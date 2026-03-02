@@ -149,13 +149,14 @@ When user's prompt is NOT in English:
 
 ### 📱 Project Type Routing
 
-| Project Type                           | Primary Agent         | Skills                        |
+| Task Domain                            | Primary Agent         | Skills                        |
 | -------------------------------------- | --------------------- | ----------------------------- |
-| **MOBILE** (iOS, Android, RN, Flutter) | `mobile-developer`    | mobile-design                 |
-| **WEB** (Next.js, React web)           | `frontend-specialist` | frontend-design               |
-| **BACKEND** (API, server, DB)          | `backend-specialist`  | api-patterns, database-design |
+| **DATA ENGINEERING** (Databricks, ETL) | `data-engineer`       | databricks-patterns, database-design |
+| **BI & DASHBOARDS** (Power BI, DAX)    | `business-analyst`    | powerbi-semantic-mcp, data-documentation |
+| **DATA MODELING** (dbt, Star Schema)   | `analytics-engineer`  | database-design, azure-devops-workflow |
+| **ADVANCED ANALYTICS** (Python, ML)    | `data-scientist`      | python-data, databricks-patterns |
 
-> 🔴 **Mobile + frontend-specialist = WRONG.** Mobile = mobile-developer ONLY.
+> 🔴 **Data Engineering + business-analyst = WRONG.** Pipelines = data-engineer ONLY.
 
 ### 🛑 Socratic Gate
 
@@ -236,23 +237,23 @@ When user's prompt is NOT in English:
 
 ---
 
-## TIER 2: DESIGN RULES (Reference)
+## TIER 2: DESIGN/MODELING RULES (Reference)
 
-> **Design rules are in the specialist agents, NOT here.**
+> **Design and architecture rules are in the specialist agents, NOT here.**
 
 | Task         | Read                            |
 | ------------ | ------------------------------- |
-| Web UI/UX    | `.agent/frontend-specialist.md` |
-| Mobile UI/UX | `.agent/mobile-developer.md`    |
+| Dashboards   | `.agent/agents/business-analyst.md` |
+| Data Models  | `.agent/agents/analytics-engineer.md` |
 
 **These agents contain:**
 
-- Purple Ban (no violet/purple colors)
-- Template Ban (no standard layouts)
-- Anti-cliché rules
-- Deep Design Thinking protocol
+- Star Schema Rules (No nested snowflakes without justification)
+- DAX formatting mandates
+- Anti-cliché dashboard rules
+- Deep Data Context thinking protocol
 
-> 🔴 **For design work:** Open and READ the agent file. Rules are there.
+> 🔴 **For BI or Data Modeling work:** Open and READ the agent file. Rules are there.
 
 ---
 
@@ -260,8 +261,8 @@ When user's prompt is NOT in English:
 
 ### Agents & Skills
 
-- **Masters**: `orchestrator`, `project-planner`, `security-auditor` (Cyber/Audit), `backend-specialist` (API/DB), `frontend-specialist` (UI/UX), `mobile-developer`, `debugger`, `game-developer`
-- **Key Skills**: `clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `plan-writing`, `behavioral-modes`
+- **Masters**: `orchestrator`, `project-planner`, `data-engineer` (Pipelines), `business-analyst` (Power BI), `analytics-engineer` (Modeling), `data-scientist` (ML), `debugger`
+- **Key Skills**: `clean-code`, `brainstorming`, `databricks-patterns`, `powerbi-semantic-mcp`, `azure-devops-workflow`, `plan-writing`, `python-data`
 
 ### Key Scripts
 

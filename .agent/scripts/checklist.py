@@ -7,17 +7,14 @@ Orchestrates all validation scripts in priority order.
 Use this for incremental validation during development.
 
 Usage:
-    python scripts/checklist.py .                    # Run core checks
-    python scripts/checklist.py . --url <URL>        # Include performance checks
+    python scripts/checklist.py .
 
 Priority Order:
     P0: Security Scan (vulnerabilities, secrets)
-    P1: Lint & Type Check (code quality)
-    P2: Schema Validation (if database exists)
-    P3: Test Runner (unit/integration tests)
-    P4: UX Audit (psychology laws, accessibility)
-    P5: SEO Check (meta tags, structure)
-    P6: Performance (lighthouse - requires URL)
+    P1: SQL Lint & Python Lint
+    P2: Data Documentation Check
+    P3: Data Pipeline Test Runner
+    P4: Heavy Query Profiler
 """
 
 import sys
@@ -54,19 +51,17 @@ def print_warning(text: str):
 def print_error(text: str):
     print(f"{Colors.RED}❌ {text}{Colors.ENDC}")
 
-# Define priority-ordered checks
+# Define priority-ordered checks for the Data Team
 CORE_CHECKS = [
     ("Security Scan", ".agent/skills/vulnerability-scanner/scripts/security_scan.py", True),
-    ("Lint Check", ".agent/skills/lint-and-validate/scripts/lint_runner.py", True),
-    ("Schema Validation", ".agent/skills/database-design/scripts/schema_validator.py", False),
-    ("Test Runner", ".agent/skills/testing-patterns/scripts/test_runner.py", False),
-    ("UX Audit", ".agent/skills/frontend-design/scripts/ux_audit.py", False),
-    ("SEO Check", ".agent/skills/seo-fundamentals/scripts/seo_checker.py", False),
+    ("SQL Lint & Format", ".agent/skills/lint-and-validate/scripts/sql_lint_runner.py", True),
+    ("Data Documentation Check", ".agent/skills/data-documentation/scripts/check_dbt_yml.py", False),
+    ("Data Pipeline Test Runner", ".agent/skills/testing-patterns/scripts/test_runner.py", False),
 ]
 
 PERFORMANCE_CHECKS = [
-    ("Lighthouse Audit", ".agent/skills/performance-profiling/scripts/lighthouse_audit.py", True),
-    ("Playwright E2E", ".agent/skills/webapp-testing/scripts/playwright_runner.py", False),
+    # E.g. long-running Spark jobs or heavy dry-runs
+    ("Heavy Query Profiler", ".agent/skills/performance-profiling/scripts/heavy_query_profiler.py", False),
 ]
 
 def check_script_exists(script_path: Path) -> bool:
@@ -165,13 +160,11 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python scripts/checklist.py .                      # Core checks only
-  python scripts/checklist.py . --url http://localhost:3000  # Include performance
+  python scripts/checklist.py .                      # Core data checks
         """
     )
     parser.add_argument("project", help="Project path to validate")
-    parser.add_argument("--url", help="URL for performance checks (lighthouse, playwright)")
-    parser.add_argument("--skip-performance", action="store_true", help="Skip performance checks even if URL provided")
+    parser.add_argument("--skip-performance", action="store_true", help="Skip query profiling checks")
     
     args = parser.parse_args()
     
@@ -183,7 +176,7 @@ Examples:
     
     print_header("🚀 ANTIGRAVITY KIT - MASTER CHECKLIST")
     print(f"Project: {project_path}")
-    print(f"URL: {args.url if args.url else 'Not provided (performance checks skipped)'}")
+    print(f"Project: {project_path}")
     
     results = []
     
@@ -200,12 +193,12 @@ Examples:
             print_summary(results)
             sys.exit(1)
     
-    # Run performance checks if URL provided
-    if args.url and not args.skip_performance:
-        print_header("⚡ PERFORMANCE CHECKS")
+    # Run performance checks if requested
+    if not args.skip_performance:
+        print_header("⚡ QUERY PROFILING")
         for name, script_path, required in PERFORMANCE_CHECKS:
             script = project_path / script_path
-            result = run_script(name, script, str(project_path), args.url)
+            result = run_script(name, script, str(project_path))
             results.append(result)
     
     # Print summary

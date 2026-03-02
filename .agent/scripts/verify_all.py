@@ -57,94 +57,53 @@ def print_warning(text: str):
 def print_error(text: str):
     print(f"{Colors.RED}❌ {text}{Colors.ENDC}")
 
-# Complete verification suite
+# Complete Data Team verification suite
 VERIFICATION_SUITE = [
     # P0: Security (CRITICAL)
     {
-        "category": "Security",
+        "category": "Security & Governance",
         "checks": [
-            ("Security Scan", ".agent/skills/vulnerability-scanner/scripts/security_scan.py", True),
-            ("Dependency Analysis", ".agent/skills/vulnerability-scanner/scripts/dependency_analyzer.py", False),
+            ("Secrets & Credential Scan", ".agent/skills/vulnerability-scanner/scripts/security_scan.py", True),
+            ("Dependency Vulnerability", ".agent/skills/vulnerability-scanner/scripts/dependency_analyzer.py", False),
+            ("Data Privacy (PII) Check", ".agent/skills/data-governance/scripts/pii_exposure_check.py", False),
         ]
     },
     
     # P1: Code Quality (CRITICAL)
     {
-        "category": "Code Quality",
+        "category": "Code Quality (SQL/Python)",
         "checks": [
-            ("Lint Check", ".agent/skills/lint-and-validate/scripts/lint_runner.py", True),
-            ("Type Coverage", ".agent/skills/lint-and-validate/scripts/type_coverage.py", False),
+            ("Python Linter (Ruff/Flake8)", ".agent/skills/lint-and-validate/scripts/lint_runner.py", True),
+            ("SQL Linter (Sqlfluff)", ".agent/skills/lint-and-validate/scripts/sql_lint_runner.py", True),
         ]
     },
     
-    # P2: Data Layer
+    # P2: Data Documentation
     {
-        "category": "Data Layer",
+        "category": "Data Documentation",
         "checks": [
-            ("Schema Validation", ".agent/skills/database-design/scripts/schema_validator.py", False),
+            ("dbt Schema Definition Check", ".agent/skills/data-documentation/scripts/check_dbt_yml.py", False),
+            ("Power BI DAX Format Check", ".agent/skills/powerbi-semantic-mcp/scripts/dax_format_audit.py", False),
         ]
     },
     
     # P3: Testing
     {
-        "category": "Testing",
+        "category": "Pipeline & Data Testing",
         "checks": [
-            ("Test Suite", ".agent/skills/testing-patterns/scripts/test_runner.py", False),
+            ("Unit Tests (pytest)", ".agent/skills/testing-patterns/scripts/test_runner.py", False),
+            ("Data Expectations (Great Expectations)", ".agent/skills/testing-patterns/scripts/data_quality_run.py", False),
         ]
     },
     
-    # P4: UX & Accessibility
+    # P4: Performance
     {
-        "category": "UX & Accessibility",
+        "category": "Query Performance",
+        "requires_url": False, # Changed to false for data queries
         "checks": [
-            ("UX Audit", ".agent/skills/frontend-design/scripts/ux_audit.py", False),
-            ("Accessibility Check", ".agent/skills/frontend-design/scripts/accessibility_checker.py", False),
+            ("Heavy Query Profiler", ".agent/skills/performance-profiling/scripts/heavy_query_profiler.py", False),
         ]
-    },
-    
-    # P5: SEO & Content
-    {
-        "category": "SEO & Content",
-        "checks": [
-            ("SEO Check", ".agent/skills/seo-fundamentals/scripts/seo_checker.py", False),
-            ("GEO Check", ".agent/skills/geo-fundamentals/scripts/geo_checker.py", False),
-        ]
-    },
-    
-    # P6: Performance (requires URL)
-    {
-        "category": "Performance",
-        "requires_url": True,
-        "checks": [
-            ("Lighthouse Audit", ".agent/skills/performance-profiling/scripts/lighthouse_audit.py", True),
-            ("Bundle Analysis", ".agent/skills/performance-profiling/scripts/bundle_analyzer.py", False),
-        ]
-    },
-    
-    # P7: E2E Testing (requires URL)
-    {
-        "category": "E2E Testing",
-        "requires_url": True,
-        "checks": [
-            ("Playwright E2E", ".agent/skills/webapp-testing/scripts/playwright_runner.py", False),
-        ]
-    },
-    
-    # P8: Mobile (if applicable)
-    {
-        "category": "Mobile",
-        "checks": [
-            ("Mobile Audit", ".agent/skills/mobile-design/scripts/mobile_audit.py", False),
-        ]
-    },
-    
-    # P9: Internationalization
-    {
-        "category": "Internationalization",
-        "checks": [
-            ("i18n Check", ".agent/skills/i18n-localization/scripts/i18n_checker.py", False),
-        ]
-    },
+    }
 ]
 
 def run_script(name: str, script_path: Path, project_path: str, url: Optional[str] = None) -> dict:

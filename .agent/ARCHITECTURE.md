@@ -8,8 +8,8 @@
 
 Antigravity Kit is a modular system consisting of:
 
-- **25 Specialist Agents** - Role-based AI personas
-- **36 Skills** - Domain-specific knowledge modules
+- **17 Specialist Agents** - Role-based AI personas
+- **26 Skills** - Domain-specific knowledge modules
 - **11 Workflows** - Slash command procedures
 
 ---
@@ -36,29 +36,21 @@ Specialist AI personas for different domains.
 | ------------------------ | -------------------------- | -------------------------------------------------------- |
 | `orchestrator`           | Multi-agent coordination   | parallel-agents, behavioral-modes                        |
 | `project-planner`        | Discovery, task planning   | brainstorming, plan-writing, architecture                |
-| `frontend-specialist`    | Web UI/UX                  | frontend-design, react-best-practices, tailwind-patterns |
-| `backend-specialist`     | API, business logic        | api-patterns, nodejs-best-practices, database-design     |
 | `database-architect`     | Schema, SQL                | database-design, prisma-expert                           |
-| `mobile-developer`       | iOS, Android, RN           | mobile-design                                            |
-| `game-developer`         | Game logic, mechanics      | game-development                                         |
 | `devops-engineer`        | CI/CD, Docker              | deployment-procedures, docker-expert                     |
-| `security-auditor`       | Security compliance        | vulnerability-scanner, red-team-tactics                  |
-| `penetration-tester`     | Offensive security         | red-team-tactics                                         |
-| `test-engineer`          | Testing strategies         | testing-patterns, tdd-workflow, webapp-testing           |
 | `debugger`               | Root cause analysis        | systematic-debugging                                     |
 | `performance-optimizer`  | Speed, Web Vitals          | performance-profiling                                    |
-| `seo-specialist`         | Ranking, visibility        | seo-fundamentals, geo-fundamentals                       |
 | `documentation-writer`   | Manuals, docs              | documentation-templates                                  |
 | `product-manager`        | Requirements, user stories | plan-writing, brainstorming                              |
 | `product-owner`          | Strategy, backlog, MVP     | plan-writing, brainstorming                              |
-| `qa-automation-engineer` | E2E testing, CI pipelines  | webapp-testing, testing-patterns                         |
 | `code-archaeologist`     | Legacy code, refactoring   | clean-code, code-review-checklist                        |
 | `explorer-agent`         | Codebase analysis          | -                                                        |
-| `data-engineer`          | ETL, pipelines, infra      | clean-code, python-patterns, database-design             |
-| `analytics-engineer`     | dbt, dimensional modeling  | clean-code, python-patterns, database-design             |
-| `data-analyst`           | Dashboards, SQL, insights  | clean-code, python-patterns, database-design             |
-| `data-scientist`         | ML, statistics, models     | clean-code, python-patterns                              |
-| `data-governance`        | Quality, LGPD, contracts   | clean-code, database-design                              |
+| `data-engineer`          | ETL, pipelines, infra      | clean-code, databricks-patterns, database-design         |
+| `analytics-engineer`     | dbt, dimensional modeling  | clean-code, database-design, azure-devops-workflow       |
+| `data-analyst`           | Dashboards, SQL, insights  | clean-code, python-data, database-design                 |
+| `data-scientist`         | ML, statistics, models     | clean-code, python-data, databricks-patterns             |
+| `data-governance`        | Quality, LGPD, contracts   | data-documentation, database-design                      |
+| `business-analyst`       | Power BI, Reqs, Metrics    | clean-code, powerbi-semantic-mcp, data-documentation     |
 
 ---
 
@@ -283,11 +275,11 @@ For details, see [scripts/README.md](scripts/README.md)
 
 | Need     | Agent                 | Skills                                |
 | -------- | --------------------- | ------------------------------------- |
-| Web App  | `frontend-specialist` | react-best-practices, frontend-design |
-| API      | `backend-specialist`  | api-patterns, nodejs-best-practices   |
-| Mobile   | `mobile-developer`    | mobile-design                         |
-| Database | `database-architect`  | database-design, prisma-expert        |
-| Security | `security-auditor`    | vulnerability-scanner                 |
-| Testing  | `test-engineer`       | testing-patterns, webapp-testing      |
+| Pipeline | `data-engineer`       | databricks-patterns, database-design  |
+| Semantic | `business-analyst`    | powerbi-semantic-mcp, data-documentation |
+| Models   | `analytics-engineer`  | database-design, azure-devops-workflow |
+| ML / AI  | `data-scientist`      | python-data, databricks-patterns      |
+| SQL Arch | `database-architect`  | database-design                       |
+| DevOps   | `devops-engineer`     | deployment-procedures, azure-devops-workflow |
 | Debug    | `debugger`            | systematic-debugging                  |
 | Plan     | `project-planner`     | brainstorming, plan-writing           |
