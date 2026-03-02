@@ -1,0 +1,36 @@
+{
+  "name": "@luccapinto/agentic-ai-kit",
+  "version": "2.0.0",
+  "description": "AI Agent templates - Skills, Agents, and Workflows for enhanced coding assistance",
+  "main": "bin/cli.js",
+  "bin": {
+    "agentic-ai-kit": "./bin/cli.js",
+    "ag-kit": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luccapinto/agentic-ai-kit.git"
+  },
+  "keywords": [
+    "agentic-ai",
+    "ai",
+    "agent",
+    "gemini",
+    "skills",
+    "templates"
+  ],
+  "author": "Lucca Pinto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/luccapinto/agentic-ai-kit/issues"
+  },
+  "homepage": "https://github.com/luccapinto/agentic-ai-kit#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^14.0.3",
+    "fs-extra": "^11.3.3"
+  }
+}
