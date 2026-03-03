@@ -19,10 +19,13 @@ Show current project and agent status.
    - Tech stack
    - Current features
 
-2. **Agent Status Board**
-   - Which agents are running
-   - Which tasks are completed
-   - Pending work
+2. **Feature Status**
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Azure DevOps Pipeline | 🟢 Done | Deployed perfectly |
+| Databricks Ingestion | 🟡 85% | Needs incremental loading fix |
+| dbt Core Models | 🔴 Blocked | Waiting for API keys |
+| Power BI Dashboard | ⚪ Pending | Spec ready |
 
 3. **File Statistics**
    - Files created count
@@ -45,11 +48,9 @@ Show current project and agent status.
 🏷️ Type: nextjs-ecommerce
 📊 Status: active
 
-🔧 Tech Stack:
-   Framework: next.js
-   Database: postgresql
-   Auth: clerk
-   Payment: stripe
+## Tech Stack Overview
+ - Platform: Databricks
+ - Visualization: Power BI
 
 ✅ Features (5):
    • product-listing
@@ -66,10 +67,10 @@ Show current project and agent status.
 
 === Agent Status ===
 
-✅ database-architect → Completed
-✅ backend-specialist → Completed
-🔄 frontend-specialist → Dashboard components (60%)
-⏳ test-engineer → Waiting
+## Active Agents
+1. `data-engineer` (Data ingestion pipeline)
+2. `analytics-engineer` (dbt dimensional modeling)
+3. `business-analyst` (Power BI semantic models)
 
 === Preview ===
 

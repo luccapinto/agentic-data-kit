@@ -24,13 +24,13 @@ $ARGUMENTS
 
 ### Agent Selection Matrix
 
-| Task Type | REQUIRED Agents (minimum) |
-|-----------|---------------------------|
-| **Web App** | frontend-specialist, backend-specialist, test-engineer |
-| **API** | backend-specialist, security-auditor, test-engineer |
-| **UI/Design** | frontend-specialist, seo-specialist, performance-optimizer |
-| **Database** | database-architect, backend-specialist, security-auditor |
-| **Full Stack** | project-planner, frontend-specialist, backend-specialist, devops-engineer |
+| Task Type | Recommended Agents (in order) |
+| :--- | :--- |
+| **Data Pipeline** | data-engineer, analytics-engineer, data-governance |
+| **Semantic Model & BI** | business-analyst, analytics-engineer, data-governance |
+| **Advanced Analytics / ML** | data-scientist, data-engineer, business-analyst |
+| **Governance & Security** | data-governance, data-engineer |
+| **Full Data Stack** | project-planner, data-engineer, analytics-engineer, business-analyst |
 | **Debug** | debugger, explorer-agent, test-engineer |
 | **Security** | security-auditor, penetration-tester, devops-engineer |
 
@@ -52,7 +52,7 @@ $ARGUMENTS
 ### PHASE 1: PLANNING (Sequential - NO parallel agents)
 
 | Step | Agent | Action |
-|------|-------|--------|
+|-------------|--------|
 | 1 | `project-planner` | Create docs/PLAN.md |
 | 2 | (optional) `explorer-agent` | Codebase discovery if needed |
 
@@ -76,8 +76,9 @@ Do you approve? (Y/N)
 
 | Parallel Group | Agents |
 |----------------|--------|
-| Foundation | `database-architect`, `security-auditor` |
-| Core | `backend-specialist`, `frontend-specialist` |
+| Foundation | **Example:** "Build a pipeline to ingest and model sales data."
+- Lead: `data-engineer`
+- Core: `analytics-engineer`, `business-analyst` |
 | Polish | `test-engineer`, `devops-engineer` |
 
 > ✅ After user approval, invoke multiple agents in PARALLEL.
@@ -85,22 +86,20 @@ Do you approve? (Y/N)
 ## Available Agents (17 total)
 
 | Agent | Domain | Use When |
-|-------|--------|----------|
+| :--- | :--- | :--- |
 | `project-planner` | Planning | Task breakdown, PLAN.md |
 | `explorer-agent` | Discovery | Codebase mapping |
-| `frontend-specialist` | UI/UX | React, Vue, CSS, HTML |
-| `backend-specialist` | Server | API, Node.js, Python |
-| `database-architect` | Data | SQL, NoSQL, Schema |
+| `data-engineer` | Pipelines | Databricks, PySpark, ingestion |
+| `analytics-engineer` | Modeling | dbt, SQL, dimensional modeling |
+| `business-analyst` | BI/Metrics | Power BI, DAX, business context |
+| `data-scientist` | Analytics | Python, ML, statistical models |
+| `data-governance` | Security | Privacy, PII, compliance, lineage |
 | `security-auditor` | Security | Vulnerabilities, Auth |
 | `penetration-tester` | Security | Active testing |
 | `test-engineer` | Testing | Unit, E2E, Coverage |
 | `devops-engineer` | Ops | CI/CD, Docker, Deploy |
-| `mobile-developer` | Mobile | React Native, Flutter |
-| `performance-optimizer` | Speed | Lighthouse, Profiling |
-| `seo-specialist` | SEO | Meta, Schema, Rankings |
 | `documentation-writer` | Docs | README, API docs |
 | `debugger` | Debug | Error analysis |
-| `game-developer` | Games | Unity, Godot |
 | `orchestrator` | Meta | Coordination |
 
 ---
@@ -109,16 +108,13 @@ Do you approve? (Y/N)
 
 ### Step 1: Analyze Task Domains
 Identify ALL domains this task touches:
-```
-□ Security     → security-auditor, penetration-tester
-□ Backend/API  → backend-specialist
-□ Frontend/UI  → frontend-specialist
-□ Database     → database-architect
+□ Ingestion/ETL → data-engineer
+□ Data Modeling → analytics-engineer
+□ Reporting/BI  → business-analyst
+□ Stats/ML      → data-scientist
+□ Security/PII  → data-governance
 □ Testing      → test-engineer
 □ DevOps       → devops-engineer
-□ Mobile       → mobile-developer
-□ Performance  → performance-optimizer
-□ SEO          → seo-specialist
 □ Planning     → project-planner
 ```
 
