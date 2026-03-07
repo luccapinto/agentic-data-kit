@@ -1,6 +1,6 @@
 # Antigravity Kit Architecture
 
-> Comprehensive AI Agent Capability Expansion Toolkit
+> Comprehensive AI Agent Capability Expansion Toolkit for Data Teams
 
 ---
 
@@ -9,8 +9,8 @@
 Antigravity Kit is a modular system consisting of:
 
 - **17 Specialist Agents** - Role-based AI personas
-- **26 Skills** - Domain-specific knowledge modules
-- **11 Workflows** - Slash command procedures
+- **27 Skills** - Domain-specific knowledge modules
+- **6 Workflows** - Slash command procedures
 
 ---
 
@@ -19,16 +19,16 @@ Antigravity Kit is a modular system consisting of:
 ```plaintext
 .agent/
 ├── ARCHITECTURE.md          # This file
-├── agents/                  # 25 Specialist Agents
-├── skills/                  # 36 Skills
-├── workflows/               # 11 Slash Commands
+├── agents/                  # 17 Specialist Agents
+├── skills/                  # 27 Skills
+├── workflows/               # 6 Slash Commands
 ├── rules/                   # Global Rules
 └── scripts/                 # Master Validation Scripts
 ```
 
 ---
 
-## 🤖 Agents (25)
+## 🤖 Agents (17)
 
 Specialist AI personas for different domains.
 
@@ -36,10 +36,9 @@ Specialist AI personas for different domains.
 | ------------------------ | -------------------------- | -------------------------------------------------------- |
 | `orchestrator`           | Multi-agent coordination   | parallel-agents, behavioral-modes                        |
 | `project-planner`        | Discovery, task planning   | brainstorming, plan-writing, architecture                |
-| `database-architect`     | Schema, SQL                | database-design, prisma-expert                           |
-| `devops-engineer`        | CI/CD, Docker              | deployment-procedures, docker-expert                     |
+| `database-architect`     | Schema, SQL                | database-design                                          |
+| `devops-engineer`        | CI/CD                      | deployment-procedures, azure-devops-workflow             |
 | `debugger`               | Root cause analysis        | systematic-debugging                                     |
-| `performance-optimizer`  | Speed, Web Vitals          | performance-profiling                                    |
 | `documentation-writer`   | Manuals, docs              | documentation-templates                                  |
 | `product-manager`        | Requirements, user stories | plan-writing, brainstorming                              |
 | `product-owner`          | Strategy, backlog, MVP     | plan-writing, brainstorming                              |
@@ -51,50 +50,41 @@ Specialist AI personas for different domains.
 | `data-scientist`         | ML, statistics, models     | clean-code, python-data, databricks-patterns             |
 | `data-governance`        | Quality, LGPD, contracts   | data-documentation, database-design                      |
 | `business-analyst`       | Power BI, Reqs, Metrics    | clean-code, powerbi-semantic-mcp, data-documentation     |
+| `agent-creator`          | Creates new agents         | plan-writing                                             |
 
 ---
 
-## 🧩 Skills (36)
+## 🧩 Skills (27)
 
-Modular knowledge domains that agents can load on-demand. based on task context.
+Modular knowledge domains that agents can load on-demand based on task context.
 
-### Frontend & UI
+### Data Engineering & Analytics
 
 | Skill                   | Description                                                           |
 | ----------------------- | --------------------------------------------------------------------- |
-| `react-best-practices`  | React & Next.js performance optimization (Vercel - 57 rules)          |
-| `web-design-guidelines` | Web UI audit - 100+ rules for accessibility, UX, performance (Vercel) |
-| `tailwind-patterns`     | Tailwind CSS v4 utilities                                             |
-| `frontend-design`       | UI/UX patterns, design systems                                        |
-| `ui-ux-pro-max`         | 50 styles, 21 palettes, 50 fonts                                      |
-
-### Backend & API
-
-| Skill                   | Description                    |
-| ----------------------- | ------------------------------ |
-| `api-patterns`          | REST, GraphQL, tRPC            |
-| `nestjs-expert`         | NestJS modules, DI, decorators |
-| `nodejs-best-practices` | Node.js async, modules         |
-| `python-patterns`       | Python standards, FastAPI      |
+| `databricks-patterns`   | Delta Lake, Unity Catalog, PySpark optimization                       |
+| `powerbi-semantic-mcp`  | Tabular Editor, REST API, Documentation, DAX Checkers                 |
+| `python-data`           | Pandas, Polars, memory management                                     |
+| `data-documentation`    | dbt YML, lineage, metric definitions                                  |
 
 ### Database
 
 | Skill             | Description                 |
 | ----------------- | --------------------------- |
 | `database-design` | Schema design, optimization |
-| `prisma-expert`   | Prisma ORM, migrations      |
 
-### TypeScript/JavaScript
+### Architecture & Planning
 
-| Skill               | Description                         |
-| ------------------- | ----------------------------------- |
-| `typescript-expert` | Type-level programming, performance |
+| Skill           | Description                |
+| --------------- | -------------------------- |
+| `architecture`  | System design patterns     |
+| `plan-writing`  | Task planning, breakdown   |
+| `brainstorming` | Socratic questioning       |
 
 ### Cloud & Infrastructure
 
 | Skill                   | Description               |
 | ----------------------- | ------------------------- |
-| `docker-expert`         | Containerization, Compose |
 | `deployment-procedures` | CI/CD, deploy workflows   |
 | `server-management`     | Infrastructure management |
 
@@ -102,11 +92,10 @@ Modular knowledge domains that agents can load on-demand. based on task context.
 
 | Skill                   | Description              |
 | ----------------------- | ------------------------ |
-| `testing-patterns`      | Jest, Vitest, strategies |
-| `webapp-testing`        | E2E, Playwright          |
+| `testing-patterns`      | PyTest, Great Expectations|
 | `tdd-workflow`          | Test-driven development  |
 | `code-review-checklist` | Code review standards    |
-| `lint-and-validate`     | Linting, validation      |
+| `lint-and-validate`     | SQLFluff, Ruff, Flake8   |
 
 ### Security
 
@@ -114,34 +103,6 @@ Modular knowledge domains that agents can load on-demand. based on task context.
 | ----------------------- | ------------------------ |
 | `vulnerability-scanner` | Security auditing, OWASP |
 | `red-team-tactics`      | Offensive security       |
-
-### Architecture & Planning
-
-| Skill           | Description                |
-| --------------- | -------------------------- |
-| `app-builder`   | Full-stack app scaffolding |
-| `architecture`  | System design patterns     |
-| `plan-writing`  | Task planning, breakdown   |
-| `brainstorming` | Socratic questioning       |
-
-### Mobile
-
-| Skill           | Description           |
-| --------------- | --------------------- |
-| `mobile-design` | Mobile UI/UX patterns |
-
-### Game Development
-
-| Skill              | Description           |
-| ------------------ | --------------------- |
-| `game-development` | Game logic, mechanics |
-
-### SEO & Growth
-
-| Skill              | Description                   |
-| ------------------ | ----------------------------- |
-| `seo-fundamentals` | SEO, E-E-A-T, Core Web Vitals |
-| `geo-fundamentals` | GenAI optimization            |
 
 ### Shell/CLI
 
@@ -159,29 +120,24 @@ Modular knowledge domains that agents can load on-demand. based on task context.
 | `parallel-agents`         | Multi-agent patterns      |
 | `mcp-builder`             | Model Context Protocol    |
 | `documentation-templates` | Doc formats               |
-| `i18n-localization`       | Internationalization      |
-| `performance-profiling`   | Web Vitals, optimization  |
+| `performance-profiling`   | Heavy Query Profiling     |
 | `systematic-debugging`    | Troubleshooting           |
+| `intelligent-routing`     | Routing definitions       |
 
 ---
 
-## 🔄 Workflows (11)
+## 🔄 Workflows (6)
 
 Slash command procedures. Invoke with `/command`.
 
 | Command          | Description              |
 | ---------------- | ------------------------ |
 | `/brainstorm`    | Socratic discovery       |
-| `/create`        | Create new features      |
 | `/debug`         | Debug issues             |
-| `/deploy`        | Deploy application       |
-| `/enhance`       | Improve existing code    |
 | `/orchestrate`   | Multi-agent coordination |
 | `/plan`          | Task breakdown           |
-| `/preview`       | Preview changes          |
 | `/status`        | Check project status     |
 | `/test`          | Run tests                |
-| `/ui-ux-pro-max` | Design with 50 styles    |
 
 ---
 
@@ -205,57 +161,45 @@ skill-name/
 └── assets/            # (Optional) Images, logos
 ```
 
-### Enhanced Skills (with scripts/references)
-
-| Skill               | Files | Coverage                            |
-| ------------------- | ----- | ----------------------------------- |
-| `ui-ux-pro-max`     | 27    | 50 styles, 21 palettes, 50 fonts    |
-| `app-builder`       | 20    | Full-stack scaffolding              |
-
 ---
 
-## � Scripts (2)
+## 🛠️ Scripts (2)
 
-Master validation scripts that orchestrate skill-level scripts.
+Master validation scripts that orchestrate skill-level scripts for Data Pipelines.
 
 ### Master Scripts
 
-| Script          | Purpose                                 | When to Use              |
-| --------------- | --------------------------------------- | ------------------------ |
-| `checklist.py`  | Priority-based validation (Core checks) | Development, pre-commit  |
-| `verify_all.py` | Comprehensive verification (All checks) | Pre-deployment, releases |
+| Script             | Purpose                                 | When to Use              |
+| ------------------ | --------------------------------------- | ------------------------ |
+| `checklist.py`     | Priority-based validation (Core checks) | Development, pre-commit  |
+| `verify_all.py`    | Comprehensive verification (All checks) | Pre-deployment, releases |
 
 ### Usage
 
 ```bash
-# Quick validation during development
+# Quick validation before commit
 python .agent/scripts/checklist.py .
 
-# Full verification before deployment
-python .agent/scripts/verify_all.py . --url http://localhost:3000
+# Full verification across all Data CI/CD checks
+python .agent/scripts/verify_all.py .
 ```
 
 ### What They Check
 
-**checklist.py** (Core checks):
+**checklist.py** (Core Data Checks):
+- Security (vulnerabilities, credentials)
+- SQL Lint & Python Lint
+- Data Documentation Check
+- Data Pipeline Test Runner (PyTest)
+- Heavy Query Profiler
 
-- Security (vulnerabilities, secrets)
-- Code Quality (lint, types)
-- Schema Validation
-- Test Suite
-- UX Audit
-- SEO Check
-
-**verify_all.py** (Full suite):
-
+**verify_all.py** (Full Suite):
 - Everything in checklist.py PLUS:
-- Lighthouse (Core Web Vitals)
-- Playwright E2E
-- Bundle Analysis
-- Mobile Audit
-- i18n Check
-
-For details, see [scripts/README.md](scripts/README.md)
+- Secrets & Credential Scan
+- Dependency Vulnerability
+- Data Privacy (PII) Check
+- Power BI DAX Format Check
+- Data Expectations (Great Expectations, Data Quality)
 
 ---
 
@@ -263,11 +207,11 @@ For details, see [scripts/README.md](scripts/README.md)
 
 | Metric              | Value                         |
 | ------------------- | ----------------------------- |
-| **Total Agents**    | 25                            |
-| **Total Skills**    | 36                            |
-| **Total Workflows** | 11                            |
-| **Total Scripts**   | 2 (master) + 18 (skill-level) |
-| **Coverage**        | ~90% web/mobile development   |
+| **Total Agents**    | 17                            |
+| **Total Skills**    | 27                            |
+| **Total Workflows** | 6                             |
+| **Total Scripts**   | 2 (master) + skill-level      |
+| **Coverage**        | ~100% Data Engineering & BI   |
 
 ---
 
