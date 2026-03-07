@@ -1,12 +1,12 @@
 ---
 name: architecture
-description: Architectural decision-making framework. Requirements analysis, trade-off evaluation, ADR documentation. Use when making architecture decisions or analyzing system design.
+description: Architectural decision-making framework for Data Engineering and Analytics. Focuses on Medallion Architecture, Data Mesh, Batch vs Streaming, and Dimensional Modeling. 
 allowed-tools: Read, Glob, Grep
 ---
 
-# Architecture Decision Framework
+# Architecture Decision Framework (Data Focus)
 
-> "Requirements drive architecture. Trade-offs inform decisions. ADRs capture rationale."
+> "Requirements drive pipelines. Volume informs processing. Modeling organizes truth."
 
 ## 🎯 Selective Reading Rule
 
@@ -14,11 +14,11 @@ allowed-tools: Read, Glob, Grep
 
 | File | Description | When to Read |
 |------|-------------|--------------|
-| `context-discovery.md` | Questions to ask, project classification | Starting architecture design |
-| `trade-off-analysis.md` | ADR templates, trade-off framework | Documenting decisions |
-| `pattern-selection.md` | Decision trees, anti-patterns | Choosing patterns |
-| `examples.md` | MVP, SaaS, Enterprise examples | Reference implementations |
-| `patterns-reference.md` | Quick lookup for patterns | Pattern comparison |
+| `context-discovery.md` | Questions to ask, project classification | Starting data architecture design |
+| `medallion.md` | Bronze, Silver, Gold layers | Designing Data Lakehouse pipelines |
+| `batch-vs-streaming.md` | Lambda, Kappa, micro-batching | Deciding latency vs throughput |
+| `dimensional-modeling.md` | Star Schema, Facts, Dimensions | Modeling the Gold layer for BI / Analytics |
+| `data-mesh.md` | Decentralized data ownership | Designing organizational data structure |
 
 ---
 
@@ -26,30 +26,27 @@ allowed-tools: Read, Glob, Grep
 
 | Skill | Use For |
 |-------|---------|
-| `@[skills/database-design]` | Database schema design |
-| `@[skills/api-patterns]` | API design patterns |
-| `@[skills/deployment-procedures]` | Deployment architecture |
+| `@[skills/database-design]` | Physical Database schema design |
+| `@[skills/databricks-patterns]` | Implementing architecture in Databricks |
+| `@[skills/tmdl-modeling]` | Semantic layer deployment |
 
 ---
 
-## Core Principle
+## Core Principles
 
-**"Simplicity is the ultimate sophistication."**
-
-- Start simple
-- Add complexity ONLY when proven necessary
-- You can always add patterns later
-- Removing complexity is MUCH harder than adding it
+1. **Idempotency is Mandatory:** Pipelines must be rerunnable without duplicating data.
+2. **Immutability in Source:** Never UPDATE or DELETE in Bronze. Append only.
+3. **Keep Compute Close to Data:** Avoid moving large datasets across networks unnecessarily.
+4. **Late Binding:** Apply heavy business logic and aggregations as late as possible (Silver to Gold).
 
 ---
 
 ## Validation Checklist
 
-Before finalizing architecture:
+Before finalizing data architecture:
 
-- [ ] Requirements clearly understood
-- [ ] Constraints identified
-- [ ] Each decision has trade-off analysis
-- [ ] Simpler alternatives considered
-- [ ] ADRs written for significant decisions
-- [ ] Team expertise matches chosen patterns
+- [ ] Data volume, velocity, and variety clearly understood
+- [ ] Requirements for SLA (freshness) defined
+- [ ] Storage vs Compute costs evaluated 
+- [ ] Appropriate processing layer chosen (Batch vs Streaming)
+- [ ] Idempotency strategies defined

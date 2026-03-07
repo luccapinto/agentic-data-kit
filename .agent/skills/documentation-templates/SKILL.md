@@ -1,194 +1,147 @@
 ---
 name: documentation-templates
-description: Documentation templates and structure guidelines. README, API docs, code comments, and AI-friendly documentation.
+description: Documentation templates and structure guidelines for Data Engineering. Runbooks, Semantic Layers, Data Dictionaries, and AI-friendly documentation.
 allowed-tools: Read, Glob, Grep
 ---
 
-# Documentation Templates
+# Documentation Templates (Data Engineering)
 
-> Templates and structure guidelines for common documentation types.
+> Templates and structure guidelines for common Data Team documentation types.
 
 ---
 
-## 1. README Structure
+## 1. Pipeline Runbook Template
 
-### Essential Sections (Priority Order)
+Every critical pipeline must have a runbook for when it fails at 3 AM.
+
+### Essential Sections
 
 | Section | Purpose |
 |---------|---------|
-| **Title + One-liner** | What is this? |
-| **Quick Start** | Running in <5 min |
-| **Features** | What can I do? |
-| **Configuration** | How to customize |
-| **API Reference** | Link to detailed docs |
-| **Contributing** | How to help |
-| **License** | Legal |
+| **Description** | What business process relies on this data? |
+| **SLAs** | When must this pipeline be finished by? |
+| **Upstream Dependencies** | What sources feed this? (APIs, Databases, etc.) |
+| **Downstream Consumers** | Who is impacted if this fails? (e.g., Finance Dashboard) |
+| **Common Failures & Fixes** | How to troubleshoot known issues. |
+| **Escalation Contacts** | Who to call if the on-call engineer can't fix it. |
 
-### README Template
-
-```markdown
-# Project Name
-
-Brief one-line description.
-
-## Quick Start
-
-[Minimum steps to run]
-
-## Features
-
-- Feature 1
-- Feature 2
-
-## Configuration
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| PORT | Server port | 3000 |
-
-## Documentation
-
-- [API Reference](./docs/api.md)
-- [Architecture](./docs/architecture.md)
-
-## License
-
-MIT
-```
-
----
-
-## 2. API Documentation Structure
-
-### Per-Endpoint Template
+### Runbook Template
 
 ```markdown
-## GET /users/:id
+# Pipeline: [Pipeline Name]
 
-Get a user by ID.
+**Business Criticality:** High | Medium | Low  
+**SLA:** Must complete by 08:00 AM EST  
+**Schedule:** Daily at 02:00 AM EST
 
-**Parameters:**
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| id | string | Yes | User ID |
+## Description
+Extracts daily sales from Stripe, transforms currency, and loads to the `fct_sales` table.
 
-**Response:**
-- 200: User object
-- 404: User not found
+## Dependencies
+- Upstream: Stripe API (Sales), Exchange Rate API
+- Downstream: Power BI Sales Executive Dashboard
 
-**Example:**
-[Request and response example]
+## Common Failures
+1. **API Rate Limit Exceeded (Stripe)**
+   - *Symptom:* HTTP 429 errors in logs.
+   - *Fix:* Pipeline has auto-retries. If it completely fails, manually clear the task in Airflow and re-trigger after 15 mins.
+2. **Missing Exchange Rates**
+   - *Symptom:* `null_value` test fails in dbt.
+   - *Fix:* Check if the Exchange Rate API changed its payload format.
+
+## Escalation
+- Primary: @DataEngineerName
+- Secondary: @DataLeadName
 ```
 
 ---
 
-## 3. Code Comment Guidelines
+## 2. Table / Model Documentation (Data Dictionary)
 
-### JSDoc/TSDoc Template
+Use this format primarily inside `schema.yml` files (dbt) or specific Markdown registry files.
 
-```typescript
-/**
- * Brief description of what the function does.
- * 
- * @param paramName - Description of parameter
- * @returns Description of return value
- * @throws ErrorType - When this error occurs
- * 
- * @example
- * const result = functionName(input);
- */
-```
-
-### When to Comment
-
-| ✅ Comment | ❌ Don't Comment |
-|-----------|-----------------|
-| Why (business logic) | What (obvious) |
-| Complex algorithms | Every line |
-| Non-obvious behavior | Self-explanatory code |
-| API contracts | Implementation details |
-
----
-
-## 4. Changelog Template (Keep a Changelog)
+### Template
 
 ```markdown
-# Changelog
+# Table: [schema_name].[table_name]
 
-## [Unreleased]
-### Added
-- New feature
+**Description:** Contains one row per completed order. Contains net amounts and applied discounts.
 
-## [1.0.0] - 2025-01-01
-### Added
-- Initial release
-### Changed
-- Updated dependency
-### Fixed
-- Bug fix
+**Grain:** 1 Row = 1 Order Item
+
+### Columns
+
+| Column Name | Type | Description | PII / Sensitive |
+|-------------|------|-------------|-----------------|
+| `order_id` | STRING | Primary Key. | No |
+| `customer_id` | STRING | Foreign Key to `dim_customer`. | No |
+| `net_amount` | FLOAT | Amount paid after taxes and discounts. | No |
+| `customer_email` | STRING | Email of the purchaser. | **YES (Masked to PBI)** |
+
+### Tests Applied
+- `order_id`: unique, not_null
+- `customer_id`: relationships to `dim_customer`
 ```
 
 ---
 
-## 5. Architecture Decision Record (ADR)
+## 3. Semantic Layer (Metric Definition)
+
+When defining a metric for Business Analysts, use a clear framework.
+
+### Template
+
+```markdown
+# Metric: Monthly Active Users (MAU)
+
+**Definition:** The number of unique authenticated users who have logged into the platform at least once trailing 30 days.
+
+**Calculation (Pseudo-SQL):**
+`COUNT(DISTINCT user_id) WHERE login_date >= CURRENT_DATE - 30`
+
+**Grain/Dimensions Available:**
+- Country
+- Device Type
+- Subscription Tier
+
+**Source Table:** `gold.fct_user_logins`
+
+**Owner:** Product Analytics Team
+```
+
+---
+
+## 4. Architecture Decision Record (ADR)
+
+Use this when making big architectural choices (e.g., moving from Airflow to Dagster, or choosing Delta over Iceberg).
 
 ```markdown
 # ADR-001: [Title]
 
 ## Status
-Accepted / Deprecated / Superseded
+Proposed / Accepted / Rejected / Deprecated
 
 ## Context
-Why are we making this decision?
+Why are we making this decision? (e.g., Databricks costs are too high for simple transformations).
 
 ## Decision
-What did we decide?
+What did we decide? (e.g., We will use dbt Core on Snowflake for the transform layer).
 
 ## Consequences
-What are the trade-offs?
+- **Positive:** Lower compute costs, easier for analysts to write SQL.
+- **Negative:** Harder to write complex Machine Learning transformations seamlessly in line with ETL.
 ```
 
 ---
 
-## 6. AI-Friendly Documentation (2025)
+## 5. SQL Commenting Guidelines
 
-### llms.txt Template
-
-For AI crawlers and agents:
-
-```markdown
-# Project Name
-> One-line objective.
-
-## Core Files
-- [src/index.ts]: Main entry
-- [src/api/]: API routes
-- [docs/]: Documentation
-
-## Key Concepts
-- Concept 1: Brief explanation
-- Concept 2: Brief explanation
-```
-
-### MCP-Ready Documentation
-
-For RAG indexing:
-- Clear H1-H3 hierarchy
-- JSON/YAML examples for data structures
-- Mermaid diagrams for flows
-- Self-contained sections
+| ✅ DO Comment | ❌ Don't Comment |
+|-----------|-----------------|
+| Complex regex logic (`regexp_replace(..., '(?i)foo', 'bar')`) | Basic SELECT statements |
+| Why a specific filter exists (`-- Exclude test accounts created before 2021`) | `LEFT JOIN` mechanics |
+| Workarounds for upstream bugs (`-- Coalesce null because source system drops 0s`) | Standard math (`-- Add a and b`) |
 
 ---
 
-## 7. Structure Principles
-
-| Principle | Why |
-|-----------|-----|
-| **Scannable** | Headers, lists, tables |
-| **Examples first** | Show, don't just tell |
-| **Progressive detail** | Simple → Complex |
-| **Up to date** | Outdated = misleading |
-
----
-
-> **Remember:** Templates are starting points. Adapt to your project's needs.
+> **Remember:** Data Documentation rots quickly. Put it as close to the code/schema as possible (e.g., YAML files) rather than isolated Wikis.

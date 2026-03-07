@@ -72,18 +72,18 @@ Next steps:
 
 | Request | Plan File |
 |---------|-----------|
-| `/plan e-commerce site with cart` | `docs/PLAN-ecommerce-cart.md` |
-| `/plan mobile app for fitness` | `docs/PLAN-fitness-app.md` |
-| `/plan add dark mode feature` | `docs/PLAN-dark-mode.md` |
-| `/plan fix authentication bug` | `docs/PLAN-auth-fix.md` |
-| `/plan SaaS dashboard` | `docs/PLAN-saas-dashboard.md` |
+| `/plan customer churn model` | `docs/PLAN-customer-churn-model.md` |
+| `/plan erp data ingestion pipeline` | `docs/PLAN-erp-ingestion.md` |
+| `/plan dbt core models setup` | `docs/PLAN-dbt-core-models.md` |
+| `/plan executive sales dashboard` | `docs/PLAN-sales-dashboard.md` |
+| `/plan databricks unified workspace` | `docs/PLAN-databricks-workspace.md` |
 
 ---
 
 ## Usage
 
 ```
-/plan e-commerce site with cart
-/plan mobile app for fitness tracking
-/plan SaaS dashboard with analytics
+/plan modelagem de churn de clientes
+/plan pipeline de ingestao ERP
+/plan dashboard de vendas SaaS
 ```

@@ -137,9 +137,9 @@ Use the project-planner agent to create PLAN.md
 **PHASE 2 (Implementation - after approval):**
 ```
 Invoke agents in PARALLEL:
-Use the frontend-specialist agent to [task]
-Use the backend-specialist agent to [task]
-Use the test-engineer agent to [task]
+Use the data-engineer agent to [ingestion task]
+Use the analytics-engineer agent to [modeling task]
+Use the test-engineer agent to [testing task]
 ```
 
 **🔴 CRITICAL: Context Passing (MANDATORY)**
@@ -156,10 +156,10 @@ When invoking ANY subagent, you MUST include:
 Use the project-planner agent to create PLAN.md:
 
 **CONTEXT:**
-- User Request: "A social platform for students, using mock data"
-- Decisions: Tech=Vue 3, Layout=Grid Widgets, Auth=Mock, Design=Youthful & dynamic
+- User Request: "Pipeline de ponta a ponta para dados de ERP"
+- Decisions: Tech=Databricks, Arquitetura=Medallion, Visualização=Power BI
 - Previous Work: Orchestrator asked 6 questions, user chose all options
-- Current Plan: playful-roaming-dream.md exists in workspace with initial structure
+- Current Plan: erp-pipeline-plan.md exists in workspace with initial structure
 
 **TASK:** Create detailed PLAN.md based on ABOVE decisions. Do NOT infer from folder name.
 ```
@@ -194,7 +194,7 @@ Combine all agent outputs into unified report.
 | # | Agent | Focus Area | Status |
 |---|-------|------------|--------|
 | 1 | project-planner | Task breakdown | ✅ |
-| 2 | frontend-specialist | UI implementation | ✅ |
+| 2 | data-engineer | Pipeline de ingestão | ✅ |
 | 3 | test-engineer | Verification scripts | ✅ |
 
 ### Verification Scripts Executed

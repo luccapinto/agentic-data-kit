@@ -83,7 +83,7 @@ def run_script(name: str, script_path: Path, project_path: str, url: Optional[st
     
     # Build command
     cmd = ["python", str(script_path), project_path]
-    if url and ("lighthouse" in script_path.name.lower() or "playwright" in script_path.name.lower()):
+    if url:
         cmd.append(url)
     
     # Run script

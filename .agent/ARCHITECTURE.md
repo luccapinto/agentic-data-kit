@@ -8,8 +8,8 @@
 
 Antigravity Kit is a modular system consisting of:
 
-- **17 Specialist Agents** - Role-based AI personas
-- **27 Skills** - Domain-specific knowledge modules
+- **14 Specialist Agents** - Role-based AI personas
+- **23 Skills** - Domain-specific knowledge modules
 - **6 Workflows** - Slash command procedures
 
 ---
@@ -19,8 +19,8 @@ Antigravity Kit is a modular system consisting of:
 ```plaintext
 .agent/
 ├── ARCHITECTURE.md          # This file
-├── agents/                  # 17 Specialist Agents
-├── skills/                  # 27 Skills
+├── agents/                  # 14 Specialist Agents
+├── skills/                  # 23 Skills
 ├── workflows/               # 6 Slash Commands
 ├── rules/                   # Global Rules
 └── scripts/                 # Master Validation Scripts
@@ -28,33 +28,30 @@ Antigravity Kit is a modular system consisting of:
 
 ---
 
-## 🤖 Agents (17)
+## 🤖 Agents (14)
 
-Specialist AI personas for different domains.
+Specialist AI personas for different Data domains.
 
 | Agent                    | Focus                      | Skills Used                                              |
 | ------------------------ | -------------------------- | -------------------------------------------------------- |
 | `orchestrator`           | Multi-agent coordination   | parallel-agents, behavioral-modes                        |
 | `project-planner`        | Discovery, task planning   | brainstorming, plan-writing, architecture                |
 | `database-architect`     | Schema, SQL                | database-design                                          |
-| `devops-engineer`        | CI/CD                      | deployment-procedures, azure-devops-workflow             |
 | `debugger`               | Root cause analysis        | systematic-debugging                                     |
 | `documentation-writer`   | Manuals, docs              | documentation-templates                                  |
-| `product-manager`        | Requirements, user stories | plan-writing, brainstorming                              |
-| `product-owner`          | Strategy, backlog, MVP     | plan-writing, brainstorming                              |
-| `code-archaeologist`     | Legacy code, refactoring   | clean-code, code-review-checklist                        |
 | `explorer-agent`         | Codebase analysis          | -                                                        |
 | `data-engineer`          | ETL, pipelines, infra      | clean-code, databricks-patterns, database-design         |
-| `analytics-engineer`     | dbt, dimensional modeling  | clean-code, database-design, azure-devops-workflow       |
+| `analytics-engineer`     | dbt, dimensional modeling  | clean-code, database-design, tmdl-modeling               |
 | `data-analyst`           | Dashboards, SQL, insights  | clean-code, python-data, database-design                 |
 | `data-scientist`         | ML, statistics, models     | clean-code, python-data, databricks-patterns             |
 | `data-governance`        | Quality, LGPD, contracts   | data-documentation, database-design                      |
 | `business-analyst`       | Power BI, Reqs, Metrics    | clean-code, powerbi-semantic-mcp, data-documentation     |
+| `powerbi-developer`      | Power BI Models & Reports  | powerbi-semantic-mcp, pbip-report-hacking, tmdl-modeling |
 | `agent-creator`          | Creates new agents         | plan-writing                                             |
 
 ---
 
-## 🧩 Skills (27)
+## 🧩 Skills (23)
 
 Modular knowledge domains that agents can load on-demand based on task context.
 
@@ -63,15 +60,30 @@ Modular knowledge domains that agents can load on-demand based on task context.
 | Skill                   | Description                                                           |
 | ----------------------- | --------------------------------------------------------------------- |
 | `databricks-patterns`   | Delta Lake, Unity Catalog, PySpark optimization                       |
-| `powerbi-semantic-mcp`  | Tabular Editor, REST API, Documentation, DAX Checkers                 |
 | `python-data`           | Pandas, Polars, memory management                                     |
 | `data-documentation`    | dbt YML, lineage, metric definitions                                  |
+
+### Business Intelligence & Reporting
+
+| Skill                   | Description                                                           |
+| ----------------------- | --------------------------------------------------------------------- |
+| `powerbi-semantic-mcp`  | Tabular Editor, REST API, Documentation, DAX Checkers                 |
+| `pbip-report-hacking`   | Programmatic extraction/manipulation of .pbip files                   |
+| `tmdl-modeling`         | Tabular Model Definition Language structural best practices           |
 
 ### Database
 
 | Skill             | Description                 |
 | ----------------- | --------------------------- |
 | `database-design` | Schema design, optimization |
+
+### Testing & Quality
+
+| Skill                   | Description              |
+| ----------------------- | ------------------------ |
+| `data-quality-testing`  | dbt tests, Great Expectations, Data Contracts |
+| `code-review-checklist` | Code review standards    |
+| `lint-and-validate`     | SQLFluff, Ruff, Flake8   |
 
 ### Architecture & Planning
 
@@ -80,29 +92,7 @@ Modular knowledge domains that agents can load on-demand based on task context.
 | `architecture`  | System design patterns     |
 | `plan-writing`  | Task planning, breakdown   |
 | `brainstorming` | Socratic questioning       |
-
-### Cloud & Infrastructure
-
-| Skill                   | Description               |
-| ----------------------- | ------------------------- |
-| `deployment-procedures` | CI/CD, deploy workflows   |
-| `server-management`     | Infrastructure management |
-
-### Testing & Quality
-
-| Skill                   | Description              |
-| ----------------------- | ------------------------ |
-| `testing-patterns`      | PyTest, Great Expectations|
-| `tdd-workflow`          | Test-driven development  |
-| `code-review-checklist` | Code review standards    |
-| `lint-and-validate`     | SQLFluff, Ruff, Flake8   |
-
-### Security
-
-| Skill                   | Description              |
-| ----------------------- | ------------------------ |
-| `vulnerability-scanner` | Security auditing, OWASP |
-| `red-team-tactics`      | Offensive security       |
+| `deployment-procedures` | CI/CD, deploy workflows  |
 
 ### Shell/CLI
 
@@ -111,7 +101,7 @@ Modular knowledge domains that agents can load on-demand based on task context.
 | `bash-linux`         | Linux commands, scripting |
 | `powershell-windows` | Windows PowerShell        |
 
-### Other
+### Core & Meta
 
 | Skill                     | Description               |
 | ------------------------- | ------------------------- |
@@ -120,7 +110,6 @@ Modular knowledge domains that agents can load on-demand based on task context.
 | `parallel-agents`         | Multi-agent patterns      |
 | `mcp-builder`             | Model Context Protocol    |
 | `documentation-templates` | Doc formats               |
-| `performance-profiling`   | Heavy Query Profiling     |
 | `systematic-debugging`    | Troubleshooting           |
 | `intelligent-routing`     | Routing definitions       |
 
@@ -188,18 +177,16 @@ python .agent/scripts/verify_all.py .
 
 **checklist.py** (Core Data Checks):
 - Security (vulnerabilities, credentials)
-- SQL Lint & Python Lint
-- Data Documentation Check
-- Data Pipeline Test Runner (PyTest)
-- Heavy Query Profiler
+- SQL Linter & Python Linter
+- Medallion Architecture Check
 
 **verify_all.py** (Full Suite):
 - Everything in checklist.py PLUS:
-- Secrets & Credential Scan
-- Dependency Vulnerability
-- Data Privacy (PII) Check
-- Power BI DAX Format Check
-- Data Expectations (Great Expectations, Data Quality)
+- Power BI DAX Best Practices
+- Star Schema Conventions Check
+- Data Quality Tests (Data Contracts)
+- PBIP, TMDL Layout Sanity Check
+- Idempotency Checks
 
 ---
 
@@ -207,8 +194,8 @@ python .agent/scripts/verify_all.py .
 
 | Metric              | Value                         |
 | ------------------- | ----------------------------- |
-| **Total Agents**    | 17                            |
-| **Total Skills**    | 27                            |
+| **Total Agents**    | 14                            |
+| **Total Skills**    | 23                            |
 | **Total Workflows** | 6                             |
 | **Total Scripts**   | 2 (master) + skill-level      |
 | **Coverage**        | ~100% Data Engineering & BI   |
@@ -220,10 +207,10 @@ python .agent/scripts/verify_all.py .
 | Need     | Agent                 | Skills                                |
 | -------- | --------------------- | ------------------------------------- |
 | Pipeline | `data-engineer`       | databricks-patterns, database-design  |
-| Semantic | `business-analyst`    | powerbi-semantic-mcp, data-documentation |
-| Models   | `analytics-engineer`  | database-design, azure-devops-workflow |
+| Power BI | `powerbi-developer`   | powerbi-semantic-mcp, pbip-report-hacking|
+| Models   | `analytics-engineer`  | database-design, tmdl-modeling        |
 | ML / AI  | `data-scientist`      | python-data, databricks-patterns      |
 | SQL Arch | `database-architect`  | database-design                       |
-| DevOps   | `devops-engineer`     | deployment-procedures, azure-devops-workflow |
 | Debug    | `debugger`            | systematic-debugging                  |
 | Plan     | `project-planner`     | brainstorming, plan-writing           |
+

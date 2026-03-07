@@ -97,10 +97,10 @@ What direction would you like to explore?
 ## Examples
 
 ```
-/brainstorm authentication system
-/brainstorm state management for complex form
-/brainstorm database schema for social app
-/brainstorm caching strategy
+/brainstorm arquitetura medallion para pipeline de logs
+/brainstorm modelagem dimensional para vendas
+/brainstorm estratégia de ingestão streaming vs batch
+/brainstorm layout de dashboard executivo no Power BI
 ```
 
 ---

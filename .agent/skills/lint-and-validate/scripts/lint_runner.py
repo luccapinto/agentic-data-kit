@@ -33,30 +33,8 @@ def detect_project_type(project_path: Path) -> dict:
         "linters": []
     }
     
-    # Node.js project
-    package_json = project_path / "package.json"
-    if package_json.exists():
-        result["type"] = "node"
-        try:
-            pkg = json.loads(package_json.read_text(encoding='utf-8'))
-            scripts = pkg.get("scripts", {})
-            deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
-            
-            # Check for lint script
-            if "lint" in scripts:
-                result["linters"].append({"name": "npm lint", "cmd": ["npm", "run", "lint"]})
-            elif "eslint" in deps:
-                result["linters"].append({"name": "eslint", "cmd": ["npx", "eslint", "."]})
-            
-            # Check for TypeScript
-            if "typescript" in deps or (project_path / "tsconfig.json").exists():
-                result["linters"].append({"name": "tsc", "cmd": ["npx", "tsc", "--noEmit"]})
-                
-        except:
-            pass
-    
-    # Python project
-    if (project_path / "pyproject.toml").exists() or (project_path / "requirements.txt").exists():
+    # Python/Data project
+    if (project_path / "pyproject.toml").exists() or (project_path / "requirements.txt").exists() or list(project_path.glob("*.py")):
         result["type"] = "python"
         
         # Check for ruff
@@ -65,7 +43,7 @@ def detect_project_type(project_path: Path) -> dict:
         # Check for mypy
         if (project_path / "mypy.ini").exists() or (project_path / "pyproject.toml").exists():
             result["linters"].append({"name": "mypy", "cmd": ["mypy", "."]})
-    
+            
     return result
 
 

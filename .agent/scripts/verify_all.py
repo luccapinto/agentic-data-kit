@@ -6,20 +6,14 @@ Full Verification Suite - Antigravity Kit
 Runs COMPLETE validation including all checks + performance + E2E.
 Use this before deployment or major releases.
 
-Usage:
-    python scripts/verify_all.py . --url <URL>
+    python scripts/verify_all.py . [--target <workspace>]
 
 Includes ALL checks:
-    ✅ Security Scan (OWASP, secrets, dependencies)
-    ✅ Lint & Type Coverage
-    ✅ Schema Validation
-    ✅ Test Suite (unit + integration)
-    ✅ UX Audit (psychology, accessibility)
-    ✅ SEO Check
-    ✅ Lighthouse (Core Web Vitals)
-    ✅ Playwright E2E
-    ✅ Bundle Analysis (if applicable)
-    ✅ Mobile Audit (if applicable)
+    ✅ Security Scan (secrets, dependencies)
+    ✅ Lint (SQL, Python) & Data Privacy Check
+    ✅ Data Documentation Check
+    ✅ Test Suite (Unit + Data Quality)
+    ✅ Heavy Query Profiling
 """
 
 import sys
@@ -59,31 +53,40 @@ def print_error(text: str):
 
 # Complete Data Team verification suite
 VERIFICATION_SUITE = [
-    # P0: Security (CRITICAL)
+    # P0: Security & Architecture (CRITICAL)
     {
-        "category": "Security & Governance",
+        "category": "Security & Architecture",
         "checks": [
             ("Secrets & Credential Scan", ".agent/skills/vulnerability-scanner/scripts/security_scan.py", True),
             ("Dependency Vulnerability", ".agent/skills/vulnerability-scanner/scripts/dependency_analyzer.py", False),
             ("Data Privacy (PII) Check", ".agent/skills/data-governance/scripts/pii_exposure_check.py", False),
+            ("Medallion Drift Checker", ".agent/skills/architecture/scripts/medallion_drift_checker.py", True),
+            ("Idempotency Checker", ".agent/skills/clean-code/scripts/idempotency_checker.py", True),
         ]
     },
     
-    # P1: Code Quality (CRITICAL)
+    # P1: Code Quality & Platform (CRITICAL)
     {
-        "category": "Code Quality (SQL/Python)",
+        "category": "Code Quality (SQL/Python/Databricks)",
         "checks": [
             ("Python Linter (Ruff/Flake8)", ".agent/skills/lint-and-validate/scripts/lint_runner.py", True),
             ("SQL Linter (Sqlfluff)", ".agent/skills/lint-and-validate/scripts/sql_lint_runner.py", True),
+            ("Databricks Anti-Pattern Linter", ".agent/skills/databricks-patterns/scripts/dbx_notebook_linter.py", False),
+            ("Pandas/Polars Performance Analyzer", ".agent/skills/python-data/scripts/pandas_polars_analyzer.py", False),
+            ("Checklist Format Verifier", ".agent/skills/plan-writing/scripts/checklist_format_verifier.py", False),
         ]
     },
     
-    # P2: Data Documentation
+    # P2: Data Modeling & Documentation
     {
-        "category": "Data Documentation",
+        "category": "Data Modeling & Documentation",
         "checks": [
-            ("dbt Schema Definition Check", ".agent/skills/data-documentation/scripts/check_dbt_yml.py", False),
+            ("Star Schema Auditor", ".agent/skills/database-design/scripts/star_schema_auditor.py", False),
+            ("Data Dictionary Completeness Check", ".agent/skills/data-documentation/scripts/docs_completeness_auditor.py", False),
             ("Power BI DAX Format Check", ".agent/skills/powerbi-semantic-mcp/scripts/dax_format_audit.py", False),
+            ("Power BI TMDL Syntax Check", ".agent/skills/tmdl-modeling/scripts/tmdl_syntax_lint.py", False),
+            ("Power BI Layout Sanity Check", ".agent/skills/pbip-report-hacking/scripts/pbir_layout_sanity_check.py", False),
+            ("Power BI DAX Best Practices", ".agent/skills/powerbi-semantic-mcp/scripts/dax_best_practices_auditor.py", False),
         ]
     },
     
@@ -92,6 +95,7 @@ VERIFICATION_SUITE = [
         "category": "Pipeline & Data Testing",
         "checks": [
             ("Unit Tests (pytest)", ".agent/skills/testing-patterns/scripts/test_runner.py", False),
+            ("Data Contracts Validator", ".agent/skills/data-quality-testing/scripts/data_contracts_validator.py", False),
             ("Data Expectations (Great Expectations)", ".agent/skills/testing-patterns/scripts/data_quality_run.py", False),
         ]
     },
@@ -99,14 +103,14 @@ VERIFICATION_SUITE = [
     # P4: Performance
     {
         "category": "Query Performance",
-        "requires_url": False, # Changed to false for data queries
+        "requires_target": False, 
         "checks": [
             ("Heavy Query Profiler", ".agent/skills/performance-profiling/scripts/heavy_query_profiler.py", False),
         ]
     }
 ]
 
-def run_script(name: str, script_path: Path, project_path: str, url: Optional[str] = None) -> dict:
+def run_script(name: str, script_path: Path, project_path: str, target: Optional[str] = None) -> dict:
     """Run validation script"""
     if not script_path.exists():
         print_warning(f"{name}: Script not found, skipping")
@@ -117,8 +121,8 @@ def run_script(name: str, script_path: Path, project_path: str, url: Optional[st
     
     # Build command
     cmd = ["python", str(script_path), project_path]
-    if url and ("lighthouse" in script_path.name.lower() or "playwright" in script_path.name.lower()):
-        cmd.append(url)
+    if target:
+        cmd.append(target)
     
     # Run
     try:
@@ -225,13 +229,12 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python scripts/verify_all.py . --url http://localhost:3000
-  python scripts/verify_all.py . --url https://staging.example.com --no-e2e
+  python scripts/verify_all.py . 
+  python scripts/verify_all.py . --target dev-workspace
         """
     )
     parser.add_argument("project", help="Project path to validate")
-    parser.add_argument("--url", required=True, help="URL for performance & E2E checks")
-    parser.add_argument("--no-e2e", action="store_true", help="Skip E2E tests")
+    parser.add_argument("--target", required=False, help="Target environment or workspace ID")
     parser.add_argument("--stop-on-fail", action="store_true", help="Stop on first failure")
     
     args = parser.parse_args()
@@ -244,7 +247,8 @@ Examples:
     
     print_header("🚀 ANTIGRAVITY KIT - FULL VERIFICATION SUITE")
     print(f"Project: {project_path}")
-    print(f"URL: {args.url}")
+    if args.target:
+        print(f"Target: {args.target}")
     print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     start_time = datetime.now()
@@ -253,21 +257,17 @@ Examples:
     # Run all verification categories
     for suite in VERIFICATION_SUITE:
         category = suite["category"]
-        requires_url = suite.get("requires_url", False)
+        requires_target = suite.get("requires_target", False)
         
-        # Skip if requires URL and not provided
-        if requires_url and not args.url:
-            continue
-        
-        # Skip E2E if flag set
-        if args.no_e2e and category == "E2E Testing":
+        # Skip if requires target and not provided
+        if requires_target and not args.target:
             continue
         
         print_header(f"📋 {category.upper()}")
         
         for name, script_path, required in suite["checks"]:
             script = project_path / script_path
-            result = run_script(name, script, str(project_path), args.url)
+            result = run_script(name, script, str(project_path), args.target)
             result["category"] = category
             results.append(result)
             

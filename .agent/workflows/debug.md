@@ -70,12 +70,12 @@ When `/debug` is triggered:
 🎯 **[Explanation of why this happened]**
 
 ### 6. Fix
-```[language]
-// Before
-[broken code]
+```sql
+-- Before
+[broken query/code]
 
-// After
-[fixed code]
+-- After
+[fixed query/code]
 ```
 
 ### 7. Prevention
@@ -87,10 +87,10 @@ When `/debug` is triggered:
 ## Examples
 
 ```
-/debug login not working
-/debug API returns 500
-/debug form doesn't submit
-/debug data not saving
+/debug refresh do dataset falhando no Power BI
+/debug divergência de dados na camada Gold
+/debug cluster Databricks dando timeout
+/debug pipeline falhando por schema drift
 ```
 
 ---

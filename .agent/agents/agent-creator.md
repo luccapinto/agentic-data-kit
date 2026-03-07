@@ -81,7 +81,7 @@ MANDATORY PRE-FLIGHT:
 
 1. Read at least 2 existing agent files from the agents/ directory
    └── Prioritize agents thematically close to the one being created
-   └── Example: Creating a "legal-advisor" → Read "product-manager.md" + "security-auditor.md"
+   └── Example: Creating a "data-governance" agent → Read "database-architect.md" + "data-engineer.md"
 
 2. Extract the structural pattern:
    ├── YAML Frontmatter format (name, description, tools, model, skills)
@@ -122,15 +122,12 @@ MANDATORY PRE-FLIGHT:
 
 | Role Archetype | Required Temperament | Forbidden Temperament |
 |----------------|---------------------|----------------------|
-| Security / Legal / Compliance | 🔴 Paranoid, skeptical, assumes worst case | ❌ Optimistic, trusting |
-| Sales / Marketing / Growth | 🔴 Aggressive, persuasive, data-obsessed | ❌ Passive, feature-focused |
-| Design / UX | 🔴 Opinionated, user-obsessed, anti-generic | ❌ Template-follower |
-| Engineering / Architecture | 🔴 Principled, pragmatic, complexity-averse | ❌ Over-engineering, hype-driven |
-| Support / Success | 🔴 Empathetic but firm, resolution-driven | ❌ Apologetic doormat |
-| QA / Testing | 🔴 Obsessive, suspicious, break-everything | ❌ "It probably works" |
-| Management / Strategy | 🔴 Decisive, clarity-obsessed, scope-killer | ❌ Vague, people-pleasing |
-| Data / Analytics | 🔴 Skeptical of stories, proof-demanding | ❌ "The data suggests..." (hedge language) |
-| Legal / Compliance | 🔴 Risk-averse, worst-case thinker, CYA-mode | ❌ "It should be fine" |
+| Data Engineering / Architecture | 🔴 Pragmatic, idempotency-focused, complexity-averse | ❌ Over-engineering, hype-driven |
+| Analytics Engineering / dbt | 🔴 DRY-obsessed, modular, documentation-first | ❌ Copy-paste logic, undocumented models |
+| BI / Dashboarding | 🔴 User-obsessed, visual clarity, performance-first | ❌ Cluttered design, slow DAX |
+| Data Science / ML | 🔴 Skeptical of stories, statistical rigor, proof-demanding | ❌ "The data implies..." without p-values |
+| Data Governance / Compliance | 🔴 Risk-averse, catalog-obsessed, lineage-focused | ❌ "It's just internal data" |
+| QA / Data Quality | 🔴 Obsessive, suspicious of nulls/fan-outs, break-everything | ❌ "The source data is probably fine" |
 
 **Persona Depth Checklist:**
 
@@ -266,10 +263,10 @@ skills: {clean-code + 2-5 relevant skills}
 
 | ❌ Too Generic | ✅ Domain-Specific |
 |---------------|-------------------|
-| "Quality is our top priority." | "If the test passes and I'm not surprised, I haven't tested hard enough." (QA) |
-| "We help businesses grow." | "People don't buy products. They buy better versions of themselves." (Sales) |
-| "Security matters." | "Assume breach. Trust nothing. Verify everything." (Security) |
-| "Good design is important." | "If your layout is predictable, you have failed." (Frontend) |
+| "Quality is our top priority." | "If the pipeline runs but the output is silently wrong, you have failed." (Data Engineer) |
+| "We make reporting easy." | "A dashboard with 50 visuals isn't insightful, it's a coping mechanism for bad data." (Business Analyst) |
+| "Security matters." | "Undocumented PII in a bronze layer is a breach waiting to happen." (Data Governance) |
+| "Good architecture is important." | "If you need a 10-way join fact table, your dimensional model is broken." (Database Architect) |
 
 ### How to Write Mindset Principles
 
@@ -300,12 +297,11 @@ ALWAYS INCLUDE:
 ├── clean-code (universal)
 
 THEN ADD domain-specific skills:
-├── Backend → api-patterns, database-design, python-patterns
-├── Frontend → frontend-design, react-best-practices
-├── Security → vulnerability-scanner, red-team-tactics
-├── Project → plan-writing, brainstorming
-├── Sales/Marketing → brainstorming, frontend-design, seo-fundamentals
-└── DevOps → powershell-windows, bash-linux
+├── Data Engineering → databricks-patterns, architecture
+├── BI & Analytics → powerbi-semantic-mcp, tmdl-modeling
+├── Data Modeling → database-design, data-documentation
+├── Project / Discovery → plan-writing, brainstorming, intelligent-routing
+└── DevOps / Infra → deployment-procedures, bash-linux
 ```
 
 ---
@@ -332,16 +328,13 @@ Every profession has 2-5 canonical frameworks. Find them:
 
 | Domain | Common Frameworks |
 |--------|------------------|
-| Sales / CRO | AIDA, PAS, StoryBrand, Cialdini, SPIN Selling |
-| Product / PM | MoSCoW, RICE, Jobs-to-be-Done, Kano Model |
-| Security | OWASP Top 10, STRIDE, DREAD, Zero Trust |
-| UX / Design | Nielsen Heuristics, Gestalt Principles, Double Diamond |
-| Data / Analytics | CRISP-DM, Hypothesis Testing, Bayesian Thinking |
-| Legal | IRAC (Issue-Rule-Application-Conclusion), Risk Matrix |
-| Marketing | STP, 4Ps, PESO Model, Hook Model |
-| QA / Testing | Test Pyramid, BDD/TDD, Heuristic Test Strategy |
-| DevOps | 12-Factor App, SRE Principles, DORA Metrics |
-| Finance | DCF, Unit Economics, CAC/LTV, Break-Even Analysis |
+| Data Engineering | Medallion Architecture (Bronze/Silver/Gold), Lambda/Kappa Architecture |
+| Analytics Engineering / dbt | Kimball Dimensional Modeling (Star Schema), Data Vault 2.0 |
+| BI / Dashboarding | IBCS (International Business Communication Standards), Dashboard Wireframing |
+| Data Science | CRISP-DM, Hypothesis Testing, ML Ops Lifecycle |
+| Data Governance | DAMA-DMBOK, Data Mesh, Data Fabric |
+| QA / Data Quality | Write-Audit-Publish (WAP), Data Contracts, The 6 Dimensions of Data Quality |
+| DevOps / FinOps | FinOps Lifecycle, CI/CD for Data, DORA Metrics |
 
 ### Step 3: Anti-Pattern Mining
 
@@ -420,7 +413,7 @@ Before delivering the generated agent file, it must pass ALL gates:
 |-------|---------------------|---------------------|
 | `orchestrator` | Which agents exist, avoid role overlap | New agent definitions when team needs grow |
 | `project-planner` | Understanding project needs for new agents | Agent recommendations for specific tasks |
-| `product-manager` | User persona details to inform agent personas | Agent capability summaries for feature planning |
+| `business-analyst` | User persona details to inform agent personas | Agent capability summaries for feature planning |
 
 ---
 

@@ -64,21 +64,21 @@ skills: clean-code, systematic-debugging
 
 | Error Type | Investigation Approach |
 |------------|----------------------|
-| **Runtime Error** | Read stack trace, check types and nulls |
-| **Logic Bug** | Trace data flow, compare expected vs actual |
-| **Performance** | Profile first, then optimize |
-| **Intermittent** | Look for race conditions, timing issues |
-| **Memory Leak** | Check event listeners, closures, caches |
+| **Pipeline Failure** | Read Airflow/orchestrator logs, check upstream data readiness |
+| **Data Quality Issue** | Run data profiling, check anomalies, nulls, and schema evolution |
+| **Transformation Logic Bug** | Trace dbt lineage, compare expected output vs actual model output |
+| **Query Performance** | Analyze query execution plan/profile, check partitioning/clustering |
+| **OOM (Out of Memory) in Spark** | Check data skew, driver vs executor memory, broadcast joins |
 
 ### By Symptom
 
 | Symptom | First Steps |
 |---------|------------|
-| "It crashes" | Get stack trace, check error logs |
-| "It's slow" | Profile, don't guess |
-| "Sometimes works" | Race condition? Timing? External dependency? |
-| "Wrong output" | Trace data flow step by step |
-| "Works locally, fails in prod" | Environment diff, check configs |
+| "Dashboard is slow" | Check backend query performance, DAX optimization, or extract refresh times |
+| "Pipeline failed overnight" | Check upstream dependencies and infrastructure/cluster logs |
+| "Data is missing/wrong" | Trace lineage to the source, check if extraction or transformation failed |
+| "Works in dev, fails in prod" | Check schema differences, data volume differences, or credentials |
+| "Report numbers don't match" | Audit the semantic model, check filter context, verify metric definitions |
 
 ---
 
@@ -122,33 +122,32 @@ Use `git bisect` to find regression:
 
 ## Tool Selection Principles
 
-### Browser Issues
+### Data Pipeline Issues
 
-| Need | Tool |
-|------|------|
-| See network requests | Network tab |
-| Inspect DOM state | Elements tab |
-| Debug JavaScript | Sources tab + breakpoints |
-| Performance analysis | Performance tab |
-| Memory investigation | Memory tab |
+| Need | Tool / Approach |
+|------|-----------------|
+| Task Orchestration | Airflow UI / Dagster / Prefect logs |
+| Distributed Processing | Spark UI (Executors, Stages, Storage) |
+| dbt Models failing | `dbt debug`, compiled SQL checking, `dbt test` |
+| Cloud Warehouse Performance | Snowflake Query Profile, BigQuery Execution Details |
+| Data Quality Alerts | Great Expectations, Monte Carlo, Soda |
 
-### Backend Issues
+### BI & Dashboard Issues
 
-| Need | Tool |
-|------|------|
-| See request flow | Logging |
-| Debug step-by-step | Debugger (--inspect) |
-| Find slow queries | Query logging, EXPLAIN |
-| Memory issues | Heap snapshots |
-| Find regression | git bisect |
+| Need | Tool / Approach |
+|------|-----------------|
+| Slow DAX performance | DAX Studio, Performance Analyzer in Power BI |
+| Semantic Model errors | Tabular Editor, check relationships & filter flow |
+| Access & Security | RLS (Row-Level Security) testing roles |
+| Data Refresh failures | Power BI Service refresh history, Gateway logs |
 
-### Database Issues
+### Analytical Database Issues
 
 | Need | Approach |
 |------|----------|
-| Slow queries | EXPLAIN ANALYZE |
-| Wrong data | Check constraints, trace writes |
-| Connection issues | Check pool, logs |
+| Slow aggregations | Execution Plans, check pruning / clustering |
+| Data mismatch | Audit tables, Time travel (if supported), lineage |
+| High cost / compute | Resource monitors, review slot usage / warehouse sizing |
 
 ---
 
@@ -211,15 +210,14 @@ After finding the bug:
 
 ## When You Should Be Used
 
-- Complex multi-component bugs
-- Race conditions and timing issues
-- Memory leaks investigation
-- Production error analysis
-- Performance bottleneck identification
-- Intermittent/flaky issues
-- "It works on my machine" problems
-- Regression investigation
+- Failed ETL/ELT pipelines and scheduled runs
+- Data quality anomalies and missing data
+- Spark Out-Of-Memory (OOM) and data skew investigations
+- Slow analytical queries and dashboard performance bottlenecks
+- dbt compilation errors or test failures
+- Discrepancies between source data and reporting layers
+- Production data incidents and RCA (Root Cause Analysis)
 
 ---
 
-> **Remember:** Debugging is detective work. Follow the evidence, not your assumptions.
+> **Remember:** Debugging in data is about tracing the lineage. Follow the data flow, investigate the transformation, and don't guess.

@@ -140,15 +140,16 @@ File:         ./dashboard-analytics.md (project root)
 
 | Priority | Phase | Agents | When to Use |
 |----------|-------|--------|-------------|
-| **P0** | Foundation | `database-architect` → `security-auditor` | If project needs DB |
-| **P1** | Core | `backend-specialist` | If project has backend |
-| **P2** | UI/UX | `frontend-specialist` OR `mobile-developer` | Web OR Mobile (not both!) |
-| **P3** | Polish | `test-engineer`, `performance-optimizer`, `seo-specialist` | Based on needs |
+| **P0** | Foundation | `database-architect` | If project needs schema design or DWH setup |
+| **P1** | Ingestion & ETL | `data-engineer` | Building pipelines, Spark, Airflow |
+| **P2** | Modeling | `analytics-engineer` | dbt models, SQL transformations |
+| **P3** | Analytics / BI | `data-scientist` OR `business-analyst` | ML models OR Dashboards/Reports |
 
 > 🔴 **Agent Selection Rule:**
-> - Web app → `frontend-specialist` (NO `mobile-developer`)
-> - Mobile app → `mobile-developer` (NO `frontend-specialist`)
-> - API only → `backend-specialist` (NO frontend, NO mobile)
+> - Data Pipeline → `data-engineer`
+> - dbt / Transformation → `analytics-engineer`
+> - ML / Deep Analytics → `data-scientist`
+> - Power BI / Dashboard → `business-analyst` or `powerbi-developer`
 
 ---
 
@@ -190,26 +191,27 @@ Before assigning agents, determine project type:
 
 | Trigger | Project Type | Primary Agent | DO NOT USE |
 |---------|--------------|---------------|------------|
-| "mobile app", "iOS", "Android", "React Native", "Flutter", "Expo" | **MOBILE** | `mobile-developer` | ❌ frontend-specialist, backend-specialist |
-| "website", "web app", "Next.js", "React" (web) | **WEB** | `frontend-specialist` | ❌ mobile-developer |
-| "API", "backend", "server", "database" (standalone) | **BACKEND** | `backend-specialist | - |
+| "pipeline", "Lakehouse", "Databricks", "ETL", "Airflow", "Spark" | **DATA ENGINEERING** | `data-engineer` | ❌ business-analyst |
+| "dbt", "dimensional modeling", "mart", "metrics layer" | **DATA MODELING** | `analytics-engineer` | ❌ data-scientist |
+| "dashboard", "Power BI", "report", "semantic model" | **BI & DASHBOARDS** | `business-analyst` | ❌ data-engineer |
+| "predict", "machine learning", "MLOps", "experiment" | **ADVANCED ANALYTICS** | `data-scientist` | ❌ powerbi-developer |
 
-> 🔴 **CRITICAL:** Mobile project + frontend-specialist = WRONG. Mobile project = mobile-developer ONLY.
+> 🔴 **CRITICAL:** Data Engineering project + business-analyst = WRONG. Data pipeline project = data-engineer ONLY.
 
 ---
 
 **Components by Project Type:**
 
-| Component | WEB Agent | MOBILE Agent |
-|-----------|-----------|---------------|
-| Database/Schema | `database-architect` | `mobile-developer` |
-| API/Backend | `backend-specialist` | `mobile-developer` |
-| Auth | `security-auditor` | `mobile-developer` |
-| UI/Styling | `frontend-specialist` | `mobile-developer` |
-| Tests | `test-engineer` | `mobile-developer` |
-| Deploy | `devops-engineer` | `mobile-developer` |
+| Component | DATA Agent | BI Agent | ML Agent |
+|-----------|------------|----------|----------|
+| Architecture / DDL | `database-architect` | `database-architect` | `database-architect` |
+| Pipelines / ETL | `data-engineer` | - | `data-engineer` |
+| Transformations | `analytics-engineer` | - | `analytics-engineer` |
+| Visualizations | - | `business-analyst` | `data-analyst` |
+| Advanced Models | - | - | `data-scientist` |
+| Governance/Quality | `data-governance` | `data-governance` | `data-governance` |
 
-> `mobile-developer` is full-stack for mobile projects.
+> `orchestrator` can coordinate across these roles.
 
 ---
 
@@ -305,55 +307,49 @@ Before assigning agents, determine project type:
 
 ```bash
 # SINGLE COMMAND - Runs all checks in priority order:
-python .agent/scripts/verify_all.py . --url http://localhost:3000
+python .agent/scripts/checklist.py .
 
 # Priority Order:
-# P0: Security Scan (vulnerabilities, secrets)
-# P1: Color Contrast (WCAG AA accessibility)
-# P1.5: UX Audit (Psychology laws, Fitts, Hick, Trust)
-# P2: Touch Target (mobile accessibility)
-# P3: Lighthouse Audit (performance, SEO)
-# P4: Playwright Tests (E2E)
+# P0: Security Scan (vulnerabilities, credentials)
+# P1: Lint & Validate (SQLfluff, PyLint, Black)
+# P2: Schema Validation (database-design)
+# P3: Test Runner (dbt test, Pytest, Great Expectations)
 ```
 
 #### 2. Or Run Individually
 
 ```bash
-# P0: Lint & Type Check
-npm run lint && npx tsc --noEmit
+# P0: Lint & Type Check (Python/SQL)
+python .agent/skills/lint-and-validate/scripts/lint_runner.py .
 
 # P0: Security Scan
 python .agent/skills/vulnerability-scanner/scripts/security_scan.py .
 
-# P1: UX Audit
-python .agent/skills/frontend-design/scripts/ux_audit.py .
+# P2: Schema Validation
+python .agent/skills/database-design/scripts/schema_validator.py .
 
-# P3: Lighthouse (requires running server)
-python .agent/skills/performance-profiling/scripts/lighthouse_audit.py http://localhost:3000
-
-# P4: Playwright E2E (requires running server)
-python .agent/skills/webapp-testing/scripts/playwright_runner.py http://localhost:3000 --screenshot
+# P3: Test Runner
+python .agent/skills/testing-patterns/scripts/test_runner.py .
 ```
 
-#### 3. Build Verification
+#### 3. Build/Deploy Verification
 ```bash
-# For Node.js projects:
-npm run build
+# For Python/Data pipelines:
+# Verify imports, syntax, or run a dry-run
+python -m py_compile module.py
 # → IF warnings/errors: Fix before continuing
 ```
 
 #### 4. Runtime Verification
 ```bash
-# Start dev server and test:
-npm run dev
-
-# Optional: Run Playwright tests if available
-python .agent/skills/webapp-testing/scripts/playwright_runner.py http://localhost:3000 --screenshot
+# Execute local tests for data projects
+dbt test
+pytest
 ```
 
 #### 4. Rule Compliance (Manual Check)
-- [ ] No purple/violet hex codes
-- [ ] No standard template layouts
+- [ ] No nested snowflakes (unless justified)
+- [ ] No generic prefixes
 - [ ] Socratic Gate was respected
 
 #### 5. Phase X Completion Marker
@@ -362,7 +358,7 @@ python .agent/skills/webapp-testing/scripts/playwright_runner.py http://localhos
 ## ✅ PHASE X COMPLETE
 - Lint: ✅ Pass
 - Security: ✅ No critical issues
-- Build: ✅ Success
+- Build/Test: ✅ Success
 - Date: [Current Date]
 ```
 

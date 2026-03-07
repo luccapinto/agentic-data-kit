@@ -43,9 +43,9 @@ Show current project and agent status.
 ```
 === Project Status ===
 
-📁 Project: my-ecommerce
-📂 Path: C:/projects/my-ecommerce
-🏷️ Type: nextjs-ecommerce
+📁 Project: erp-medallion-pipeline
+📂 Path: C:/projects/erp-data
+🏷️ Type: databricks-dbt-pipeline
 📊 Status: active
 
 ## Tech Stack Overview
@@ -53,15 +53,15 @@ Show current project and agent status.
  - Visualization: Power BI
 
 ✅ Features (5):
-   • product-listing
-   • cart
-   • checkout
-   • user-auth
-   • order-history
+   • bronze-ingestion
+   • silver-cleansing
+   • gold-marts
+   • semantic-model-refresh
+   • row-level-security
 
 ⏳ Pending (2):
-   • admin-panel
-   • email-notifications
+   • data-quality-tests
+   • data-governance-docs
 
 📄 Files: 73 created, 12 modified
 
@@ -74,8 +74,8 @@ Show current project and agent status.
 
 === Preview ===
 
-🌐 URL: http://localhost:3000
-💚 Health: OK
+🌐 URL: https://app.powerbi.com/groups/workspace-id
+💚 Health: Refresh Successful
 ```
 
 ---
