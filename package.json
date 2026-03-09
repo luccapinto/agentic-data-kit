@@ -1,11 +1,12 @@
 {
-  "name": "@luccapinto/agentic-ai-kit",
+  "name": "@luccapinto/agentic-data-kit",
   "version": "2.0.0",
-  "description": "AI Agent templates - Skills, Agents, and Workflows for enhanced coding assistance",
+  "description": "AI Agent templates - Skills, Agents, and Workflows for Data Teams",
+  "type": "module",
   "main": "bin/cli.js",
   "bin": {
-    "agentic-ai-kit": "./bin/cli.js",
-    "ag-kit": "./bin/cli.js"
+    "agentic-data-kit": "./bin/cli.js",
+    "ag-data-kit": "./bin/cli.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -29,6 +30,7 @@
   },
   "homepage": "https://github.com/luccapinto/agentic-ai-kit#readme",
   "dependencies": {
+    "@inquirer/prompts": "^8.3.0",
     "chalk": "^4.1.2",
     "commander": "^14.0.3",
     "fs-extra": "^11.3.3"
