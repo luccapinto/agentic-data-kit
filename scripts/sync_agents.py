@@ -1,13 +1,14 @@
 """
 sync_agents.py
 ==============
-Sincroniza a pasta `.agent` (fonte da verdade) com `.github` (GitHub Copilot).
+Sincroniza a pasta `.agent` (Fonte da Verdade — Antigravity) para:
+  - `.github/`  → GitHub Copilot
+  - `.claude/`  → Claude Code CLI
 
 Mapeamento:
-  .agent/agents/*.md        →  .github/agents/*.agent.md
-  .agent/skills/            →  .github/skills/   (cópia recursiva)
-  .agent/workflows/*.md     →  .github/prompts/*.prompt.md
-  .agent/rules/rules.md     →  .github/copilot-instructions.md
+  🟣 SOURCE  : .agent/
+  ⚪ COPILOT : .github/agents/*.agent.md | .github/skills/ | .github/prompts/*.prompt.md | .github/copilot-instructions.md
+  🟠 CLAUDE  : .claude/agents/*.md      | .claude/skills/ | .claude/workflows/           | .claude/CLAUDE.md
 """
 
 import re
@@ -17,32 +18,37 @@ from pathlib import Path
 import yaml  # pip install pyyaml
 
 # ---------------------------------------------------------------------------
-# Configuração de caminhos
+# Caminhos raiz
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parent.parent
-ORIGIN = ROOT / ".agent"
-DEST = ROOT / ".github"
 
-AGENTS_SRC = ORIGIN / "agents"
-SKILLS_SRC = ORIGIN / "skills"
-WORKFLOWS_SRC = ORIGIN / "workflows"
-RULES_SRC = ORIGIN / "rules" / "rules.md"
+# 🟣 Fonte da Verdade (Antigravity)
+SOURCE = ROOT / ".agent"
+AGENTS_SRC    = SOURCE / "agents"
+SKILLS_SRC    = SOURCE / "skills"
+WORKFLOWS_SRC = SOURCE / "workflows"
+RULES_SRC     = SOURCE / "rules" / "rules.md"
 
-AGENTS_DEST = DEST / "agents"
-SKILLS_DEST = DEST / "skills"
-PROMPTS_DEST = DEST / "prompts"
-INSTRUCTIONS_DEST = DEST / "copilot-instructions.md"
+# ⚪ Destino Copilot (.github)
+COPILOT           = ROOT / ".github"
+COPILOT_AGENTS    = COPILOT / "agents"
+COPILOT_SKILLS    = COPILOT / "skills"
+COPILOT_PROMPTS   = COPILOT / "prompts"
+COPILOT_RULES     = COPILOT / "copilot-instructions.md"
+
+# 🟠 Destino Claude (.claude)
+CLAUDE            = ROOT / ".claude"
+CLAUDE_AGENTS     = CLAUDE / "agents"
+CLAUDE_SKILLS     = CLAUDE / "skills"
+CLAUDE_WORKFLOWS  = CLAUDE / "workflows"
+CLAUDE_MD         = CLAUDE / "CLAUDE.md"
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Helpers compartilhados
 # ---------------------------------------------------------------------------
 def parse_frontmatter(text: str) -> tuple[dict, str]:
-    """Separa o YAML frontmatter do corpo do arquivo.
-
-    Returns:
-        (meta_dict, body_string) — meta_dict é {} se não houver frontmatter.
-    """
+    """Separa YAML frontmatter do corpo. Retorna ({}, texto) se não houver."""
     pattern = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
     match = pattern.match(text)
     if match:
@@ -50,145 +56,223 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
             meta = yaml.safe_load(match.group(1)) or {}
         except yaml.YAMLError:
             meta = {}
-        body = text[match.end():]
-        return meta, body
+        return meta, text[match.end():]
     return {}, text
 
 
 def first_sentence(text: str) -> str:
-    """Extrai a primeira frase significativa do texto (ignora cabeçalhos #)."""
+    """Primeira linha significativa do corpo (ignora títulos # e separadores)."""
     for line in text.splitlines():
         line = line.strip()
         if line and not line.startswith("#") and not line.startswith("---"):
-            # Remove formatação Markdown inline básica
             clean = re.sub(r"[*_`>\[\]]", "", line).strip()
             if clean:
-                # Trunca em 120 caracteres para não deixar o campo muito longo
                 return clean[:120]
     return "Agent logic"
 
 
 def to_title_case(slug: str) -> str:
-    """Converte 'data-scientist' → 'Data Scientist'."""
+    """'data-scientist' → 'Data Scientist'."""
     return slug.replace("-", " ").replace("_", " ").title()
 
 
 def clean_dirs(*dirs: Path) -> None:
-    """Remove os diretórios de destino (sem recriar — cada função cria o seu)."""
+    """Remove diretórios gerenciados (sem recriar — cada função cria o seu)."""
     for d in dirs:
         if d.exists():
             shutil.rmtree(d)
             print(f"  🗑️  Limpou: {d.relative_to(ROOT)}")
 
 
-# ---------------------------------------------------------------------------
-# 1. Agentes
-# ---------------------------------------------------------------------------
-def sync_agents() -> None:
-    print("\n📦 Sincronizando AGENTES...")
-    AGENTS_DEST.mkdir(parents=True, exist_ok=True)
+def copy_tree(src: Path, dest: Path, label: str) -> None:
+    """copytree seguro: exige que dest NÃO exista (clean_dirs deve rodar antes)."""
+    if src.exists():
+        shutil.copytree(src, dest)
+        count = sum(1 for f in dest.rglob("*") if f.is_file())
+        print(f"  ✅  {count} arquivo(s) copiados → {label}")
+    else:
+        print(f"  ⚠️  Pasta não encontrada: {src.relative_to(ROOT)}")
+
+
+# ===========================================================================
+# ⚪ BLOCO COPILOT (.github)
+# ===========================================================================
+
+def copilot_sync_agents() -> None:
+    """Agentes: injeta YAML padronizado + muda extensão para .agent.md."""
+    COPILOT_AGENTS.mkdir(parents=True, exist_ok=True)
     for src_file in sorted(AGENTS_SRC.glob("*.md")):
         raw = src_file.read_text(encoding="utf-8")
         meta, body = parse_frontmatter(raw)
 
-        stem = src_file.stem  # ex: "data-scientist"
-        name = meta.get("name") or to_title_case(stem)
+        stem = src_file.stem
+        name        = meta.get("name")        or to_title_case(stem)
         description = meta.get("description") or first_sentence(body)
-        role = first_sentence(body)
+        role        = first_sentence(body)
 
-        # Monta novo cabeçalho YAML (sem model, sem tools, sem skills)
-        new_meta = {"name": name, "description": description, "role": role}
+        new_meta   = {"name": name, "description": description, "role": role}
         yaml_block = yaml.dump(new_meta, allow_unicode=True, default_flow_style=False).strip()
-        output = f"---\n{yaml_block}\n---\n\n{body.lstrip()}"
+        output     = f"---\n{yaml_block}\n---\n\n{body.lstrip()}"
 
-        dest_file = AGENTS_DEST / f"{stem}.agent.md"
+        dest_file = COPILOT_AGENTS / f"{stem}.agent.md"
         dest_file.write_text(output, encoding="utf-8")
         print(f"  ✅  {src_file.name}  →  {dest_file.name}")
 
 
-# ---------------------------------------------------------------------------
-# 2. Skills
-# ---------------------------------------------------------------------------
-def sync_skills() -> None:
-    print("\n🛠️  Sincronizando SKILLS...")
-    if SKILLS_SRC.exists():
-        # copytree requer que o destino NÃO exista — clean_dirs já removeu
-        shutil.copytree(SKILLS_SRC, SKILLS_DEST)
-        count = sum(1 for _ in SKILLS_DEST.rglob("*") if _.is_file())
-        print(f"  ✅  {count} arquivo(s) copiados de skills/")
-    else:
-        print(f"  ⚠️  Pasta de skills não encontrada: {SKILLS_SRC}")
+def copilot_sync_skills() -> None:
+    """Skills: cópia recursiva exata."""
+    copy_tree(SKILLS_SRC, COPILOT_SKILLS, COPILOT_SKILLS.relative_to(ROOT))
 
 
-# ---------------------------------------------------------------------------
-# 3. Prompts (Workflows)
-# ---------------------------------------------------------------------------
-def sync_prompts() -> None:
-    print("\n📝 Sincronizando PROMPTS (workflows)...")
-    PROMPTS_DEST.mkdir(parents=True, exist_ok=True)
+def copilot_sync_prompts() -> None:
+    """Workflows → Prompt Files (.prompt.md) sem campo model."""
+    COPILOT_PROMPTS.mkdir(parents=True, exist_ok=True)
     for src_file in sorted(WORKFLOWS_SRC.glob("*.md")):
         raw = src_file.read_text(encoding="utf-8")
         meta, body = parse_frontmatter(raw)
 
-        stem = src_file.stem  # ex: "brainstorm"
-        name = stem  # usa o nome do arquivo como nome do prompt
+        stem        = src_file.stem
         description = meta.get("description") or f"Workflow: {to_title_case(stem)}"
+        new_meta    = {"name": stem, "description": description}
+        yaml_block  = yaml.dump(new_meta, allow_unicode=True, default_flow_style=False).strip()
 
-        # NÃO inclui o campo `model` — Copilot usará o padrão do usuário
-        new_meta = {"name": name, "description": description}
-        yaml_block = yaml.dump(new_meta, allow_unicode=True, default_flow_style=False).strip()
-
-        # Contexto padrão do Copilot + conteúdo original
         context_block = "**Contexto:** {{selection}}\n"
         output = f"---\n{yaml_block}\n---\n\n{context_block}\n{body.lstrip()}"
 
-        dest_file = PROMPTS_DEST / f"{stem}.prompt.md"
+        dest_file = COPILOT_PROMPTS / f"{stem}.prompt.md"
         dest_file.write_text(output, encoding="utf-8")
         print(f"  ✅  {src_file.name}  →  {dest_file.name}")
 
 
-# ---------------------------------------------------------------------------
-# 4. Copilot Instructions (rules)
-# ---------------------------------------------------------------------------
-def sync_rules() -> None:
-    print("\n📋 Sincronizando REGRAS GLOBAIS...")
+def copilot_sync_rules() -> None:
+    """Rules → copilot-instructions.md."""
     if not RULES_SRC.exists():
-        print(f"  ⚠️  Arquivo de regras não encontrado: {RULES_SRC}")
+        print(f"  ⚠️  rules.md não encontrado: {RULES_SRC}")
         return
-
-    rules_content = RULES_SRC.read_text(encoding="utf-8")
     header = "<!-- Auto-generated by scripts/sync_agents.py — NÃO EDITE MANUALMENTE -->\n\n"
-    INSTRUCTIONS_DEST.write_text(header + rules_content, encoding="utf-8")
+    COPILOT_RULES.write_text(header + RULES_SRC.read_text(encoding="utf-8"), encoding="utf-8")
     print(f"  ✅  rules.md  →  copilot-instructions.md")
 
 
-# ---------------------------------------------------------------------------
+# ===========================================================================
+# 🟠 BLOCO CLAUDE (.claude)
+# ===========================================================================
+
+def claude_sync_agents() -> None:
+    """Agentes: cópia direta dos .md originais (Claude não precisa de YAML especial)."""
+    CLAUDE_AGENTS.mkdir(parents=True, exist_ok=True)
+    for src_file in sorted(AGENTS_SRC.glob("*.md")):
+        dest_file = CLAUDE_AGENTS / src_file.name
+        shutil.copy2(src_file, dest_file)
+        print(f"  ✅  {src_file.name}  →  {dest_file.relative_to(ROOT)}")
+
+
+def claude_sync_skills() -> None:
+    """Skills: cópia recursiva exata."""
+    copy_tree(SKILLS_SRC, CLAUDE_SKILLS, CLAUDE_SKILLS.relative_to(ROOT))
+
+
+def claude_sync_workflows() -> None:
+    """Workflows: cópia recursiva exata."""
+    copy_tree(WORKFLOWS_SRC, CLAUDE_WORKFLOWS, CLAUDE_WORKFLOWS.relative_to(ROOT))
+
+
+def claude_build_claude_md() -> None:
+    """CLAUDE.md = rules.md + seção de comandos dinâmicos gerada dos workflows."""
+    if not RULES_SRC.exists():
+        print(f"  ⚠️  rules.md não encontrado, CLAUDE.md não será gerado.")
+        return
+
+    rules_content = RULES_SRC.read_text(encoding="utf-8")
+
+    # Constrói bloco de comandos a partir dos workflows disponíveis
+    commands_lines: list[str] = []
+    for wf_file in sorted(WORKFLOWS_SRC.glob("*.md")):
+        raw = wf_file.read_text(encoding="utf-8")
+        meta, _ = parse_frontmatter(raw)
+        stem        = wf_file.stem
+        description = meta.get("description") or to_title_case(stem)
+        commands_lines.append(
+            f"- **/{stem}**: {description} "
+            f"— Load context from `.claude/workflows/{wf_file.name}` and follow its steps."
+        )
+
+    commands_block = "\n".join(commands_lines)
+
+    claude_md_content = (
+        "<!-- Auto-generated by scripts/sync_agents.py — NÃO EDITE MANUALMENTE -->\n\n"
+        + rules_content.rstrip()
+        + "\n\n---\n\n"
+        + "## ⚡ Custom Commands & Workflows\n\n"
+        + "The following slash commands are available. When triggered, load the referenced\n"
+        + "workflow file and follow its instructions step by step.\n\n"
+        + commands_block
+        + "\n"
+    )
+
+    CLAUDE_MD.write_text(claude_md_content, encoding="utf-8")
+    print(f"  ✅  CLAUDE.md gerado com {len(commands_lines)} comando(s)")
+
+
+# ===========================================================================
 # Main
-# ---------------------------------------------------------------------------
+# ===========================================================================
 def main() -> None:
-    print("🔄 Iniciando sincronização: .agent → .github")
-    print(f"   Origem  : {ORIGIN.relative_to(ROOT)}")
-    print(f"   Destino : {DEST.relative_to(ROOT)}")
+    print("=" * 60)
+    print("🟣 Antigravity Sync  —  .agent → .github + .claude")
+    print("=" * 60)
+    print(f"   Fonte    : {SOURCE.relative_to(ROOT)}")
+    print(f"   Copilot  : {COPILOT.relative_to(ROOT)}")
+    print(f"   Claude   : {CLAUDE.relative_to(ROOT)}")
 
-    # Garante que .github existe
-    DEST.mkdir(parents=True, exist_ok=True)
+    # Garante que os destinos-raiz existam
+    COPILOT.mkdir(parents=True, exist_ok=True)
+    CLAUDE.mkdir(parents=True, exist_ok=True)
 
-    # Limpeza dos diretórios gerenciados (skills NÃO entra aqui — copytree exige ausência)
-    # .github/workflows é preservado automaticamente pois não está na lista
+    # Limpeza — skills NÃO entra (copytree exige ausência do dest)
+    # .github/workflows é preservado (não está na lista)
     print("\n🗑️  Limpando diretórios anteriores...")
-    clean_dirs(AGENTS_DEST, SKILLS_DEST, PROMPTS_DEST)
+    clean_dirs(
+        COPILOT_AGENTS, COPILOT_SKILLS, COPILOT_PROMPTS,
+        CLAUDE_AGENTS,  CLAUDE_SKILLS,  CLAUDE_WORKFLOWS,
+    )
 
-    # Executa sincronizações
-    sync_agents()
-    sync_skills()
-    sync_prompts()
-    sync_rules()
+    # ------------------------------------------------------------------
+    print("\n⚪ [COPILOT] Sincronizando para .github/...")
+    # ------------------------------------------------------------------
+    print("  📦 Agentes:")
+    copilot_sync_agents()
+    print("  🛠️  Skills:")
+    copilot_sync_skills()
+    print("  📝 Prompts:")
+    copilot_sync_prompts()
+    print("  📋 Regras:")
+    copilot_sync_rules()
 
-    print("\n✨ Sincronização concluída com sucesso!")
-    print(f"   Agentes  : {AGENTS_DEST.relative_to(ROOT)}")
-    print(f"   Skills   : {SKILLS_DEST.relative_to(ROOT)}")
-    print(f"   Prompts  : {PROMPTS_DEST.relative_to(ROOT)}")
-    print(f"   Regras   : {INSTRUCTIONS_DEST.relative_to(ROOT)}")
+    # ------------------------------------------------------------------
+    print("\n🟠 [CLAUDE] Sincronizando para .claude/...")
+    # ------------------------------------------------------------------
+    print("  📦 Agentes:")
+    claude_sync_agents()
+    print("  🛠️  Skills:")
+    claude_sync_skills()
+    print("  📝 Workflows:")
+    claude_sync_workflows()
+    print("  📋 CLAUDE.md:")
+    claude_build_claude_md()
+
+    # Summary
+    print("\n" + "=" * 60)
+    print("✨ Sincronização concluída!")
+    print(f"   ⚪ Copilot agents  : {COPILOT_AGENTS.relative_to(ROOT)}")
+    print(f"   ⚪ Copilot skills  : {COPILOT_SKILLS.relative_to(ROOT)}")
+    print(f"   ⚪ Copilot prompts : {COPILOT_PROMPTS.relative_to(ROOT)}")
+    print(f"   ⚪ Copilot rules   : {COPILOT_RULES.relative_to(ROOT)}")
+    print(f"   🟠 Claude agents   : {CLAUDE_AGENTS.relative_to(ROOT)}")
+    print(f"   🟠 Claude skills   : {CLAUDE_SKILLS.relative_to(ROOT)}")
+    print(f"   🟠 Claude workflows: {CLAUDE_WORKFLOWS.relative_to(ROOT)}")
+    print(f"   🟠 CLAUDE.md       : {CLAUDE_MD.relative_to(ROOT)}")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
