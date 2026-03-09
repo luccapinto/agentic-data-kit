@@ -8,9 +8,9 @@ trigger: always_on
 
 ---
 
-## CRITICAL: AGENT & SKILL PROTOCOL (START HERE)
+## 🤝 CRITICAL: AGENT & SKILL PROTOCOL (START HERE)
 
-> **MANDATORY:** You MUST read the appropriate agent file and its skills BEFORE performing any implementation. This is the highest priority rule.
+> **MANDATORY:** We work as a team, but we rely on your expertise. You MUST read the appropriate agent file and its skills BEFORE performing any implementation. This is our highest priority rule to ensure we maintain our high standards.
 
 ### 1. Modular Skill Loading Protocol
 
@@ -24,6 +24,14 @@ Agent activated → Check frontmatter "skills:" → Read SKILL.md (INDEX) → Re
 1. **When agent is activated:**
     - ✅ Activate: Read Rules → Check Frontmatter → Load SKILL.md → Apply All.
 2. **Forbidden:** Never skip reading agent rules or skill instructions. "Read → Understand → Apply" is mandatory.
+
+---
+
+## 🛠️ TOOL EXPLORATION (MANDATORY BEFORE ANSWERING)
+
+**Before answering ANY question or writing ANY code, you must seek context:**
+- **Always use your available tools** (e.g., `grep_search`, `list_dir`, `view_file`) to search the codebase, gather context, or verify facts.
+- **Do not guess or assume.** If you don't have the context, actively explore the project directories and files to find it before providing your response.
 
 ---
 
@@ -123,8 +131,9 @@ When user's prompt is NOT in English:
 
 ### 🧠 Read → Understand → Apply
 
+Let's ensure we deeply understand the goal before taking action:
 ✅ **CORRECT:** Read agent file → Understand GOAL & PRINCIPLES → Apply → Code
-❌ **WRONG:** Read agent file → Start coding immediately
+❌ **WRONG:** Read agent file → Start coding immediately without grasping the full picture.
 
 ---
 
@@ -132,23 +141,19 @@ When user's prompt is NOT in English:
 
 ### 📱 Project Type Routing
 
-| Task Domain                            | Primary Agent         | Skills                        |
-| -------------------------------------- | --------------------- | ----------------------------- |
+| Task Domain                            | Primary Agent         | Skills                               |
+| -------------------------------------- | --------------------- | ------------------------------------ |
 | **DATA ENGINEERING** (Databricks, ETL) | `data-engineer`       | databricks-patterns, database-design |
 | **BI & DASHBOARDS** (Requirements)     | `business-analyst`    | powerbi-semantic-mcp, data-documentation |
 | **POWER BI DEVELOPMENT** (DAX, TMDL)   | `powerbi-developer`   | powerbi-semantic-mcp, pbip-report-hacking |
-| **DATA MODELING** (dbt, Star Schema)   | `analytics-engineer`  | database-design, tmdl-modeling |
-| **ADVANCED ANALYTICS** (Python, ML)    | `data-scientist`      | python-data, databricks-patterns |
+| **DATA MODELING** (dbt, Star Schema)   | `analytics-engineer`  | database-design, tmdl-modeling       |
+| **ADVANCED ANALYTICS** (Python, ML)    | `data-scientist`      | python-data, databricks-patterns     |
 
 > 🔴 **Data Engineering + business-analyst = WRONG.** Pipelines = data-engineer ONLY.
 
-### 🛑 Socratic Gate
+### 🛑 GLOBAL SOCRATIC GATE
 
-**For complex requests, STOP and ASK first:**
-
-### 🛑 GLOBAL SOCRATIC GATE (TIER 0)
-
-**MANDATORY: Every user request must pass through the Socratic Gate before ANY tool use or implementation.**
+**MANDATORY: Every user request must pass through our Socratic Gate before ANY tool use or implementation.**
 
 | Request Type            | Strategy       | Required Action                                                   |
 | ----------------------- | -------------- | ----------------------------------------------------------------- |
@@ -159,13 +164,13 @@ When user's prompt is NOT in English:
 | **Direct "Proceed"**    | Validation     | **STOP** → Even if answers are given, ask 2 "Edge Case" questions |
 
 **Protocol:**
-1. **Never Assume:** If even 1% is unclear, ASK.
-2. **Spec-heavy Requests:** Do NOT skip the gate. Ask about **Trade-offs/Edge Cases** before starting.
+1. **Never Assume:** If even 1% is unclear, let's discuss it. ASK.
+2. **Spec-heavy Requests:** Do NOT skip the gate. Let's talk about **Trade-offs/Edge Cases** before starting.
 3. **Wait:** Do NOT write code until the user clears the Gate. Ref: `@[skills/brainstorming]`.
 
 ### 🏁 Final Checklist Protocol
 
-**Trigger:** "son kontrolleri yap", "final checks", "çalıştır tüm testleri".
+**Trigger:** "final checks", "run all tests", "validate everything".
 - **Audit**: `python .agent/scripts/checklist.py .`
 - **Pre-Deploy**: `python .agent/scripts/verify_all.py .`
 
@@ -177,7 +182,7 @@ When user's prompt is NOT in English:
 
 > 🔴 **Agents & Skills can invoke ANY script** via `python .agent/skills/<skill>/scripts/<script>.py`
 
-### 🎭 Gemini Mode Mapping
+### 🎭 Mode Mapping
 
 | Mode     | Agent             | Behavior                                     |
 | -------- | ----------------- | -------------------------------------------- |
@@ -200,10 +205,10 @@ When user's prompt is NOT in English:
 
 > **Design and architecture rules are in the specialist agents, NOT here.**
 
-| Task         | Read                            |
-| ------------ | ------------------------------- |
+| Task         | Read                                                                      |
+| ------------ | ------------------------------------------------------------------------- |
 | Dashboards   | `.agent/agents/business-analyst.md`, `.agent/agents/powerbi-developer.md` |
-| Data Models  | `.agent/agents/analytics-engineer.md` |
+| Data Models  | `.agent/agents/analytics-engineer.md`                                     |
 
 **These agents contain:**
 

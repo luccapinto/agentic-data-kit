@@ -139,25 +139,282 @@ You can build custom visuals without `.pbiviz` files by injecting SVG or HTML st
 
 ### 3. Visual Layout Editing (`visual.json`)
 
-The `visual.json` file controls the visual's position, size, type, and formatting. Key paths:
+The `visual.json` file (`definition/pages/{page}/visuals/{visual}/visual.json`) controls everything about a visual. Its top-level shape (from the official [JSON schema](https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json)):
 
 ```json
 {
-  "$schema": "...",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
   "name": "90c2e07d8e84e7d5c026",
   "position": { "x": 0, "y": 0, "z": 0, "width": 600, "height": 400, "tabOrder": 1000 },
   "visual": {
     "visualType": "barChart",
     "query": { ... },
-    "objects": {
-      "general": [{ "properties": { "outspace": { "solid": { "color": { "expr": { "Literal": { "Value": "'#FF0000'" } } } } } } }]
+    "objects": { ... }
+  }
+}
+```
+
+> **Safe to edit:** `position`, `objects`, `visual.title`, `isHidden`, `annotations`.
+
+---
+
+## 🔗 Visual Data Binding (Programmatic)
+
+> Source: Official Microsoft JSON schemas from [github.com/microsoft/json-schemas](https://github.com/microsoft/json-schemas/tree/main/fabric/item/report/definition)
+
+### The Core Concept: `queryState`
+
+Data binding lives in `visual.query.queryState`. It is a **dictionary** where each **key** is a **visual role name** (e.g., `"Category"`, `"Y"`, `"Values"`) and each **value** is a `ProjectionState` object containing the fields assigned to that role.
+
+```json
+"query": {
+  "queryState": {
+    "<RoleName>": {
+      "projections": [
+        {
+          "field": { <QueryExpressionContainer> },
+          "queryRef": "fVoos.'Total de Voos'"
+        }
+      ]
     }
   }
 }
 ```
 
-> **Safe to edit:** `position` (size/coordinates), `objects` (formatting properties), `visual.title`.
-> **Dangerous to edit:** `query` and `dataTransforms` — mismatch with the Semantic Model will break the visual silently.
+### The Field Expression — `QueryExpressionContainer`
+
+Every field binding uses a `QueryExpressionContainer`. It has exactly **one** of:
+
+#### Binding a **Measure**
+```json
+{
+  "Measure": {
+    "Expression": {
+      "SourceRef": { "Entity": "fVoos" }
+    },
+    "Property": "Total de Voos"
+  }
+}
+```
+
+#### Binding a **Column**
+```json
+{
+  "Column": {
+    "Expression": {
+      "SourceRef": { "Entity": "dCalendario" }
+    },
+    "Property": "NomeMes"
+  }
+}
+```
+
+#### Binding a Column with **Aggregation** (e.g., Sum)
+```json
+{
+  "Aggregation": {
+    "Expression": {
+      "Column": {
+        "Expression": { "SourceRef": { "Entity": "fVoos" } },
+        "Property": "Passageiros"
+      }
+    },
+    "Function": 0
+  }
+}
+```
+> Aggregation `Function` values: `0` = Sum, `1` = Avg, `2` = Min, `3` = Max, `4` = Count, `5` = CountNonNull.
+
+---
+
+### Visual Role Keys by `visualType`
+
+> **Important:** Role key names are case-sensitive exact strings defined by each visual type.
+
+| `visualType` | Role Keys |
+|-------------|-----------|
+| `barChart` / `clusteredBarChart` | `Category`, `Y`, `Series` |
+| `columnChart` / `clusteredColumnChart` | `Category`, `Y`, `Series` |
+| `lineChart` | `Category`, `Y`, `Series` |
+| `areaChart` | `Category`, `Y`, `Series` |
+| `lineClusteredColumnComboChart` | `SharedAxis`, `ColumnValues`, `LineValues`, `ColumnSeries` |
+| `pieChart` / `donutChart` | `Category`, `Y` |
+| `card` | `Values` |
+| `multiRowCard` | `Values` |
+| `table` | `Values` |
+| `matrix` | `Rows`, `Columns`, `Values` |
+| `slicer` | `Field` |
+| `scatterChart` | `X`, `Y`, `Details`, `Legend`, `Size` |
+| `treemap` | `Group`, `Values` |
+| `funnel` | `Category`, `Y` |
+| `gauge` | `Y`, `MinValue`, `MaxValue`, `TargetValue` |
+| `kpi` | `TrendAxis`, `Indicator`, `Goal` |
+| `map` / `filledMap` | `Location`, `Legend`, `Size`, `Color` |
+| `htmlViewer` | `Values` ← use for **HTML Content** custom visual |
+
+---
+
+### Complete `visual.json` Templates
+
+#### ✅ KPI Card (`card`)
+```json
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "name": "card_receita_total",
+  "position": { "x": 0, "y": 0, "z": 1, "width": 240, "height": 120, "tabOrder": 100 },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": { "SourceRef": { "Entity": "fVoos" } },
+                  "Property": "Receita Total"
+                }
+              },
+              "queryRef": "fVoos.'Receita Total'"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+#### ✅ Bar Chart (`barChart`) — Receita por Aeroporto
+```json
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "name": "barchart_receita_aeroporto",
+  "position": { "x": 0, "y": 130, "z": 1, "width": 600, "height": 300, "tabOrder": 200 },
+  "visual": {
+    "visualType": "barChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": { "SourceRef": { "Entity": "dAeroportos" } },
+                  "Property": "NomeAeroporto"
+                }
+              },
+              "queryRef": "dAeroportos.NomeAeroporto"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": { "SourceRef": { "Entity": "fVoos" } },
+                  "Property": "Receita Total"
+                }
+              },
+              "queryRef": "fVoos.'Receita Total'"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+#### ✅ Line Chart — Total de Voos por Mês
+```json
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "name": "linechart_voos_mes",
+  "position": { "x": 620, "y": 0, "z": 1, "width": 600, "height": 300, "tabOrder": 300 },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": { "SourceRef": { "Entity": "dCalendario" } },
+                  "Property": "NomeMes"
+                }
+              },
+              "queryRef": "dCalendario.NomeMes"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": { "SourceRef": { "Entity": "fVoos" } },
+                  "Property": "Total de Voos"
+                }
+              },
+              "queryRef": "fVoos.'Total de Voos'"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+#### ✅ HTML Content Visual — Medida HTML
+```json
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "name": "html_kpi_receita",
+  "position": { "x": 0, "y": 440, "z": 1, "width": 300, "height": 150, "tabOrder": 400 },
+  "visual": {
+    "visualType": "htmlViewer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": { "SourceRef": { "Entity": "fVoos" } },
+                  "Property": "HTML - KPI Receita"
+                }
+              },
+              "queryRef": "fVoos.'HTML - KPI Receita'"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+### Data Binding Rules & Gotchas
+
+> These rules were confirmed from the official JSON schema and apply to **all** visual types:
+
+| Rule | Detail |
+|------|--------|
+| `queryRef` must be unique per visual | Format: `"TableName.ColumnName"` or `"TableName.'Measure Name'"` (quotes for names with spaces) |
+| `Entity` in `SourceRef` = **table name** in TOM | Must exactly match the table name in TMDL (e.g., `"fVoos"`, `"dAeroportos"`) |
+| `Property` = **column or measure name** | Must exactly match the TMDL name (case-sensitive) |
+| Role key names are case-sensitive | `"Y"` ≠ `"y"`. Use exact role keys from the table above |
+| A role can have multiple projections | Just add more items to the `projections` array |
+| Measure vs Column: never mix them | A `Measure` expression for a `Y` axis, a `Column` for `Category` |
+| `queryState` key must match an existing role | Roles vary by `visualType` — using a wrong role name will silently fail |
+
+
 
 ---
 

@@ -72,17 +72,17 @@ This kit solves that. It's **pre-built intellectual property** for data teams:
 
 ## 🚀 Quick Start
 
-### 1. Clone
+### 1. Run the Installer
+
+In your terminal, navigate to your project folder and run the interactive CLI. It will ask you which version of the kit you want to install:
 
 ```bash
-git clone https://github.com/luccapinto/agentic-data-kit.git
+npx @luccapinto/agentic-data-kit@latest init
 ```
 
-### 2. Drop
+*Press `Enter`, choose your AI assistant (Antigravity, Copilot, or Claude), and the correct folder will be dropped into your project.*
 
-Copy the `.agent/` folder into your project repository.
-
-### 3. Work
+### 2. Work
 
 Start asking your AI to build things. The agents are already loaded and ready.
 
