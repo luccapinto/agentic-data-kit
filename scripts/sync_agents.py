@@ -49,6 +49,13 @@ CLAUDE_SKILLS     = CLAUDE / "skills"
 CLAUDE_WORKFLOWS  = CLAUDE / "workflows"
 CLAUDE_MD         = CLAUDE / "CLAUDE.md"
 
+# 🔵 Destino OpenCode (.opencode)
+OPENCODE          = ROOT / ".opencode"
+OPENCODE_AGENTS   = OPENCODE / "agents"
+OPENCODE_SKILLS   = OPENCODE / "skills"
+OPENCODE_COMMANDS = OPENCODE / "commands"
+OPENCODE_AGENTS_MD = OPENCODE / "AGENTS.md"
+
 
 # ---------------------------------------------------------------------------
 # Helpers compartilhados
@@ -221,6 +228,42 @@ def claude_build_claude_md() -> None:
 
 
 # ===========================================================================
+# 🔵 BLOCO OPENCODE (.opencode)
+# ===========================================================================
+
+def opencode_sync_agents() -> None:
+    """Agentes: cópia direta para .opencode/agents/."""
+    OPENCODE_AGENTS.mkdir(parents=True, exist_ok=True)
+    for src_file in sorted(AGENTS_SRC.glob("*.md")):
+        dest_file = OPENCODE_AGENTS / src_file.name
+        shutil.copy2(src_file, dest_file)
+        print(f"  ✅  {src_file.name}  →  {dest_file.relative_to(ROOT)}")
+
+
+def opencode_sync_skills() -> None:
+    """Skills: cópia recursiva exata de todas as pastas de skills."""
+    copy_tree(SKILLS_SRC, OPENCODE_SKILLS, OPENCODE_SKILLS.relative_to(ROOT))
+
+
+def opencode_sync_commands() -> None:
+    """Commands: workflows copiados para .opencode/commands/."""
+    OPENCODE_COMMANDS.mkdir(parents=True, exist_ok=True)
+    for src_file in sorted(WORKFLOWS_SRC.glob("*.md")):
+        dest_file = OPENCODE_COMMANDS / src_file.name
+        shutil.copy2(src_file, dest_file)
+        print(f"  ✅  {src_file.name}  →  {dest_file.relative_to(ROOT)}")
+
+
+def opencode_sync_agents_md() -> None:
+    """AGENTS.md: Cópia do rules.md para a pasta .opencode/."""
+    if not RULES_SRC.exists():
+        print(f"  ⚠️  rules.md não encontrado para AGENTS.md")
+        return
+    shutil.copy2(RULES_SRC, OPENCODE_AGENTS_MD)
+    print(f"  ✅  rules.md  →  {OPENCODE_AGENTS_MD.relative_to(ROOT)}")
+
+
+# ===========================================================================
 # Main
 # ===========================================================================
 def main() -> None:
@@ -230,10 +273,12 @@ def main() -> None:
     print(f"   Fonte    : {SOURCE.relative_to(ROOT)}")
     print(f"   Copilot  : {COPILOT.relative_to(ROOT)}")
     print(f"   Claude   : {CLAUDE.relative_to(ROOT)}")
+    print(f"   OpenCode : {OPENCODE.relative_to(ROOT)}")
 
     # Garante que os destinos-raiz existam
     COPILOT.mkdir(parents=True, exist_ok=True)
     CLAUDE.mkdir(parents=True, exist_ok=True)
+    OPENCODE.mkdir(parents=True, exist_ok=True)
 
     # Limpeza — skills NÃO entra (copytree exige ausência do dest)
     # .github/workflows é preservado (não está na lista)
@@ -241,6 +286,7 @@ def main() -> None:
     clean_dirs(
         COPILOT_AGENTS, COPILOT_SKILLS, COPILOT_PROMPTS,
         CLAUDE_AGENTS,  CLAUDE_SKILLS,  CLAUDE_WORKFLOWS,
+        OPENCODE_AGENTS, OPENCODE_SKILLS, OPENCODE_COMMANDS
     )
 
     # ------------------------------------------------------------------
@@ -267,6 +313,18 @@ def main() -> None:
     print("  📋 CLAUDE.md:")
     claude_build_claude_md()
 
+    # ------------------------------------------------------------------
+    print("\n🔵 [OPENCODE] Sincronizando para .opencode/...")
+    # ------------------------------------------------------------------
+    print("  📦 Agentes:")
+    opencode_sync_agents()
+    print("  🛠️  Skills:")
+    opencode_sync_skills()
+    print("  📝 Commands:")
+    opencode_sync_commands()
+    print("  📋 AGENTS.md:")
+    opencode_sync_agents_md()
+
     # Summary
     print("\n" + "=" * 60)
     print("✨ Sincronização concluída!")
@@ -278,6 +336,10 @@ def main() -> None:
     print(f"   🟠 Claude skills   : {CLAUDE_SKILLS.relative_to(ROOT)}")
     print(f"   🟠 Claude workflows: {CLAUDE_WORKFLOWS.relative_to(ROOT)}")
     print(f"   🟠 CLAUDE.md       : {CLAUDE_MD.relative_to(ROOT)}")
+    print(f"   🔵 OpenCode agents : {OPENCODE_AGENTS.relative_to(ROOT)}")
+    print(f"   🔵 OpenCode skills : {OPENCODE_SKILLS.relative_to(ROOT)}")
+    print(f"   🔵 OpenCode cmd    : {OPENCODE_COMMANDS.relative_to(ROOT)}")
+    print(f"   🔵 AGENTS.md       : {OPENCODE_AGENTS_MD.relative_to(ROOT)}")
     print("=" * 60)
 
 

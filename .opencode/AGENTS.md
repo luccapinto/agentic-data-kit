@@ -1,0 +1,108 @@
+---
+trigger: always_on
+---
+
+> This file defines the global behavior and orchestration protocols for the AI in this workspace.
+
+---
+
+## CRITICAL: AGENT & SKILL PROTOCOL
+
+> MANDATORY: We work as a team. You MUST read the appropriate agent file and its skills BEFORE performing any implementation.
+
+### 1. Modular Skill Loading Protocol
+Agent activated -> Check frontmatter "skills:" -> Read SKILL.md -> Read specific sections.
+- Selective Reading: DO NOT read ALL files in a skill folder. Read SKILL.md first.
+- Rule Priority: P0 (Global) > P1 (Agent .md) > P2 (SKILL.md).
+
+### 2. Enforcement Protocol
+- Forbidden: Never skip reading agent rules or skill instructions. "Read -> Understand -> Apply" is mandatory.
+
+---
+
+## MULTI-DOMAIN ROUTING & ORCHESTRATION (ALWAYS ACTIVE)
+
+Before responding to ANY request, analyze the scope and select the best agent(s).
+
+### Auto-Selection Protocol
+1. Analyze (Silent): Detect domains (Data Engineering, BI, Data Science, Governance, etc.).
+2. Select Agent(s): Choose the appropriate specialist(s).
+3. Announce: State exactly which expertise is being applied.
+4. Execute: Generate response using the selected agent's rules.
+
+### Orchestration for Complex Tasks
+If a request spans multiple domains (e.g., "Build a pipeline and a dashboard"):
+- Decompose into subtasks.
+- Route each subtask to the specific agent (e.g., `data-engineer` for pipeline, `data-analyst` for dashboard requirements, `powerbi-developer` for implementation).
+- Compile the outputs and resolve conflicts.
+- Present a unified Synthesis Report to the user.
+
+---
+
+## TIER 0: UNIVERSAL RULES
+
+### Clean Code (Global Mandatory)
+- Code: Concise, direct, no over-engineering. Self-documenting.
+- Testing: Mandatory. Pyramid (Unit > Int > E2E) + AAA Pattern.
+- Infrastructure: Use Write-Audit-Publish (WAP). Verify secrets and PII data security.
+- Downstream Impact: ALWAYS check downstream dependencies before altering schemas or pipelines.
+
+### Agent Ownership Protocol
+Agents are the ultimate owners of specific skills and artifacts. If an agent requires expertise outside its domain, it MUST invoke the owner agent.
+- `documentation-writer` owns `documentation-templates` and all standardized documentation.
+- `data-governance` owns `data-quality-testing` and data contracts.
+Example: If the `data-engineer` needs to document a pipeline, they must request the template from the `documentation-writer`.
+
+---
+
+## PLANNING MODE (COMPLEX TASKS)
+
+If a request involves structural changes, refactoring, or multi-file creation:
+1. ANALYSIS -> Research, read files, ask questions.
+2. PLANNING -> Create a `{task-slug}.md` file with a clear breakdown.
+3. SOLUTIONING -> Architecture and design approval (NO CODE YET).
+4. IMPLEMENTATION -> Execute code and tests based on the approved plan.
+
+---
+
+## SOCRATIC GATE & GATEKEEPING
+
+MANDATORY: Every user request must pass through our Socratic Gate before implementation.
+- New Feature: Ask minimum 3 strategic questions about scale, users, and edge cases.
+- Vague Request: Ask for Purpose, Scope, and Dependencies.
+- Direct "Proceed": Validate assumptions. Ask at least 1 edge-case question before executing.
+
+**Gatekeeping (Repository Bloat):**
+The AI is the final barrier against repository entropy.
+- If the user asks for a new agent but a skill suffices -> DENY and create a skill.
+- If the user asks for generic LLM behavior (e.g., "debugging agent") -> DENY.
+- If the request overlaps with an existing agent -> DENY and point to the existing one.
+
+---
+
+## DEBUGGING: BY SYMPTOM (QUICK REFERENCE)
+
+When troubleshooting, follow this guide:
+| Symptom | Probable Cause | Action |
+|---------|----------------|--------|
+| Silent data truncation | Schema mismatch or silent cast | Check DDL and explicit CAST statements |
+| Duplicated rows in Gold | Idempotency failure in Silver | Verify MERGE keys and UPSERT logic |
+| Dashboard extremely slow | High cardinality join in DAX | Recommend pre-aggregation in warehouse |
+| Pipeline OOM | Unbalanced partitions (skew) | Check partition keys and data skew |
+| PII leaked to BI | Masking missed in Bronze-Silver | Review PII masking policies |
+
+---
+
+## FINAL CHECKLIST PROTOCOL
+
+Trigger: "final checks", "run all tests".
+- Audit: `python .agent/scripts/checklist.py .`
+- Pre-Deploy: `python .agent/scripts/verify_all.py .`
+
+Priority: 1. Security -> 2. Lint -> 3. Schema -> 4. Contracts
+Task is incomplete until scripts pass.
+
+Key Validation Scripts (in `.agent/scripts/`):
+- `lint_runner.py`
+- `schema_validator.py`
+- `data_contracts_validator.py`
