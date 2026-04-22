@@ -49,7 +49,7 @@ Add-Type -Path ".\bin\adomd\Microsoft.AnalysisServices.AdomdClient.dll" -ErrorAc
 ```powershell
 $server = New-Object Microsoft.AnalysisServices.Tabular.Server
 try {
-    $server.Connect("localhost:$port")
+    $server.Connect("Data Source=localhost:$port")
     $db = $server.Databases[0]
     $model = $db.Model
     
@@ -91,3 +91,15 @@ try {
 4. Realizar edição via TOM (`$model.SaveChanges()`).
 5. Se sucesso: rodar DAX de sanidade via ADOMD para garantir validade matemática.
 6. Desconectar e informar o usuário para salvar (`Ctrl+S`).
+
+## 📁 8. Regras de Criação de Arquivos (PS1 Encoding)
+
+Sempre que criar scripts `.ps1` ou arquivos que contenham caracteres especiais (emojis, acentos), **VOCÊ DEVE** garantir que o arquivo seja salvo em **UTF-8 com BOM**.
+
+O Windows PowerShell 5.1 interpreta arquivos `.ps1` sem BOM como `Windows-1252` (ANSI). Como consequência, qualquer emoji ou caractere especial dentro de uma string causará erro de parse.
+
+**Como salvar corretamente via PowerShell:**
+```powershell
+$content | Out-File -FilePath "script.ps1" -Encoding utf8
+```
+*(Nota: No PS 5.1, `-Encoding utf8` força o BOM. No PS 7+, o padrão já é UTF-8 sem BOM e ele entende ambos.)*
