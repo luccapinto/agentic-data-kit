@@ -69,15 +69,15 @@ program
         const targetFolder = folderMapping[targetFramework];
 
         if (!targetFolder) {
-            console.error(chalk.red(`Error: Invalid target '${targetFramework}'. Choose 'antigravity', 'copilot', or 'claude'.`));
+            console.error(chalk.red(`Error: Invalid target '${targetFramework}'. Choose 'antigravity', 'copilot', 'claude', or 'opencode'.`));
             process.exit(1);
         }
 
         const sourceDir = path.resolve(__dirname, '..');
         const agentSourceDir = path.join(sourceDir, targetFolder);
         
-        // OpenCode special handling: install to root instead of subfolder
-        const agentDestDir = targetFramework === 'opencode' ? destDir : path.join(destDir, targetFolder);
+        // Final destination directory
+        const agentDestDir = path.join(destDir, targetFolder);
 
         console.log(chalk.blue('\nInitializing Agentic Data Kit...'));
 
@@ -90,18 +90,37 @@ program
                 process.exit(1);
             }
 
-            if (await fs.pathExists(agentDestDir)) {
+            const alreadyExists = targetFramework === 'opencode'
+                ? (await fs.pathExists(agentDestDir) || await fs.pathExists(path.join(destDir, 'AGENTS.md')))
+                : await fs.pathExists(agentDestDir);
+
+            if (alreadyExists) {
                 if (options.force) {
-                    console.log(chalk.yellow(`Force flag used. Overwriting existing ${targetFolder} folder...`));
+                    console.log(chalk.yellow(`Force flag used. Overwriting existing ${targetFramework} setup...`));
                     await fs.remove(agentDestDir);
+                    if (targetFramework === 'opencode') {
+                        await fs.remove(path.join(destDir, 'AGENTS.md'));
+                    }
                 } else {
-                    console.error(chalk.red(`Error: ${targetFolder} directory already exists. Use --force to overwrite.`));
+                    const errorMsg = targetFramework === 'opencode'
+                        ? `Error: Agentic Data Kit already initialized for OpenCode (found .opencode folder or AGENTS.md). Use --force to overwrite.`
+                        : `Error: ${targetFolder} directory already exists. Use --force to overwrite.`;
+                    console.error(chalk.red(errorMsg));
                     process.exit(1);
                 }
             }
 
-            console.log(chalk.gray(`Installing ${targetFolder} setup...`));
+            console.log(chalk.gray(`Installing ${targetFramework} setup...`));
             await fs.copy(agentSourceDir, agentDestDir);
+
+            // OpenCode special handling: move AGENTS.md to root
+            if (targetFramework === 'opencode') {
+                const agentsMdPath = path.join(agentDestDir, 'AGENTS.md');
+                const rootAgentsMdPath = path.join(destDir, 'AGENTS.md');
+                if (await fs.pathExists(agentsMdPath)) {
+                    await fs.move(agentsMdPath, rootAgentsMdPath, { overwrite: true });
+                }
+            }
 
             console.log(chalk.green(`\n✨ Successfully installed Agentic Data Kit for ${targetFramework}!`));
 
@@ -112,7 +131,7 @@ program
             } else if (targetFramework === 'claude') {
                 console.log(chalk.cyan('Ready! Open your terminal and run `claude` to interact with your new specialists.'));
             } else if (targetFramework === 'opencode') {
-                console.log(chalk.cyan('Ready! Your project now follows the OpenCode standard with AGENTS.md at the root.'));
+                console.log(chalk.cyan('Ready! Your project now follows the OpenCode standard with AGENTS.md at the root and everything else in .opencode/.'));
             }
 
             console.log('\n');

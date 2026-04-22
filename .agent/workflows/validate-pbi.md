@@ -14,12 +14,11 @@ Se o caminho não for especificado, utiliza o projeto na pasta atual. Se houver 
 ## 🔄 Passos do Fluxo
 
 ### 1. Orientação Inicial
-Usa `pbi-pbip-structure` para assegurar que estamos num diretório de projeto PBIP válido. Em caso negativo, informa o erro e interrompe o fluxo.
+Usa `pbi-semantic-layer-tmdl` para assegurar que estamos num diretório de projeto PBIP válido. Em caso negativo, informa o erro e interrompe o fluxo.
 
-### 2. Escolha do Modo de Conexão
-Analisa o ambiente:
-* **Desktop Aberto:** (Recomendado) Valida via TOM Localmente (`pbi-live-connection`). A validação em tempo de execução via TOM inclui erros do próprio Engine DAX.
-* **Desktop Fechado:** Valida apenas por parsing de texto através dos arquivos TMDL (Cobertura parcial, não resolve referências quebradas).
+### 2. Validação Offline (TMDL)
+O workflow executa a validação por parsing de texto através dos arquivos TMDL (utilizando a skill `pbi-quality-rules`).
+*Nota: Recomenda-se que o Desktop esteja fechado durante a análise para garantir que os arquivos em disco reflitam o estado mais recente.*
 
 ### 3. Quality Rules Pipeline
 Executa o playbook nativo `pbi-quality-rules` (`.agent/skills/pbi-quality-rules/pbi-quality-rules.yaml`) no projeto. Anota todas as ocorrências de classificação: Warning e Error.
@@ -34,7 +33,7 @@ Gera um relatório markdown curto:
 
 ```markdown
 # Relatório de Validação — [NomeProjeto]
-**Data:** [Data de Hoje] | **Modo:** [TOM ao vivo / Arquivos TMDL]
+**Data:** [Data de Hoje] | **Modo:** [Arquivos TMDL]
 
 ## Resumo
 | Categoria | Erros | Warnings |

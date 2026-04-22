@@ -11,7 +11,7 @@
 
 Stop explaining the same concepts to your AI over and over. Generic LLMs don't know *your* stack, *your* standards, or *your* architecture.
 
-The **Agentic Data Kit** is a curated library of **9 dedicated AI agents**, **7 specialized skills**, and **3 automated workflows** — all pre-configured for Data Engineering, Analytics, and Business Intelligence.
+The **Agentic Data Kit** is a curated library of **9 dedicated AI agents**, **6 specialized skills**, and **3 automated workflows** — all pre-configured for Data Engineering, Analytics, and Business Intelligence.
 
 By dropping this kit into your repository, your AI assistant instantly knows how to build robust Data pipelines, edit Power BI reports programmatically, design star schemas, run data quality checks, and much more — without you having to teach it anything.
 
@@ -63,7 +63,7 @@ AI:  🤖 Applying @powerbi-developer... [writes DAX, updates TMDL]
 ### 🧩 Skills — Deep, Pre-Packaged Expertise
 
 Instead of pasting documentation into a chat window, skills give the AI deep, structured expertise on specific tools and frameworks:
-- **Power BI Mastery:** `pbi-live-automation`, `pbi-semantic-layer-tmdl`, `pbi-report-layer-pbir`, `pbi-quality-rules`, `pbi-dashboard-documentation`
+- **Power BI Mastery:** `pbi-semantic-layer-tmdl`, `pbi-report-layer-pbir`, `pbi-quality-rules`, `pbi-dashboard-documentation`
 - **Quality & Docs:** `data-quality-testing`, `documentation-templates`
 
 ### 🔄 Workflows & Scripts

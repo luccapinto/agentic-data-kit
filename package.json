@@ -1,12 +1,12 @@
 {
   "name": "@luccapinto/agentic-data-kit",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "AI Agent templates - Skills, Agents, and Workflows for Data Teams",
   "type": "module",
   "main": "bin/cli.js",
   "bin": {
-    "agentic-data-kit": "./bin/cli.js",
-    "ag-data-kit": "./bin/cli.js"
+    "agentic-data-kit": "bin/cli.js",
+    "ag-data-kit": "bin/cli.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

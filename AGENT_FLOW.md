@@ -150,7 +150,7 @@ Pre-Deployment (Full Verification):
 | Metric | Value |
 | --- | --- |
 | Total Agents | 9 |
-| Total Skills | 7 |
+| Total Skills | 6 |
 | Total Workflows | 3 |
 | Master Scripts | 5 |
 

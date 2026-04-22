@@ -8,8 +8,8 @@ description: Edição de arquivos TMDL e regras arquiteturais do SemanticModel n
 Ensina a orientação espacial dentro do `.SemanticModel` e a sintaxe TMDL para criar ou editar modelos do zero quando o Desktop está **FECHADO**.
 
 ## 🎯 Quando Usar
-* Use este modo apenas se o Desktop estiver **fechado**, em refactors massivos ou criação de base.
-* Se o Desktop estiver aberto, **NÃO USE** esta skill. Use `pbi-live-automation` (via TOM) para evitar sobrescritas ou corrupções na memória do Power BI.
+* Use este modo para qualquer edição no modelo semântico (medidas, tabelas, relações).
+* **MANDATÓRIO:** O Power BI Desktop deve estar **FECHADO** antes de salvar as alterações nos arquivos TMDL para evitar corrupção de arquivos ou perda de trabalho (o Desktop mantém o modelo em memória e sobrescreve o disco ao salvar).
 
 ## 📂 Arquitetura do `.SemanticModel`
 
@@ -68,8 +68,17 @@ relationship 'Vendas_Para_DimData'
 3. **Indentação:** Use tabulação simples (tabs) ou espaços alinhados com o resto do arquivo.
 4. **Strings multilinha no DAX:** Use `\` no final da linha se precisar quebrar longos blocos sem perder a sintaxe.
 
-## ⚠️ Checklist de Conclusão
+## ⚠️ Checklist e Protocolo de Verificação
 
-* Você garantiu que o Desktop estava fechado antes de salvar?
-* Cada tabela alterada manteve sua residência em `tables/`?
-* Após a edição, peça ao usuário: *"Arquivos editados com sucesso. Por favor, abra o projeto no PBI Desktop e verifique se há mensagens de erro ou diagnóstico no carregamento."*
+### Antes de Salvar
+1. O Power BI Desktop está completamente fechado?
+
+### Após Salvar (Verificação Pós-Edição)
+1. Peça ao usuário para abrir o arquivo `.pbip` no Power BI Desktop.
+2. Aguarde o carregamento completo (até que o painel "Campos" seja populado).
+3. Peça ao usuário para abrir **Exibir → Diagnóstico** e reportar qualquer erro ou aviso exibido no topo.
+4. **Validação de Medidas:** Para cada medida criada ou modificada, peça ao usuário para arrastá-la para um visual de **Cartão** (Card) e confirmar se o valor retornado está correto ou se exibe um erro (ícone de exclamação vermelho).
+5. Se houver erro: Releia o TMDL editado, identifique o problema de sintaxe ou referência e proponha a correção.
+
+> [!TIP]
+> Este protocolo garante que o modelo permaneça íntegro sem a necessidade de uma conexão live instável.

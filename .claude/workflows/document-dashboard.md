@@ -21,8 +21,6 @@ O agente precisa coletar metadados ativamente de duas frentes do PBIP:
 1. **Dados do Semantic Model (`.tmdl`):** Extrai nome, data types, `description`, `expressions` e a topologia de ligações na pasta `relationships.tmdl`.
 2. **Dados do Report (`.json`):** Vasculha os `pages/*/visuals/*/visual.json`. Procura pelas chaves de identificação (tipo de visual), titulo (se existente nas propriedades) e os campos/medidas utilizados (olhando para a array de `projections`).
 
-*Nota: Se o Power BI Desktop estiver ativo, o passo #1 pode se beneficiar de inspeção TOM via `pbi-live-connection` para ter a leitura mais fiel. O agente deve explicitar qual via tomou.*
-
 ### 3. Geração Documental
 Utiliza a skill-mãe `pbi-dashboard-documentation` para compilar todo esse dado de parser em um markdown fluído com as sessões essenciais de uma governança enxuta.
 A documentação final deve conter pelo menos:
@@ -36,4 +34,4 @@ A documentação final deve conter pelo menos:
 Após salvar o arquivo `DASHBOARD_DOC.md`, informe na conversa:
 * Local e sucesso na salvaguarda do arquivo.
 * A porcentagem geral (cobertura) de documentação (Tabelas e Medidas contendo descrições vs O Total).
-* **Se a cobertura for inferior a 80%:** Aconselhe rodar o workflow `/validate-pbi` para evidenciar os gargalos onde o dicionário estagnou ou ofecere ajuda para documentar (adicionar DAX comment / desc) via TOM imediatamente.
+* **Se a cobertura for inferior a 80%:** Aconselhe rodar o workflow `/validate-pbi` para evidenciar os gargalos onde o dicionário estagnou ou ofereça ajuda para documentar (adicionar DAX comment / desc) via TMDL.
