@@ -22,3 +22,9 @@ Thumbs.db
 # Temporary NPM files
 package-lock.json
 yarn.lock
+
+# Power BI AMO/ADOMD Binaries
+bin/amo/*.dll
+bin/amo/*/
+bin/adomd/*.dll
+bin/adomd/*/

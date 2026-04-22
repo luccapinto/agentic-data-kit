@@ -246,7 +246,9 @@ workflow file and follow its instructions step by step.
 
 - **/brainstorm**: Structured brainstorming for projects and features. Explores multiple options before implementation. — Load context from `.claude/workflows/brainstorm.md` and follow its steps.
 - **/debug**: Debugging command. Activates DEBUG mode for systematic problem investigation. — Load context from `.claude/workflows/debug.md` and follow its steps.
+- **/document-dashboard**: Gera automaticamente documentação completa do projeto PBIP em Markdown. — Load context from `.claude/workflows/document-dashboard.md` and follow its steps.
 - **/orchestrate**: Coordinate multiple agents for complex tasks. Use for multi-perspective analysis, comprehensive reviews, or tasks requiring different domain expertise. — Load context from `.claude/workflows/orchestrate.md` and follow its steps.
 - **/plan**: Create project plan using project-planner agent. No code writing - only plan file generation. — Load context from `.claude/workflows/plan.md` and follow its steps.
 - **/status**: Display agent and project status. Progress tracking and status board. — Load context from `.claude/workflows/status.md` and follow its steps.
 - **/test**: Test generation and test running command. Creates and executes tests for code. — Load context from `.claude/workflows/test.md` and follow its steps.
+- **/validate-pbi**: Executa validação completa de qualidade de um projeto PBIP. — Load context from `.claude/workflows/validate-pbi.md` and follow its steps.

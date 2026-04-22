@@ -1,0 +1,125 @@
+rules:
+  # Naming
+  - id: NAMING_001
+    severity: warning
+    category: naming
+    name: "Medidas sem maiúscula inicial"
+    description: "Nomes de medidas devem começar com letra maiúscula."
+    applies_to: measure
+    check: "Name -cnotmatch '^[A-Z]'"
+
+  - id: NAMING_002
+    severity: warning
+    category: naming
+    name: "Tabelas com espaços no nome"
+    description: "Nomes de tabelas não devem ter espaços, use PascalCase ou snake_case."
+    applies_to: table
+    check: "Name -match ' '"
+
+  - id: NAMING_003
+    severity: info
+    category: naming
+    name: "Colunas de chave sem ID"
+    description: "Recomenda-se sufixo _ID ou ID para chaves estrangeiras."
+    applies_to: column
+    check: "DataType -eq 'Int64' -and Name -notmatch 'ID$'"
+
+  - id: NAMING_004
+    severity: warning
+    category: naming
+    name: "Medida sem DisplayFolder"
+    description: "Medidas devem ficar organizadas dentro de DisplayFolders."
+    applies_to: measure
+    check: "[string]::IsNullOrEmpty($_.DisplayFolder)"
+
+  # DAX
+  - id: DAX_001
+    severity: error
+    category: dax
+    name: "Expressão vazia"
+    description: "Medida tem a expressão vazia ou retornando diretamente BLANK()."
+    applies_to: measure
+    check: "Expression.Trim() -eq '' -or Expression.Trim().ToUpper() -eq 'BLANK()'"
+
+  - id: DAX_002
+    severity: warning
+    category: dax
+    name: "Uso de IFERROR sem justificativa"
+    description: "IFERROR pode mascarar erros subjacentes que deveriam ser tratados por DIVIDE ou similar."
+    applies_to: measure
+    check: "Expression -match 'IFERROR'"
+
+  - id: DAX_003
+    severity: info
+    category: dax
+    name: "Medidas duplicadas"
+    description: "Mesma expressão encontrada para mais de um nome (o agente valida em tempo de execução o cruzamento)."
+    applies_to: measure
+    check: "false" # Implementação complexa em PS puro
+
+  # Model & Relationships
+  - id: MODEL_001
+    severity: warning
+    category: model
+    name: "Relação bidirecional sem documentação"
+    description: "CrossFilteringBehavior de Both exige justificação e documentação para não penalizar engine."
+    applies_to: relationship
+    check: "CrossFilteringBehavior -eq 'BothDirections'"
+
+  - id: MODEL_002
+    severity: warning
+    category: model
+    name: "Island Tables"
+    description: "A tabela não possui relacionamentos ativos conhecidos."
+    applies_to: table
+    check: "$_.UsedInRelationships.Count -eq 0 -and $_.Partitions[0].Mode -eq 'Import'"
+
+  - id: MODEL_003
+    severity: info
+    category: model
+    name: "Colunas de Date não categorizadas"
+    description: "Colunas DateTime devem conter DataCategory Time."
+    applies_to: column
+    check: "DataType -eq 'DateTime' -and DataCategory -ne 'Time'"
+
+  # Performance
+  - id: PERF_001
+    severity: warning
+    category: performance
+    name: "Colunas desnecessárias sem uso"
+    description: "Coluna de alta cardinalidade ou sem referências aparentes de visuais."
+    applies_to: column
+    check: "IsHidden -eq $false -and ReferencedBy.Count -eq 0 -and Type -eq 'Data'"
+
+  - id: PERF_002
+    severity: warning
+    category: performance
+    name: "DateTime nativo ativo"
+    description: "O modelo não deveria utilizar o auto-DateTime base devido ao impacto de cache."
+    applies_to: table
+    check: "Name -match 'LocalDateTable_'"
+
+  # Documentation
+  - id: DOC_001
+    severity: warning
+    category: documentation
+    name: "Tabelas sem Description"
+    description: "Tabela não possui a anotação description, essencial para a documentação corporativa."
+    applies_to: table
+    check: "[string]::IsNullOrWhiteSpace($_.Description)"
+
+  - id: DOC_002
+    severity: warning
+    category: documentation
+    name: "Medidas sem Description"
+    description: "Medida não possui a anotação description."
+    applies_to: measure
+    check: "[string]::IsNullOrWhiteSpace($_.Description)"
+
+  - id: DOC_003
+    severity: info
+    category: documentation
+    name: "Colunas chave ocultas"
+    description: "Garantir que colunas usadas como PK ou FK que não significam nada para user final estão invisíveis."
+    applies_to: column
+    check: "Name -match 'ID$' -and IsHidden -eq $false"
