@@ -48,6 +48,11 @@ program
                         name: 'Antigravity (Autonomous Agents & Sync Engine)',
                         value: 'antigravity',
                         description: 'Installs the .agent folder (Source of truth)'
+                    },
+                    {
+                        name: 'OpenCode (Standard Agentic Format)',
+                        value: 'opencode',
+                        description: 'Installs AGENTS.md to root and /agents, /skills, /commands folders'
                     }
                 ]
             });
@@ -57,7 +62,8 @@ program
         const folderMapping = {
             'antigravity': '.agent',
             'copilot': '.github',
-            'claude': '.claude'
+            'claude': '.claude',
+            'opencode': '.opencode'
         };
 
         const targetFolder = folderMapping[targetFramework];
@@ -67,9 +73,11 @@ program
             process.exit(1);
         }
 
-        const agentDestDir = path.join(destDir, targetFolder);
         const sourceDir = path.resolve(__dirname, '..');
         const agentSourceDir = path.join(sourceDir, targetFolder);
+        
+        // OpenCode special handling: install to root instead of subfolder
+        const agentDestDir = targetFramework === 'opencode' ? destDir : path.join(destDir, targetFolder);
 
         console.log(chalk.blue('\nInitializing Agentic Data Kit...'));
 
@@ -103,6 +111,8 @@ program
                 console.log(chalk.cyan('Ready! Use @ triggers in GitHub Copilot Chat (e.g. @data-engineer) in your editor.'));
             } else if (targetFramework === 'claude') {
                 console.log(chalk.cyan('Ready! Open your terminal and run `claude` to interact with your new specialists.'));
+            } else if (targetFramework === 'opencode') {
+                console.log(chalk.cyan('Ready! Your project now follows the OpenCode standard with AGENTS.md at the root.'));
             }
 
             console.log('\n');

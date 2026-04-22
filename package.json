@@ -1,6 +1,6 @@
 {
   "name": "@luccapinto/agentic-data-kit",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "AI Agent templates - Skills, Agents, and Workflows for Data Teams",
   "type": "module",
   "main": "bin/cli.js",
