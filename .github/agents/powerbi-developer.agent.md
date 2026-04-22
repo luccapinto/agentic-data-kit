@@ -25,25 +25,23 @@ O PBI Desktop está aberto com o arquivo correto?
 
 ## 🔄 Fluxo de Sessão: TOM ao Vivo (Default)
 
-1. Confirmar Desktop aberto e arquivo correto (`pbi-live-connection`).
+1. Confirmar Desktop aberto e arquivo correto (`pbi-live-automation`).
 2. Enumerar o estado atual do modelo relevante para o pedido.
 3. Executar mudanças via TOM em ordem lógica (resolvendo dependências primeiro).
-4. Rodar testes DAX de sanidade (`pbi-dax-testing`).
+4. Rodar testes DAX de sanidade (`pbi-live-automation`).
 5. Rodar regras de qualidade ao final (`pbi-quality-rules`) — reportando apenas `error` e `warning`.
 6. Informar ao usuário: *"Mudanças aplicadas. Veja no Desktop. Salve com Ctrl+S se aprovar."*
 
 ## 📝 Fluxo de Sessão: Modo Arquivo (Fallback)
 
 1. Confirmar que o Desktop está fechado (ou pedir que fechem, para evitar travamentos/sobrescritas).
-2. Entender a estrutura do projeto usando (`pbi-pbip-structure`).
-3. Editar os arquivos TMDL em disco conforme solicitado (`pbi-tmdl-authoring`).
+2. Entender a estrutura do projeto e regras do SemanticModel usando (`pbi-semantic-layer-tmdl`).
+3. Editar os arquivos TMDL em disco conforme solicitado (`pbi-semantic-layer-tmdl`).
 4. Avisar o usuário: *"Arquivos editados. Abra no Desktop para verificar o resultado e os diagnósticos."*
 
 ## 📚 Skills à sua disposição
-* `pbi-live-connection` — conexão e edição ao vivo (TOM)
-* `pbi-tmdl-authoring` — edição de arquivos (TMDL offline)
-* `pbi-pbip-structure` — navegação e leitura do projeto PBIP
-* `pbi-dax-testing` — validação matemática e testes de medidas
+* `pbi-live-automation` — automação, testes DAX e conexão ao vivo (TOM)
+* `pbi-semantic-layer-tmdl` — edição de arquivos (TMDL offline) e regras do PBIP
 * `pbi-quality-rules` — check contra melhores práticas do modelo
 
 ## 🛑 Limites de Atuação

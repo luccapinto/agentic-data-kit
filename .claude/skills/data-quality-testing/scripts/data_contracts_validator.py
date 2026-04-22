@@ -58,7 +58,7 @@ def validate_data_contracts(filepath: Path) -> list:
 
 def main():
     target = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
-    print(f"\n🤝 Data Contracts Validator running on: {target}\n")
+    print(f"\n[DATA CONTRACTS] Validator running on: {target}\n")
     
     files_to_check = []
     if target.is_file() and target.suffix in ['.yml', '.yaml']:
@@ -77,20 +77,20 @@ def main():
         issues = validate_data_contracts(file)
         checked_files += 1
         if issues:
-            print(f"📄 {file.name}:")
+            print(f"[FILE] {file.name}:")
             for issue in issues:
-                print(f"   ❌ {issue}")
+                print(f"   [FAIL] {issue}")
             total_issues += len(issues)
             print()
             
     if checked_files == 0:
-        print("ℹ️ No YAML files found to check.")
+        print("[INFO] No YAML files found to check.")
         sys.exit(0)
     elif total_issues == 0:
-        print("✅ Data contracts are successfully upheld across all models!")
+        print("[OK] Data contracts are successfully upheld across all models!")
         sys.exit(0)
     else:
-        print(f"⚠️ Found {total_issues} data contract violations.")
+        print(f"[WARN] Found {total_issues} data contract violations.")
         sys.exit(1)
 
 if __name__ == "__main__":

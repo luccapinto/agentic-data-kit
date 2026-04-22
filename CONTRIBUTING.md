@@ -49,7 +49,7 @@ Your new agent appears in Copilot's `@` mentions and Claude's CLI. No extra conf
 │   └── ...
 ├── skills/                 ← Deep knowledge modules
 │   ├── data-quality-testing/
-│   ├── pbi-tmdl-authoring/
+│   ├── pbi-semantic-layer-tmdl/
 │   └── ...
 ├── workflows/              ← Slash command procedures
 │   ├── plan.md

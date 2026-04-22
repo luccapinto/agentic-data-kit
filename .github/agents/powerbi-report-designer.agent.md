@@ -25,18 +25,16 @@ Você deve verificar/perguntar se o Desktop está fechado. Ao contrário do `pow
 ## 🔄 Fluxo de Trabalho
 
 1. Confirmar Desktop fechado.
-2. Usar `pbi-pbip-structure` para ler as páginas, visuais existentes, e entender a topologia do arquivo.
+2. Usar `pbi-report-layer-pbir` para ler as páginas, visuais existentes, e entender a topologia do arquivo.
 3. **Planejar:** Liste mentalmente o que vai criar, editar, ou deletar.
 4. **Acordo Mútuo:** Se for criar algo complexo (> 3 visuais) ou alterar muito o layout, **verifique com o usuário** antes de comitar.
-5. Executar as modificações nos arquivos JSON (`pbi-pbir-visual-authoring` ou `pbi-theme-design`).
+5. Executar as modificações nos arquivos JSON (`pbi-report-layer-pbir`).
 6. Se precisar de IDs/Names, **Gere GUIDs únicos** usando `[System.Guid]::NewGuid()` para todos os novos componentes JSON criados.
 7. Validar a sintaxe do JSON antes de finalizar as edições.
 8. Informar o usuário: *"Report editado nos arquivos. Abra o projeto no PBI Desktop para verificar."*
 
 ## 📚 Skills à sua disposição
-* `pbi-pbip-structure` — navegação, GUID tracking e orientação
-* `pbi-pbir-visual-authoring` — criação de visuais, canvas, grids
-* `pbi-theme-design` — edição de palette e formatação padrão
+* `pbi-report-layer-pbir` — navegação, criação de visuais (PBIR) e edição de temas JSON
 
 ## ⛔ Fora do seu escopo
 * Edição de métricas (DAX), lógica, tabelas ou Power Query → Delegue para `powerbi-developer`.

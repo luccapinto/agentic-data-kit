@@ -9,11 +9,11 @@ Use this before deployment or major releases.
     python scripts/verify_all.py . [--target <workspace>]
 
 Includes ALL checks:
-    ✅ Security Scan (secrets, dependencies)
-    ✅ Lint (SQL, Python) & Data Privacy Check
-    ✅ Data Documentation Check
-    ✅ Test Suite (Unit + Data Quality)
-    ✅ Heavy Query Profiling
+[OK] Security Scan (secrets, dependencies)
+[OK] Lint (SQL, Python) & Data Privacy Check
+[OK] Data Documentation Check
+[OK] Test Suite (Unit + Data Quality)
+[OK] Heavy Query Profiling
 """
 
 import sys
@@ -40,16 +40,16 @@ def print_header(text: str):
     print(f"{Colors.BOLD}{Colors.CYAN}{'='*70}{Colors.ENDC}\n")
 
 def print_step(text: str):
-    print(f"{Colors.BOLD}{Colors.BLUE}🔄 {text}{Colors.ENDC}")
+    print(f"{Colors.BOLD}{Colors.BLUE}[RUN] {text}{Colors.ENDC}")
 
 def print_success(text: str):
-    print(f"{Colors.GREEN}✅ {text}{Colors.ENDC}")
+    print(f"{Colors.GREEN}[OK] {text}{Colors.ENDC}")
 
 def print_warning(text: str):
-    print(f"{Colors.YELLOW}⚠️  {text}{Colors.ENDC}")
+    print(f"{Colors.YELLOW}[WARN] {text}{Colors.ENDC}")
 
 def print_error(text: str):
-    print(f"{Colors.RED}❌ {text}{Colors.ENDC}")
+    print(f"{Colors.RED}[FAIL] {text}{Colors.ENDC}")
 
 # Complete Data Team verification suite
 VERIFICATION_SUITE = [
@@ -124,7 +124,7 @@ def print_final_report(results: List[dict], start_time: datetime):
     """Print comprehensive final report"""
     total_duration = (datetime.now() - start_time).total_seconds()
     
-    print_header("📊 FULL VERIFICATION REPORT")
+    print_header("FULL VERIFICATION REPORT")
     
     # Statistics
     total = len(results)
@@ -134,9 +134,9 @@ def print_final_report(results: List[dict], start_time: datetime):
     
     print(f"Total Duration: {total_duration:.1f}s")
     print(f"Total Checks: {total}")
-    print(f"{Colors.GREEN}✅ Passed: {passed}{Colors.ENDC}")
-    print(f"{Colors.RED}❌ Failed: {failed}{Colors.ENDC}")
-    print(f"{Colors.YELLOW}⏭️  Skipped: {skipped}{Colors.ENDC}")
+    print(f"{Colors.GREEN}[OK] Passed: {passed}{Colors.ENDC}")
+    print(f"{Colors.RED}[FAIL] Failed: {failed}{Colors.ENDC}")
+    print(f"{Colors.YELLOW}[SKIP] Skipped: {skipped}{Colors.ENDC}")
     print()
     
     # Category breakdown
@@ -150,11 +150,11 @@ def print_final_report(results: List[dict], start_time: datetime):
         
         # Print result
         if r.get("skipped"):
-            status = f"{Colors.YELLOW}⏭️ {Colors.ENDC}"
+            status = f"{Colors.YELLOW}[SKIP]{Colors.ENDC}"
         elif r["passed"]:
-            status = f"{Colors.GREEN}✅{Colors.ENDC}"
+            status = f"{Colors.GREEN}[OK]{Colors.ENDC}"
         else:
-            status = f"{Colors.RED}❌{Colors.ENDC}"
+            status = f"{Colors.RED}[FAIL]{Colors.ENDC}"
         
         duration_str = f"({r.get('duration', 0):.1f}s)" if not r.get("skipped") else ""
         print(f"  {status} {r['name']} {duration_str}")
@@ -175,10 +175,10 @@ def print_final_report(results: List[dict], start_time: datetime):
     # Final verdict
     if failed > 0:
         print_error(f"VERIFICATION FAILED - {failed} check(s) need attention")
-        print(f"\n{Colors.YELLOW}💡 Tip: Fix critical (security, lint) issues first{Colors.ENDC}")
+        print(f"\n{Colors.YELLOW}[INFO] Tip: Fix critical (security, lint) issues first{Colors.ENDC}")
         return False
     else:
-        print_success("✨ ALL CHECKS PASSED - Ready for deployment! ✨")
+        print_success("ALL CHECKS PASSED - Ready for deployment!")
         return True
 
 def main():
@@ -221,7 +221,7 @@ Examples:
         if requires_target and not args.target:
             continue
         
-        print_header(f"📋 {category.upper()}")
+        print_header(category.upper())
         
         for name, script_path, required in suite["checks"]:
             script = project_path / script_path

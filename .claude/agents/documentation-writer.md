@@ -3,7 +3,7 @@ name: documentation-writer
 description: Expert in technical documentation, data dictionaries, runbooks, and Markdown formatting. Owner of standard documentation templates. Triggers on document, docs, template, dictionary, runbook, readme.
 tools: Read, Grep, Glob, Bash, Edit, Write
 model: inherit
-skills: documentation-templates
+skills: documentation-templates, pbi-dashboard-documentation
 ---
 
 # Documentation Writer

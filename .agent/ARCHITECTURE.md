@@ -9,7 +9,7 @@
 Antigravity Kit is a modular system consisting of:
 
 - **9 Specialist Agents** - Role-based AI personas
-- **10 Skills** - Domain-specific knowledge modules
+- **7 Skills** - Domain-specific knowledge modules
 - **3 Workflows** - Slash command procedures
 
 ---
@@ -20,7 +20,7 @@ Antigravity Kit is a modular system consisting of:
 .agent/
 ├── ARCHITECTURE.md          # This file
 ├── agents/                  # 9 Specialist Agents
-├── skills/                  # 10 Skills
+├── skills/                  # 7 Skills
 ├── workflows/               # 3 Slash Commands
 ├── rules/                   # Global Rules
 └── scripts/                 # Master Validation Scripts
@@ -39,14 +39,14 @@ Specialist AI personas for different Data domains.
 | `data-analyst`              | Dashboards, SQL, metrics   | data-quality-testing                                     |
 | `data-scientist`            | ML, statistics, models     | -                                                        |
 | `data-governance`           | Quality, LGPD, contracts   | data-quality-testing                                     |
-| `powerbi-developer`         | PBI Orchestrator           | pbi-live-connection, pbi-pbip-structure, pbi-quality-rules, pbi-tmdl-authoring, pbi-dax-testing |
-| `powerbi-report-designer`   | PBI Visual Layer           | pbi-theme-design, pbi-pbir-visual-authoring              |
+| `powerbi-developer`         | PBI Orchestrator           | pbi-live-automation, pbi-semantic-layer-tmdl, pbi-quality-rules |
+| `powerbi-report-designer`   | PBI Visual Layer           | pbi-report-layer-pbir                                    |
 | `documentation-writer`      | Manuals, docs              | documentation-templates, pbi-dashboard-documentation     |
 | `agent-creator`             | Creates new agents/skills  | -                                                        |
 
 ---
 
-## 🧩 Skills (10)
+## 🧩 Skills (7)
 
 Modular knowledge domains that agents can load on-demand based on task context.
 
@@ -61,13 +61,10 @@ Modular knowledge domains that agents can load on-demand based on task context.
 
 | Skill                         | Description                                                           |
 | ----------------------------- | --------------------------------------------------------------------- |
-| `pbi-live-connection`         | TOM and ADOMD connection directly to local MSMDSRV                    |
-| `pbi-pbip-structure`          | Spatial navigation for Power BI projects                              |
+| `pbi-live-automation`         | TOM, ADOMD connection directly to local MSMDSRV and DAX Testing       |
+| `pbi-semantic-layer-tmdl`     | Semantic layer structuring and TMDL authoring rules                   |
+| `pbi-report-layer-pbir`       | Report layout, page and visual creation via PBIR and themes           |
 | `pbi-quality-rules`           | Execution of BPA-like rules via PowerShell                            |
-| `pbi-tmdl-authoring`          | Writing TMDL files                                                    |
-| `pbi-dax-testing`             | Querying model via ADOMD to test DAX                                  |
-| `pbi-theme-design`            | Report Themes JSON                                                    |
-| `pbi-pbir-visual-authoring`   | Directly creating pages and visuals                                   |
 | `pbi-dashboard-documentation` | Automatic documentation generation                                    |
 
 ---
@@ -115,7 +112,7 @@ python .agent/scripts/verify_all.py .
 | Metric              | Value                         |
 | ------------------- | ----------------------------- |
 | **Total Agents**    | 9                             |
-| **Total Skills**    | 10                            |
+| **Total Skills**    | 7                             |
 | **Total Workflows** | 3                             |
 | **Total Scripts**   | 5                             |
 | **Coverage**        | ~100% Data Engineering & BI   |

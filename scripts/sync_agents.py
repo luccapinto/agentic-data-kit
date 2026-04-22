@@ -13,7 +13,13 @@ Mapeamento:
 
 import re
 import shutil
+import sys
+import codecs
 from pathlib import Path
+
+# Fix Windows encoding issues with emojis
+if sys.platform == 'win32':
+    sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 import yaml  # pip install pyyaml
 

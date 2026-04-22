@@ -117,7 +117,7 @@ Before ANY data engineering/BI work:
 
 ### 3️⃣ **Skill Loading Protocol**
 
-1. Match request to Skill (e.g. "Create DAX" → `pbi-tmdl-authoring`)
+1. Match request to Skill (e.g. "Create DAX" → `pbi-semantic-layer-tmdl`)
 2. Load Skill Metadata (`SKILL.md`)
 3. Execute validation scripts if requested.
 4. Apply structured knowledge to the task.
@@ -150,7 +150,7 @@ Pre-Deployment (Full Verification):
 | Metric | Value |
 | --- | --- |
 | Total Agents | 9 |
-| Total Skills | 10 |
+| Total Skills | 7 |
 | Total Workflows | 3 |
 | Master Scripts | 5 |
 
