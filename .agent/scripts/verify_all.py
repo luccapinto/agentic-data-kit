@@ -53,61 +53,19 @@ def print_error(text: str):
 
 # Complete Data Team verification suite
 VERIFICATION_SUITE = [
-    # P0: Security & Architecture (CRITICAL)
     {
-        "category": "Security & Architecture",
+        "category": "Code Quality",
         "checks": [
-            ("Secrets & Credential Scan", ".agent/skills/vulnerability-scanner/scripts/security_scan.py", True),
-            ("Dependency Vulnerability", ".agent/skills/vulnerability-scanner/scripts/dependency_analyzer.py", False),
-            ("Data Privacy (PII) Check", ".agent/skills/data-governance/scripts/pii_exposure_check.py", False),
-            ("Medallion Drift Checker", ".agent/skills/architecture/scripts/medallion_drift_checker.py", True),
-            ("Idempotency Checker", ".agent/skills/clean-code/scripts/idempotency_checker.py", True),
+            ("Lint (Ruff + SQLFluff)", ".agent/scripts/lint_runner.py", True),
+            ("Schema Validation", ".agent/scripts/schema_validator.py", False),
         ]
     },
-    
-    # P1: Code Quality & Platform (CRITICAL)
     {
-        "category": "Code Quality (SQL/Python/Databricks)",
+        "category": "Data Quality",
         "checks": [
-            ("Python Linter (Ruff/Flake8)", ".agent/skills/lint-and-validate/scripts/lint_runner.py", True),
-            ("SQL Linter (Sqlfluff)", ".agent/skills/lint-and-validate/scripts/sql_lint_runner.py", True),
-            ("Databricks Anti-Pattern Linter", ".agent/skills/databricks-patterns/scripts/dbx_notebook_linter.py", False),
-            ("Pandas/Polars Performance Analyzer", ".agent/skills/python-data/scripts/pandas_polars_analyzer.py", False),
-            ("Checklist Format Verifier", ".agent/skills/plan-writing/scripts/checklist_format_verifier.py", False),
+            ("Data Contracts", ".agent/skills/data-quality-testing/scripts/data_contracts_validator.py", False),
         ]
     },
-    
-    # P2: Data Modeling & Documentation
-    {
-        "category": "Data Modeling & Documentation",
-        "checks": [
-            ("Star Schema Auditor", ".agent/skills/database-design/scripts/star_schema_auditor.py", False),
-            ("Data Dictionary Completeness Check", ".agent/skills/data-documentation/scripts/docs_completeness_auditor.py", False),
-            ("Power BI DAX Format Check", ".agent/skills/powerbi-semantic-mcp/scripts/dax_format_audit.py", False),
-            ("Power BI TMDL Syntax Check", ".agent/skills/tmdl-modeling/scripts/tmdl_syntax_lint.py", False),
-            ("Power BI Layout Sanity Check", ".agent/skills/pbip-report-hacking/scripts/pbir_layout_sanity_check.py", False),
-            ("Power BI DAX Best Practices", ".agent/skills/powerbi-semantic-mcp/scripts/dax_best_practices_auditor.py", False),
-        ]
-    },
-    
-    # P3: Testing
-    {
-        "category": "Pipeline & Data Testing",
-        "checks": [
-            ("Unit Tests (pytest)", ".agent/skills/testing-patterns/scripts/test_runner.py", False),
-            ("Data Contracts Validator", ".agent/skills/data-quality-testing/scripts/data_contracts_validator.py", False),
-            ("Data Expectations (Great Expectations)", ".agent/skills/testing-patterns/scripts/data_quality_run.py", False),
-        ]
-    },
-    
-    # P4: Performance
-    {
-        "category": "Query Performance",
-        "requires_target": False, 
-        "checks": [
-            ("Heavy Query Profiler", ".agent/skills/performance-profiling/scripts/heavy_query_profiler.py", False),
-        ]
-    }
 ]
 
 def run_script(name: str, script_path: Path, project_path: str, target: Optional[str] = None) -> dict:

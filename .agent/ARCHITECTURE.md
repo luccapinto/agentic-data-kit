@@ -8,9 +8,9 @@
 
 Antigravity Kit is a modular system consisting of:
 
-- **14 Specialist Agents** - Role-based AI personas
-- **23 Skills** - Domain-specific knowledge modules
-- **6 Workflows** - Slash command procedures
+- **9 Specialist Agents** - Role-based AI personas
+- **10 Skills** - Domain-specific knowledge modules
+- **3 Workflows** - Slash command procedures
 
 ---
 
@@ -19,149 +19,84 @@ Antigravity Kit is a modular system consisting of:
 ```plaintext
 .agent/
 ├── ARCHITECTURE.md          # This file
-├── agents/                  # 14 Specialist Agents
-├── skills/                  # 23 Skills
-├── workflows/               # 6 Slash Commands
+├── agents/                  # 9 Specialist Agents
+├── skills/                  # 10 Skills
+├── workflows/               # 3 Slash Commands
 ├── rules/                   # Global Rules
 └── scripts/                 # Master Validation Scripts
 ```
 
 ---
 
-## 🤖 Agents (14)
+## 🤖 Agents (9)
 
 Specialist AI personas for different Data domains.
 
-| Agent                    | Focus                      | Skills Used                                              |
-| ------------------------ | -------------------------- | -------------------------------------------------------- |
-| `orchestrator`           | Multi-agent coordination   | parallel-agents, behavioral-modes                        |
-| `project-planner`        | Discovery, task planning   | brainstorming, plan-writing, architecture                |
-| `database-architect`     | Schema, SQL                | database-design                                          |
-| `debugger`               | Root cause analysis        | systematic-debugging                                     |
-| `documentation-writer`   | Manuals, docs              | documentation-templates                                  |
-| `explorer-agent`         | Codebase analysis          | -                                                        |
-| `data-engineer`          | ETL, pipelines, infra      | clean-code, databricks-patterns, database-design         |
-| `analytics-engineer`     | dbt, dimensional modeling  | clean-code, database-design, tmdl-modeling               |
-| `data-analyst`           | Dashboards, SQL, insights  | clean-code, python-data, database-design                 |
-| `data-scientist`         | ML, statistics, models     | clean-code, python-data, databricks-patterns             |
-| `data-governance`        | Quality, LGPD, contracts   | data-documentation, database-design                      |
-| `business-analyst`       | Power BI, Reqs, Metrics    | clean-code, powerbi-semantic-mcp, data-documentation     |
-| `powerbi-developer`      | Power BI Models & Reports  | powerbi-semantic-mcp, pbip-report-hacking, tmdl-modeling |
-| `agent-creator`          | Creates new agents         | plan-writing                                             |
+| Agent                       | Focus                      | Skills Used                                              |
+| --------------------------- | -------------------------- | -------------------------------------------------------- |
+| `data-engineer`             | ETL, pipelines, infra      | -                                                        |
+| `analytics-engineer`        | dbt, dimensional modeling  | data-quality-testing                                     |
+| `data-analyst`              | Dashboards, SQL, metrics   | data-quality-testing                                     |
+| `data-scientist`            | ML, statistics, models     | -                                                        |
+| `data-governance`           | Quality, LGPD, contracts   | data-quality-testing                                     |
+| `powerbi-developer`         | PBI Orchestrator           | pbi-live-connection, pbi-pbip-structure, pbi-quality-rules, pbi-tmdl-authoring, pbi-dax-testing |
+| `powerbi-report-designer`   | PBI Visual Layer           | pbi-theme-design, pbi-pbir-visual-authoring              |
+| `documentation-writer`      | Manuals, docs              | documentation-templates, pbi-dashboard-documentation     |
+| `agent-creator`             | Creates new agents/skills  | -                                                        |
 
 ---
 
-## 🧩 Skills (23)
+## 🧩 Skills (10)
 
 Modular knowledge domains that agents can load on-demand based on task context.
 
-### Data Engineering & Analytics
+### Documentation & Quality
 
-| Skill                   | Description                                                           |
-| ----------------------- | --------------------------------------------------------------------- |
-| `databricks-patterns`   | Delta Lake, Unity Catalog, PySpark optimization                       |
-| `python-data`           | Pandas, Polars, memory management                                     |
-| `data-documentation`    | dbt YML, lineage, metric definitions                                  |
+| Skill                     | Description                                                           |
+| ------------------------- | --------------------------------------------------------------------- |
+| `documentation-templates` | Doc formats and templates                                             |
+| `data-quality-testing`    | dbt tests, Great Expectations, Data Contracts                         |
 
-### Business Intelligence & Reporting
+### Power BI
 
-| Skill                   | Description                                                           |
-| ----------------------- | --------------------------------------------------------------------- |
-| `powerbi-semantic-mcp`  | Tabular Editor, REST API, Documentation, DAX Checkers                 |
-| `pbip-report-hacking`   | Programmatic extraction/manipulation of .pbip files                   |
-| `tmdl-modeling`         | Tabular Model Definition Language structural best practices           |
-
-### Database
-
-| Skill             | Description                 |
-| ----------------- | --------------------------- |
-| `database-design` | Schema design, optimization |
-
-### Testing & Quality
-
-| Skill                   | Description              |
-| ----------------------- | ------------------------ |
-| `data-quality-testing`  | dbt tests, Great Expectations, Data Contracts |
-| `code-review-checklist` | Code review standards    |
-| `lint-and-validate`     | SQLFluff, Ruff, Flake8   |
-
-### Architecture & Planning
-
-| Skill           | Description                |
-| --------------- | -------------------------- |
-| `architecture`  | System design patterns     |
-| `plan-writing`  | Task planning, breakdown   |
-| `brainstorming` | Socratic questioning       |
-| `deployment-procedures` | CI/CD, deploy workflows  |
-
-### Shell/CLI
-
-| Skill                | Description               |
-| -------------------- | ------------------------- |
-| `bash-linux`         | Linux commands, scripting |
-| `powershell-windows` | Windows PowerShell        |
-
-### Core & Meta
-
-| Skill                     | Description               |
-| ------------------------- | ------------------------- |
-| `clean-code`              | Coding standards (Global) |
-| `behavioral-modes`        | Agent personas            |
-| `parallel-agents`         | Multi-agent patterns      |
-| `mcp-builder`             | Model Context Protocol    |
-| `documentation-templates` | Doc formats               |
-| `systematic-debugging`    | Troubleshooting           |
-| `intelligent-routing`     | Routing definitions       |
+| Skill                         | Description                                                           |
+| ----------------------------- | --------------------------------------------------------------------- |
+| `pbi-live-connection`         | TOM and ADOMD connection directly to local MSMDSRV                    |
+| `pbi-pbip-structure`          | Spatial navigation for Power BI projects                              |
+| `pbi-quality-rules`           | Execution of BPA-like rules via PowerShell                            |
+| `pbi-tmdl-authoring`          | Writing TMDL files                                                    |
+| `pbi-dax-testing`             | Querying model via ADOMD to test DAX                                  |
+| `pbi-theme-design`            | Report Themes JSON                                                    |
+| `pbi-pbir-visual-authoring`   | Directly creating pages and visuals                                   |
+| `pbi-dashboard-documentation` | Automatic documentation generation                                    |
 
 ---
 
-## 🔄 Workflows (6)
+## 🔄 Workflows (3)
 
 Slash command procedures. Invoke with `/command`.
 
-| Command          | Description              |
-| ---------------- | ------------------------ |
-| `/brainstorm`    | Socratic discovery       |
-| `/debug`         | Debug issues             |
-| `/orchestrate`   | Multi-agent coordination |
-| `/plan`          | Task breakdown           |
-| `/status`        | Check project status     |
-| `/test`          | Run tests                |
+| Command                | Description                               |
+| ---------------------- | ----------------------------------------- |
+| `/plan`                | Project Breakdown and task scoping        |
+| `/validate-pbi`        | Validates Power BI Model                  |
+| `/document-dashboard`  | Automatically documents a Power BI Report |
 
 ---
 
-## 🎯 Skill Loading Protocol
+## 🛠️ Scripts (5)
 
-```plaintext
-User Request → Skill Description Match → Load SKILL.md
-                                            ↓
-                                    Read references/
-                                            ↓
-                                    Read scripts/
-```
-
-### Skill Structure
-
-```plaintext
-skill-name/
-├── SKILL.md           # (Required) Metadata & instructions
-├── scripts/           # (Optional) Python/Bash scripts
-├── references/        # (Optional) Templates, docs
-└── assets/            # (Optional) Images, logos
-```
-
----
-
-## 🛠️ Scripts (2)
-
-Master validation scripts that orchestrate skill-level scripts for Data Pipelines.
+Master validation scripts that orchestrate validation for CI/CD or local checks.
 
 ### Master Scripts
 
-| Script             | Purpose                                 | When to Use              |
-| ------------------ | --------------------------------------- | ------------------------ |
-| `checklist.py`     | Priority-based validation (Core checks) | Development, pre-commit  |
-| `verify_all.py`    | Comprehensive verification (All checks) | Pre-deployment, releases |
+| Script                 | Purpose                                 | When to Use              |
+| ---------------------- | --------------------------------------- | ------------------------ |
+| `checklist.py`         | Priority-based validation (Core checks) | Development, pre-commit  |
+| `verify_all.py`        | Comprehensive verification (All checks) | Pre-deployment, releases |
+| `lint_runner.py`       | SQLFluff and Ruff execution             | Checkstyle               |
+| `schema_validator.py`  | Validates database modeling rules       | Commit                   |
+| `data_contracts...py`  | Validates Data Contracts (YAML)         | Commit                   |
 
 ### Usage
 
@@ -173,44 +108,14 @@ python .agent/scripts/checklist.py .
 python .agent/scripts/verify_all.py .
 ```
 
-### What They Check
-
-**checklist.py** (Core Data Checks):
-- Security (vulnerabilities, credentials)
-- SQL Linter & Python Linter
-- Medallion Architecture Check
-
-**verify_all.py** (Full Suite):
-- Everything in checklist.py PLUS:
-- Power BI DAX Best Practices
-- Star Schema Conventions Check
-- Data Quality Tests (Data Contracts)
-- PBIP, TMDL Layout Sanity Check
-- Idempotency Checks
-
 ---
 
 ## 📊 Statistics
 
 | Metric              | Value                         |
 | ------------------- | ----------------------------- |
-| **Total Agents**    | 14                            |
-| **Total Skills**    | 23                            |
-| **Total Workflows** | 6                             |
-| **Total Scripts**   | 2 (master) + skill-level      |
+| **Total Agents**    | 9                             |
+| **Total Skills**    | 10                            |
+| **Total Workflows** | 3                             |
+| **Total Scripts**   | 5                             |
 | **Coverage**        | ~100% Data Engineering & BI   |
-
----
-
-## 🔗 Quick Reference
-
-| Need     | Agent                 | Skills                                |
-| -------- | --------------------- | ------------------------------------- |
-| Pipeline | `data-engineer`       | databricks-patterns, database-design  |
-| Power BI | `powerbi-developer`   | powerbi-semantic-mcp, pbip-report-hacking|
-| Models   | `analytics-engineer`  | database-design, tmdl-modeling        |
-| ML / AI  | `data-scientist`      | python-data, databricks-patterns      |
-| SQL Arch | `database-architect`  | database-design                       |
-| Debug    | `debugger`            | systematic-debugging                  |
-| Plan     | `project-planner`     | brainstorming, plan-writing           |
-

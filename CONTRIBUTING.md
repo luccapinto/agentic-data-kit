@@ -48,12 +48,12 @@ Your new agent appears in Copilot's `@` mentions and Claude's CLI. No extra conf
 │   ├── powerbi-developer.md
 │   └── ...
 ├── skills/                 ← Deep knowledge modules
-│   ├── databricks-patterns/
-│   ├── tmdl-modeling/
+│   ├── data-quality-testing/
+│   ├── pbi-tmdl-authoring/
 │   └── ...
 ├── workflows/              ← Slash command procedures
 │   ├── plan.md
-│   ├── debug.md
+│   ├── validate-pbi.md
 │   └── ...
 └── rules/                  ← Universal directives
     └── rules.md

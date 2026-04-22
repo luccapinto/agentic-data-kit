@@ -53,15 +53,9 @@ def print_error(text: str):
 
 # Define priority-ordered checks for the Data Team
 CORE_CHECKS = [
-    ("Security Scan", ".agent/skills/vulnerability-scanner/scripts/security_scan.py", True),
-    ("SQL Lint & Format", ".agent/skills/lint-and-validate/scripts/sql_lint_runner.py", True),
-    ("Data Documentation Check", ".agent/skills/data-documentation/scripts/check_dbt_yml.py", False),
-    ("Data Pipeline Test Runner", ".agent/skills/testing-patterns/scripts/test_runner.py", False),
-]
-
-PERFORMANCE_CHECKS = [
-    # E.g. long-running Spark jobs or heavy dry-runs
-    ("Heavy Query Profiler", ".agent/skills/performance-profiling/scripts/heavy_query_profiler.py", False),
+    ("Lint (Ruff + SQLFluff)", ".agent/scripts/lint_runner.py", True),
+    ("Schema Validation", ".agent/scripts/schema_validator.py", False),
+    ("Data Contracts", ".agent/skills/data-quality-testing/scripts/data_contracts_validator.py", False),
 ]
 
 def check_script_exists(script_path: Path) -> bool:
@@ -163,19 +157,17 @@ Examples:
   python scripts/checklist.py .                      # Core data checks
         """
     )
-    parser.add_argument("project", help="Project path to validate")
-    parser.add_argument("--skip-performance", action="store_true", help="Skip query profiling checks")
+    parser.add_argument("path", nargs="?", default=".", help="Path to check (project root)")
     
     args = parser.parse_args()
     
-    project_path = Path(args.project).resolve()
+    project_path = Path(args.path).resolve()
     
     if not project_path.exists():
         print_error(f"Project path does not exist: {project_path}")
         sys.exit(1)
     
-    print_header("🚀 ANTIGRAVITY KIT - MASTER CHECKLIST")
-    print(f"Project: {project_path}")
+    print_header("[ANTIGRAVITY KIT - MASTER CHECKLIST]")
     print(f"Project: {project_path}")
     
     results = []
@@ -193,13 +185,7 @@ Examples:
             print_summary(results)
             sys.exit(1)
     
-    # Run performance checks if requested
-    if not args.skip_performance:
-        print_header("⚡ QUERY PROFILING")
-        for name, script_path, required in PERFORMANCE_CHECKS:
-            script = project_path / script_path
-            result = run_script(name, script, str(project_path))
-            results.append(result)
+
     
     # Print summary
     all_passed = print_summary(results)

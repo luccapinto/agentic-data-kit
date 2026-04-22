@@ -2,235 +2,107 @@
 trigger: always_on
 ---
 
-> This file defines how the AI behaves in this workspace.
+> This file defines the global behavior and orchestration protocols for the AI in this workspace.
 
 ---
 
-## 🤝 CRITICAL: AGENT & SKILL PROTOCOL (START HERE)
+## CRITICAL: AGENT & SKILL PROTOCOL
 
-> **MANDATORY:** We work as a team, but we rely on your expertise. You MUST read the appropriate agent file and its skills BEFORE performing any implementation. This is our highest priority rule to ensure we maintain our high standards.
+> MANDATORY: We work as a team. You MUST read the appropriate agent file and its skills BEFORE performing any implementation.
 
 ### 1. Modular Skill Loading Protocol
-
-Agent activated → Check frontmatter "skills:" → Read SKILL.md (INDEX) → Read specific sections.
-
-- **Selective Reading:** DO NOT read ALL files in a skill folder. Read `SKILL.md` first, then only read sections matching the user's request.
-- **Rule Priority:** P0 (GEMINI.md) > P1 (Agent .md) > P2 (SKILL.md). All rules are binding.
+Agent activated -> Check frontmatter "skills:" -> Read SKILL.md -> Read specific sections.
+- Selective Reading: DO NOT read ALL files in a skill folder. Read SKILL.md first.
+- Rule Priority: P0 (Global) > P1 (Agent .md) > P2 (SKILL.md).
 
 ### 2. Enforcement Protocol
-
-1. **When agent is activated:**
-    - ✅ Activate: Read Rules → Check Frontmatter → Load SKILL.md → Apply All.
-2. **Forbidden:** Never skip reading agent rules or skill instructions. "Read → Understand → Apply" is mandatory.
+- Forbidden: Never skip reading agent rules or skill instructions. "Read -> Understand -> Apply" is mandatory.
 
 ---
 
-## 🛠️ TOOL EXPLORATION (MANDATORY BEFORE ANSWERING)
+## MULTI-DOMAIN ROUTING & ORCHESTRATION (ALWAYS ACTIVE)
 
-**Before answering ANY question or writing ANY code, you must seek context:**
-- **Always use your available tools** (e.g., `grep_search`, `list_dir`, `view_file`) to search the codebase, gather context, or verify facts.
-- **Do not guess or assume.** If you don't have the context, actively explore the project directories and files to find it before providing your response.
-
----
-
-## 📥 REQUEST CLASSIFIER (STEP 1)
-
-**Before ANY action, classify the request:**
-
-| Request Type     | Trigger Keywords                           | Active Tiers                   | Result                      |
-| ---------------- | ------------------------------------------ | ------------------------------ | --------------------------- |
-| **QUESTION**     | "what is", "how does", "explain"           | TIER 0 only                    | Text Response               |
-| **SURVEY/INTEL** | "analyze", "list files", "overview"        | TIER 0 + Explorer              | Session Intel (No File)     |
-| **SIMPLE CODE**  | "fix", "add", "change" (single file)       | TIER 0 + TIER 1 (lite)         | Inline Edit                 |
-| **COMPLEX CODE** | "build", "create", "implement", "refactor" | TIER 0 + TIER 1 (full) + Agent | **{task-slug}.md Required** |
-| **DESIGN/UI**    | "model", "schema", "dashboard", "pipeline" | TIER 0 + TIER 1 + Agent        | **{task-slug}.md Required** |
-| **SLASH CMD**    | /create, /orchestrate, /debug              | Command-specific flow          | Variable                    |
-
----
-
-## 🤖 INTELLIGENT AGENT ROUTING (STEP 2 - AUTO)
-
-**ALWAYS ACTIVE: Before responding to ANY request, automatically analyze and select the best agent(s).**
-
-> 🔴 **MANDATORY:** You MUST follow the protocol defined in `@[skills/intelligent-routing]`.
+Before responding to ANY request, analyze the scope and select the best agent(s).
 
 ### Auto-Selection Protocol
+1. Analyze (Silent): Detect domains (Data Engineering, BI, Data Science, Governance, etc.).
+2. Select Agent(s): Choose the appropriate specialist(s).
+3. Announce: State exactly which expertise is being applied.
+4. Execute: Generate response using the selected agent's rules.
 
-1. **Analyze (Silent)**: Detect domains (Data Engineering, BI, Data Science, Governance, etc.) from user request.
-2. **Select Agent(s)**: Choose the most appropriate specialist(s).
-3. **Inform User**: Concisely state which expertise is being applied.
-4. **Apply**: Generate response using the selected agent's persona and rules.
-
-### Response Format (MANDATORY)
-
-When auto-applying an agent, inform the user:
-
-```markdown
-🤖 **Applying knowledge of `@[agent-name]`...**
-
-[Continue with specialized response]
-```
-
-**Rules:**
-
-1. **Silent Analysis**: No verbose meta-commentary ("I am analyzing...").
-2. **Respect Overrides**: If user mentions `@agent`, use it.
-3. **Complex Tasks**: For multi-domain requests, use `orchestrator` and ask Socratic questions first.
-
-### ⚠️ AGENT ROUTING CHECKLIST (MANDATORY BEFORE EVERY CODE/DESIGN RESPONSE)
-
-**Before ANY code or design work, you MUST:**
-1. **Identify** the correct agent for the domain.
-2. **READ** the agent's `.md` file and `skills:` field.
-3. **Announce** `🤖 Applying knowledge of @[agent]...` before responding.
-
-**If you fail to do this:**
-- ❌ Writing code without identifying an agent = **PROTOCOL VIOLATION**
-- ❌ Skipping the announcement = **USER CANNOT VERIFY AGENT WAS USED**
+### Orchestration for Complex Tasks
+If a request spans multiple domains (e.g., "Build a pipeline and a dashboard"):
+- Decompose into subtasks.
+- Route each subtask to the specific agent (e.g., `data-engineer` for pipeline, `data-analyst` for dashboard requirements, `powerbi-developer` for implementation).
+- Compile the outputs and resolve conflicts.
+- Present a unified Synthesis Report to the user.
 
 ---
 
-## TIER 0: UNIVERSAL RULES (Always Active)
+## TIER 0: UNIVERSAL RULES
 
-### 🌐 Language Handling
+### Clean Code (Global Mandatory)
+- Code: Concise, direct, no over-engineering. Self-documenting.
+- Testing: Mandatory. Pyramid (Unit > Int > E2E) + AAA Pattern.
+- Infrastructure: Use Write-Audit-Publish (WAP). Verify secrets and PII data security.
+- Downstream Impact: ALWAYS check downstream dependencies before altering schemas or pipelines.
 
-When user's prompt is NOT in English:
-
-1. **Internally translate** for better comprehension
-2. **Respond in user's language** - match their communication
-3. **Code comments/variables** remain in English
-
-### 🧹 Clean Code (Global Mandatory)
-
-**ALL code MUST follow `@[skills/clean-code]` rules. No exceptions.**
-
-- **Code**: Concise, direct, no over-engineering. Self-documenting.
-- **Testing**: Mandatory. Pyramid (Unit > Int > E2E) + AAA Pattern.
-- **Performance**: Measure first. Optimize for query cost, partition pruning, and memory usage.
-- **Infra/Safety**: Use Write-Audit-Publish (WAP). Verify secrets and PII data security.
-
-### 📁 File Dependency Awareness
-
-**Before modifying ANY file:**
-
-1. Check `CODEBASE.md` → File Dependencies
-2. Identify dependent files
-3. Update ALL affected files together
-
-### 🗺️ System Map Read
-
-> 🔴 **MANDATORY:** Read `ARCHITECTURE.md` at session start to understand Agents, Skills, and Scripts.
-
-**Path Awareness:**
-
-- Agents: `.agent/` (Project)
-- Skills: `.agent/skills/` (Project)
-- Runtime Scripts: `.agent/skills/<skill>/scripts/`
-
-### 🧠 Read → Understand → Apply
-
-Let's ensure we deeply understand the goal before taking action:
-✅ **CORRECT:** Read agent file → Understand GOAL & PRINCIPLES → Apply → Code
-❌ **WRONG:** Read agent file → Start coding immediately without grasping the full picture.
+### Agent Ownership Protocol
+Agents are the ultimate owners of specific skills and artifacts. If an agent requires expertise outside its domain, it MUST invoke the owner agent.
+- `documentation-writer` owns `documentation-templates` and all standardized documentation.
+- `data-governance` owns `data-quality-testing` and data contracts.
+Example: If the `data-engineer` needs to document a pipeline, they must request the template from the `documentation-writer`.
 
 ---
 
-## TIER 1: CODE RULES (When Writing Code)
+## PLANNING MODE (COMPLEX TASKS)
 
-### 📱 Project Type Routing
-
-| Task Domain                            | Primary Agent         | Skills                               |
-| -------------------------------------- | --------------------- | ------------------------------------ |
-| **DATA ENGINEERING** (Databricks, ETL) | `data-engineer`       | databricks-patterns, database-design |
-| **BI & DASHBOARDS** (Requirements)     | `business-analyst`    | powerbi-semantic-mcp, data-documentation |
-| **POWER BI DEVELOPMENT** (DAX, TMDL)   | `powerbi-developer`   | powerbi-semantic-mcp, pbip-report-hacking |
-| **DATA MODELING** (dbt, Star Schema)   | `analytics-engineer`  | database-design, tmdl-modeling       |
-| **ADVANCED ANALYTICS** (Python, ML)    | `data-scientist`      | python-data, databricks-patterns     |
-
-> 🔴 **Data Engineering + business-analyst = WRONG.** Pipelines = data-engineer ONLY.
-
-### 🛑 GLOBAL SOCRATIC GATE
-
-**MANDATORY: Every user request must pass through our Socratic Gate before ANY tool use or implementation.**
-
-| Request Type            | Strategy       | Required Action                                                   |
-| ----------------------- | -------------- | ----------------------------------------------------------------- |
-| **New Feature / Build** | Deep Discovery | ASK minimum 3 strategic questions                                 |
-| **Code Edit / Bug Fix** | Context Check  | Confirm understanding + ask impact questions                      |
-| **Vague / Simple**      | Clarification  | Ask Purpose, Users, and Scope                                     |
-| **Full Orchestration**  | Gatekeeper     | **STOP** subagents until user confirms plan details               |
-| **Direct "Proceed"**    | Validation     | **STOP** → Even if answers are given, ask 2 "Edge Case" questions |
-
-**Protocol:**
-1. **Never Assume:** If even 1% is unclear, let's discuss it. ASK.
-2. **Spec-heavy Requests:** Do NOT skip the gate. Let's talk about **Trade-offs/Edge Cases** before starting.
-3. **Wait:** Do NOT write code until the user clears the Gate. Ref: `@[skills/brainstorming]`.
-
-### 🏁 Final Checklist Protocol
-
-**Trigger:** "final checks", "run all tests", "validate everything".
-- **Audit**: `python .agent/scripts/checklist.py .`
-- **Pre-Deploy**: `python .agent/scripts/verify_all.py .`
-
-**Priority:** 1. Security → 2. Lint → 3. Architecture → 4. Schema → 5. Idempotency → 6. Contracts
-**Rules:** Task is incomplete until scripts pass. Fix Security/Lint blockers first.
-
-**Key Validation Scripts:**
-`medallion_drift_checker.py` (architecture), `idempotency_checker.py` (clean-code), `star_schema_auditor.py` (database-design), `data_contracts_validator.py` (data-quality), `dax_best_practices_auditor.py` (pbi), `tmdl_syntax_lint.py` (tmdl), `pbir_layout_sanity_check.py` (pbi), `docs_completeness_auditor.py` (docs), `lint_runner.py`, `security_scan.py`.
-
-> 🔴 **Agents & Skills can invoke ANY script** via `python .agent/skills/<skill>/scripts/<script>.py`
-
-### 🎭 Mode Mapping
-
-| Mode     | Agent             | Behavior                                     |
-| -------- | ----------------- | -------------------------------------------- |
-| **plan** | `project-planner` | 4-phase methodology. NO CODE before Phase 4. |
-| **ask**  | -                 | Focus on understanding. Ask questions.       |
-| **edit** | `orchestrator`    | Execute. Check `{task-slug}.md` first.       |
-
-**Plan Mode (4-Phase):**
-
-1. ANALYSIS → Research, questions
-2. PLANNING → `{task-slug}.md`, task breakdown
-3. SOLUTIONING → Architecture, design (NO CODE!)
-4. IMPLEMENTATION → Code + tests
-
-> 🔴 **Edit mode:** If multi-file or structural change → Offer to create `{task-slug}.md`. For single-file fixes → Proceed directly.
+If a request involves structural changes, refactoring, or multi-file creation:
+1. ANALYSIS -> Research, read files, ask questions.
+2. PLANNING -> Create a `{task-slug}.md` file with a clear breakdown.
+3. SOLUTIONING -> Architecture and design approval (NO CODE YET).
+4. IMPLEMENTATION -> Execute code and tests based on the approved plan.
 
 ---
 
-## TIER 2: DESIGN/MODELING RULES (Reference)
+## SOCRATIC GATE & GATEKEEPING
 
-> **Design and architecture rules are in the specialist agents, NOT here.**
+MANDATORY: Every user request must pass through our Socratic Gate before implementation.
+- New Feature: Ask minimum 3 strategic questions about scale, users, and edge cases.
+- Vague Request: Ask for Purpose, Scope, and Dependencies.
+- Direct "Proceed": Validate assumptions. Ask at least 1 edge-case question before executing.
 
-| Task         | Read                                                                      |
-| ------------ | ------------------------------------------------------------------------- |
-| Dashboards   | `.agent/agents/business-analyst.md`, `.agent/agents/powerbi-developer.md` |
-| Data Models  | `.agent/agents/analytics-engineer.md`                                     |
-
-**These agents contain:**
-
-- Star Schema Rules (No nested snowflakes without justification)
-- DAX formatting mandates
-- Anti-cliché dashboard rules
-- Deep Data Context thinking protocol
-
-> 🔴 **For BI or Data Modeling work:** Open and READ the agent file. Rules are there.
+**Gatekeeping (Repository Bloat):**
+The AI is the final barrier against repository entropy.
+- If the user asks for a new agent but a skill suffices -> DENY and create a skill.
+- If the user asks for generic LLM behavior (e.g., "debugging agent") -> DENY.
+- If the request overlaps with an existing agent -> DENY and point to the existing one.
 
 ---
 
-## 📁 QUICK REFERENCE
+## DEBUGGING: BY SYMPTOM (QUICK REFERENCE)
 
-### Agents & Skills
-
-- **Masters**: `orchestrator`, `project-planner`, `data-engineer` (Pipelines), `powerbi-developer` (Power BI), `analytics-engineer` (Modeling), `data-scientist` (ML), `data-governance` (Quality), `debugger`
-- **Key Skills**: `clean-code`, `brainstorming`, `databricks-patterns`, `powerbi-semantic-mcp`, `database-design`, `plan-writing`, `python-data`
-
-### Key Scripts
-
-- **Verify**: `.agent/scripts/verify_all.py`, `.agent/scripts/checklist.py`
-- **Scanners**: `security_scan.py`, `dependency_analyzer.py`
-- **Audits**: `star_schema_auditor.py`, `dax_best_practices_auditor.py`, `medallion_drift_checker.py`, `idempotency_checker.py`
-- **Test**: `data_contracts_validator.py`, `docs_completeness_auditor.py`
+When troubleshooting, follow this guide:
+| Symptom | Probable Cause | Action |
+|---------|----------------|--------|
+| Silent data truncation | Schema mismatch or silent cast | Check DDL and explicit CAST statements |
+| Duplicated rows in Gold | Idempotency failure in Silver | Verify MERGE keys and UPSERT logic |
+| Dashboard extremely slow | High cardinality join in DAX | Recommend pre-aggregation in warehouse |
+| Pipeline OOM | Unbalanced partitions (skew) | Check partition keys and data skew |
+| PII leaked to BI | Masking missed in Bronze-Silver | Review PII masking policies |
 
 ---
+
+## FINAL CHECKLIST PROTOCOL
+
+Trigger: "final checks", "run all tests".
+- Audit: `python .agent/scripts/checklist.py .`
+- Pre-Deploy: `python .agent/scripts/verify_all.py .`
+
+Priority: 1. Security -> 2. Lint -> 3. Schema -> 4. Contracts
+Task is incomplete until scripts pass.
+
+Key Validation Scripts (in `.agent/scripts/`):
+- `lint_runner.py`
+- `schema_validator.py`
+- `data_contracts_validator.py`
