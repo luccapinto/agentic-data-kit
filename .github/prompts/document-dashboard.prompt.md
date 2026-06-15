@@ -1,39 +1,30 @@
 ---
-description: Gera automaticamente documentação completa do projeto PBIP em Markdown.
+description: Auto-generate complete Markdown documentation for a PBIP project.
 name: document-dashboard
 ---
 
-**Contexto:** {{selection}}
+**Context:** ${selection}
 
-# 📚 Workflow: /document-dashboard
+# Workflow: /document-dashboard
 
-**Comando:** `/document-dashboard [caminho/do/projeto.pbip] [--output caminho/saida.md]`
+**Usage:** `/document-dashboard [path/to/project.pbip] [--output path/to/doc.md]`
 
-Elimina a necessidade manual de se manter catálogos de dados e metadados sobre modelos do Power BI, orquestrando um parse massivo no modelo semântico e visual gerando output em formato Markdown puro.
+Builds a data catalog for a Power BI model by parsing the semantic model and report, removing
+the need to hand-maintain dashboard documentation. Default output: `DASHBOARD_DOC.md` at the
+project root.
 
-Default output file: `DASHBOARD_DOC.md` na raiz do projeto analisado.
+## Steps
 
-## 🔄 Passos do Fluxo
-
-### 1. Orientação e Inventário
-Utilizando o skill `pbi-pbip-structure`, levanta dados quantitativos base (Número de tabelas, medidas, relações, páginas e gráficos).
-
-### 2. Parsers de Fonte
-O agente precisa coletar metadados ativamente de duas frentes do PBIP:
-1. **Dados do Semantic Model (`.tmdl`):** Extrai nome, data types, `description`, `expressions` e a topologia de ligações na pasta `relationships.tmdl`.
-2. **Dados do Report (`.json`):** Vasculha os `pages/*/visuals/*/visual.json`. Procura pelas chaves de identificação (tipo de visual), titulo (se existente nas propriedades) e os campos/medidas utilizados (olhando para a array de `projections`).
-
-### 3. Geração Documental
-Utiliza a skill-mãe `pbi-dashboard-documentation` para compilar todo esse dado de parser em um markdown fluído com as sessões essenciais de uma governança enxuta.
-A documentação final deve conter pelo menos:
-1. Resumo e Visão Geral.
-2. Data Dictionary de tabelas referenciadas.
-3. Listagem de Medidas formatadas com DAX code-block.
-4. Mapa de Referência Visual → Medida → Coluna por Página.
-5. Diagrama Relacional (Listagem simples com Tabelas, Direção e Cardinalidade).
-
-### 4. Resumo e Entrega
-Após salvar o arquivo `DASHBOARD_DOC.md`, informe na conversa:
-* Local e sucesso na salvaguarda do arquivo.
-* A porcentagem geral (cobertura) de documentação (Tabelas e Medidas contendo descrições vs O Total).
-* **Se a cobertura for inferior a 80%:** Aconselhe rodar o workflow `/validate-pbi` para evidenciar os gargalos onde o dicionário estagnou ou ofereça ajuda para documentar (adicionar DAX comment / desc) via TMDL.
+1. **Inventory.** Use `pbi-semantic-layer-tmdl` to confirm the PBIP project and count tables,
+   measures, relationships, pages, and visuals.
+2. **Parse both layers.**
+   - **Semantic model (`.tmdl`):** names, data types, `description`, DAX `expressions`, and
+     relationships from `relationships.tmdl`.
+   - **Report (`.json`):** scan `pages/*/visuals/*/visual.json` for visual type, title, and the
+     fields/measures used (`projections`).
+3. **Generate.** Use the `pbi-dashboard-documentation` skill to compile a Markdown doc with at
+   least: overview, data dictionary, measure inventory (with DAX blocks), visual→measure→column
+   map per page, and a relationships table.
+4. **Deliver.** Save `DASHBOARD_DOC.md`, then report its location and the documentation coverage
+   (% of tables and measures with descriptions). If coverage < 80%, suggest running
+   `/validate-pbi` or offer to fill the gaps via TMDL.

@@ -4,110 +4,51 @@
 trigger: always_on
 ---
 
-> This file defines the global behavior and orchestration protocols for the AI in this workspace.
+# Agentic Data Kit — Operating Rules
 
----
+Global behavior for AI assistants working in this repository. Keep it short on purpose:
+every token here competes for the model's attention, so this file holds only high-signal,
+data-specific rules — not things a capable model already does well.
 
-## CRITICAL: AGENT & SKILL PROTOCOL
+## Language
 
-> MANDATORY: We work as a team. You MUST read the appropriate agent file and its skills BEFORE performing any implementation.
+- Write all code, identifiers, and artifacts in English.
+- **Respond to the user in the language they write in** (Portuguese in, Portuguese out).
 
-### 1. Modular Skill Loading Protocol
-Agent activated -> Check frontmatter "skills:" -> Read SKILL.md -> Read specific sections.
-- Selective Reading: DO NOT read ALL files in a skill folder. Read SKILL.md first.
-- Rule Priority: P0 (Global) > P1 (Agent .md) > P2 (SKILL.md).
+## How to work
 
-### 2. Enforcement Protocol
-- Forbidden: Never skip reading agent rules or skill instructions. "Read -> Understand -> Apply" is mandatory.
+1. **Route to a specialist.** Pick the agent whose domain fits the request and briefly say
+   which one you're applying (e.g. "Applying @data-engineer"). For cross-domain requests,
+   split the work across agents and merge the results.
+2. **Load skills on demand.** When an agent lists `skills:`, read that `SKILL.md` only when
+   the task needs it. Don't preload every file in a skill folder — open referenced files
+   when you actually need them.
+3. **Clarify only when genuinely blocked.** If the request is ambiguous enough that you'd
+   likely build the wrong thing, ask. Otherwise state your assumptions and proceed.
 
----
+## Data engineering principles (always apply)
 
-## MULTI-DOMAIN ROUTING & ORCHESTRATION (ALWAYS ACTIVE)
+- **Idempotency:** Pipelines must be safely re-runnable. Prefer `MERGE`/`OVERWRITE` over
+  blind `INSERT`. Re-running a window yields the same result.
+- **Write-Audit-Publish:** Write to staging → run quality checks → publish only if they pass.
+- **Check downstream impact** before changing any schema, contract, or shared model.
+- **Never hardcode secrets or PII.** Use secret managers; mask PII at the Silver layer.
 
-Before responding to ANY request, analyze the scope and select the best agent(s).
+## Data debugging quick reference
 
-### Auto-Selection Protocol
-1. Analyze (Silent): Detect domains (Data Engineering, BI, Data Science, Governance, etc.).
-2. Select Agent(s): Choose the appropriate specialist(s).
-3. Announce: State exactly which expertise is being applied.
-4. Execute: Generate response using the selected agent's rules.
+| Symptom | Likely cause | First check |
+|---|---|---|
+| Silent row drops | Schema/type mismatch or silent cast | DDL and explicit `CAST` |
+| Duplicates in Gold | Non-idempotent Silver | `MERGE` keys / upsert logic |
+| Slow dashboard | High-cardinality join in DAX | Pre-aggregate upstream |
+| Pipeline OOM | Partition skew | Partition keys / data skew |
+| PII in BI | Masking missed Bronze→Silver | PII masking policies |
 
-### Orchestration for Complex Tasks
-If a request spans multiple domains (e.g., "Build a pipeline and a dashboard"):
-- Decompose into subtasks.
-- Route each subtask to the specific agent (e.g., `data-engineer` for pipeline, `data-analyst` for dashboard requirements, `powerbi-developer` for implementation).
-- Compile the outputs and resolve conflicts.
-- Present a unified Synthesis Report to the user.
+## Optional validation helpers
 
----
-
-## TIER 0: UNIVERSAL RULES
-
-### Clean Code (Global Mandatory)
-- Code: Concise, direct, no over-engineering. Self-documenting.
-- Testing: Mandatory. Pyramid (Unit > Int > E2E) + AAA Pattern.
-- Infrastructure: Use Write-Audit-Publish (WAP). Verify secrets and PII data security.
-- Downstream Impact: ALWAYS check downstream dependencies before altering schemas or pipelines.
-
-### Agent Ownership Protocol
-Agents are the ultimate owners of specific skills and artifacts. If an agent requires expertise outside its domain, it MUST invoke the owner agent.
-- `documentation-writer` owns `documentation-templates` and all standardized documentation.
-- `data-governance` owns `data-quality-testing` and data contracts.
-Example: If the `data-engineer` needs to document a pipeline, they must request the template from the `documentation-writer`.
-
----
-
-## PLANNING MODE (COMPLEX TASKS)
-
-If a request involves structural changes, refactoring, or multi-file creation:
-1. ANALYSIS -> Research, read files, ask questions.
-2. PLANNING -> Create a `{task-slug}.md` file with a clear breakdown.
-3. SOLUTIONING -> Architecture and design approval (NO CODE YET).
-4. IMPLEMENTATION -> Execute code and tests based on the approved plan.
-
----
-
-## SOCRATIC GATE & GATEKEEPING
-
-MANDATORY: Every user request must pass through our Socratic Gate before implementation.
-- New Feature: Ask minimum 3 strategic questions about scale, users, and edge cases.
-- Vague Request: Ask for Purpose, Scope, and Dependencies.
-- Direct "Proceed": Validate assumptions. Ask at least 1 edge-case question before executing.
-
-**Gatekeeping (Repository Bloat):**
-The AI is the final barrier against repository entropy.
-- If the user asks for a new agent but a skill suffices -> DENY and create a skill.
-- If the user asks for generic LLM behavior (e.g., "debugging agent") -> DENY.
-- If the request overlaps with an existing agent -> DENY and point to the existing one.
-
----
-
-## DEBUGGING: BY SYMPTOM (QUICK REFERENCE)
-
-When troubleshooting, follow this guide:
-| Symptom | Probable Cause | Action |
-|---------|----------------|--------|
-| Silent data truncation | Schema mismatch or silent cast | Check DDL and explicit CAST statements |
-| Duplicated rows in Gold | Idempotency failure in Silver | Verify MERGE keys and UPSERT logic |
-| Dashboard extremely slow | High cardinality join in DAX | Recommend pre-aggregation in warehouse |
-| Pipeline OOM | Unbalanced partitions (skew) | Check partition keys and data skew |
-| PII leaked to BI | Masking missed in Bronze-Silver | Review PII masking policies |
-
----
-
-## FINAL CHECKLIST PROTOCOL
-
-Trigger: "final checks", "run all tests".
-- Audit: `python .agent/scripts/checklist.py .`
-- Pre-Deploy: `python .agent/scripts/verify_all.py .`
-
-Priority: 1. Security -> 2. Lint -> 3. Schema -> 4. Contracts
-Task is incomplete until scripts pass.
-
-Key Validation Scripts (in `.agent/scripts/`):
-- `lint_runner.py`
-- `schema_validator.py`
-- `data_contracts_validator.py`
+`.agent/scripts/` holds lint/schema/contract checkers you can run during development
+(`python .agent/scripts/checklist.py .`) or in CI (`verify_all.py`). They are conveniences,
+not gates — use them when a project's stack matches.
 
 ---
 
@@ -116,6 +57,6 @@ Key Validation Scripts (in `.agent/scripts/`):
 The following slash commands are available. When triggered, load the referenced
 workflow file and follow its instructions step by step.
 
-- **/document-dashboard**: Gera automaticamente documentação completa do projeto PBIP em Markdown. — Load context from `.claude/workflows/document-dashboard.md` and follow its steps.
-- **/plan**: Create project plan using project-planner agent. No code writing - only plan file generation. — Load context from `.claude/workflows/plan.md` and follow its steps.
-- **/validate-pbi**: Executa validação completa de qualidade de um projeto PBIP. — Load context from `.claude/workflows/validate-pbi.md` and follow its steps.
+- **/document-dashboard**: Auto-generate complete Markdown documentation for a PBIP project. — Load context from `.claude/workflows/document-dashboard.md` and follow its steps.
+- **/plan**: Draft an implementation plan for a data task — a plan file only, no code. — Load context from `.claude/workflows/plan.md` and follow its steps.
+- **/validate-pbi**: Run a full quality check on a PBIP project (BPA via Tabular Editor 2 + structural review). — Load context from `.claude/workflows/validate-pbi.md` and follow its steps.

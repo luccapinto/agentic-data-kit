@@ -1,61 +1,46 @@
 ---
 name: validate-pbi
-description: Executa validação completa de qualidade de um projeto PBIP.
+description: Run a full quality check on a PBIP project (BPA via Tabular Editor 2 + structural review).
 ---
 
-# 🔎 Workflow: /validate-pbi
+# Workflow: /validate-pbi
 
-**Comando:** `/validate-pbi [caminho/do/projeto.pbip]`
+**Usage:** `/validate-pbi [path/to/project.pbip]`
 
-O workflow que atua como checkpoint primário de sanidade de um projeto PBIP. Responde à pergunta "Meu modelo está saudável?" executando todas as verificações de qualidade do modelo semântico. 
+Answers "is my model healthy?" by running the quality checks on a PBIP semantic model. If no
+path is given, use the project in the current folder; if there are several, ask which one.
 
-Se o caminho não for especificado, utiliza o projeto na pasta atual. Se houver mais de um, o agente pergunta.
+## Steps
 
-## 🔄 Passos do Fluxo
-
-### 1. Orientação Inicial
-Usa `pbi-semantic-layer-tmdl` para assegurar que estamos num diretório de projeto PBIP válido. Em caso negativo, informa o erro e interrompe o fluxo.
-
-### 2. Validação Offline (TMDL)
-O workflow executa a validação por parsing de texto através dos arquivos TMDL (utilizando a skill `pbi-quality-rules`).
-*Nota: Recomenda-se que o Desktop esteja fechado durante a análise para garantir que os arquivos em disco reflitam o estado mais recente.*
-
-### 3. Quality Rules Pipeline
-Executa o playbook nativo `pbi-quality-rules` (`.agent/skills/pbi-quality-rules/pbi-quality-rules.yaml`) no projeto. Anota todas as ocorrências de classificação: Warning e Error.
-
-### 4. Avaliação Adicional de Estrutura
-- **Cobertura de Docs:** Calcula métricas simples (Quantidade de Tabelas/Medidas vs Quantidade de Descriptions preenchidos).
-- **Relações e Tipologia:** Identifica "islands" (Tabelas sem relações), direções Bidirecionais desaconselhadas e tipos de junções não convencionais (many-to-many).
-
-### 5. Apresentação (Output do Agente)
-
-Gera um relatório markdown curto:
+1. **Locate the project.** Use `pbi-semantic-layer-tmdl` to confirm a valid PBIP project.
+   If none is found, report it and stop.
+2. **Run the BPA.** Use `pbi-quality-rules` to run the Best Practice Analyzer (Tabular Editor 2
+   CLI, or the TMDL-parsing fallback). Recommend the user close Desktop first so disk is current.
+   Record every `error` and `warning`.
+3. **Structural review.**
+   - **Doc coverage:** tables/measures with a `description` vs. total.
+   - **Relationships:** flag island tables (no relationships), bidirectional filters, and
+     many-to-many joins.
+4. **Report** — a short Markdown summary:
 
 ```markdown
-# Relatório de Validação — [NomeProjeto]
-**Data:** [Data de Hoje] | **Modo:** [Arquivos TMDL]
+# Validation Report — <Project>
+**Date:** <today> | **Source:** TMDL files
 
-## Resumo
-| Categoria | Erros | Warnings |
-|-----------|-------|----------|
-| Nomeação  | 0     | 3        |
-| DAX       | 1     | 2        |
-| Modelo    | 0     | 1        |
-| Docs      | 0     | 8        |
+## Summary
+| Category | Errors | Warnings |
+|----------|--------|----------|
+| Naming   | 0 | 3 |
+| DAX      | 1 | 2 |
+| Model    | 0 | 1 |
+| Docs     | 0 | 8 |
 
-## Erros (corrigir antes de publicar)
-- [DAX_001] Medida "Turnover %" — expressão vazia
+## Errors (fix before publishing)
+- [DAX_EMPTY_EXPRESSION] Measure "Turnover %" — empty expression
 
-## Warnings
-- [NAMING_004] 3 medidas sem displayFolder: "Headcount", "Ativos"
-
-## Cobertura de Documentação
-- Tabelas: 5/7 com descrição (71%)
-- Medidas: 12/20 com descrição (60%)
-
-## Relações
-- 1 relação bidirecional encontrada: Fatos ↔ DimTempo — revisar se necessário
+## Doc coverage
+- Tables: 5/7 described (71%) · Measures: 12/20 described (60%)
 ```
 
-### 6. Sugestão de Reparos
-Após exibir o relatório, o agente automaticamente sugere arrumar todos os **Errors**. Ele questiona se o usuário quer arrumar os **Warnings**, ou se prefere atuar nas Descriptions que faltam.
+5. **Offer fixes.** Auto-offer to fix all **errors**; ask whether to address **warnings** and
+   missing descriptions.
