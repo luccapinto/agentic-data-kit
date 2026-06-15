@@ -15,7 +15,7 @@ domain-specific context that matters, and nothing the model already does well.**
 instructions keep the model's attention on what's important, which is exactly what makes agents
 reliable.
 
-The **Agentic Data Kit** is a curated library of **5 focused AI agents**, **7 on-demand skills**,
+The **Agentic Data Kit** is a curated library of **4 focused AI agents**, **5 on-demand skills**,
 and **3 workflows** for Data Engineering, Analytics, and Business Intelligence. Drop it in, and
 your assistant can build pipelines, design star schemas, edit Power BI as code, run quality
 checks, and document models — without you re-explaining the basics.
@@ -50,8 +50,10 @@ AI:  Applying @powerbi-developer → writes DAX, edits TMDL, runs the BPA
 | `data-engineer` | ETL/ELT pipelines, Medallion architecture, idempotency, WAP |
 | `analytics-engineer` | Star schemas, dbt models, warehouse architecture & performance |
 | `data-scientist` | Analysis, metrics, dashboards & semantic review — through to ML, statistics, forecasting, A/B testing |
-| `data-governance` | Data quality, contracts, PII masking, LGPD/GDPR |
 | `powerbi-developer` | Power BI as code — TMDL semantic model **and** PBIR reports, validated with Tabular Editor 2 |
+
+Governance (PII masking, WAP, contracts, downstream-impact) is cross-cutting — it lives in the
+always-on workspace rules, not a separate agent.
 
 ### 🧩 Skills — Deep, On-Demand Expertise
 
@@ -59,8 +61,9 @@ Skills **activate themselves** from their description (progressive disclosure) �
 required, no need to name them. Ask "document this" and the docs skill fires on its own.
 
 - **Power BI:** `pbi-semantic-layer-tmdl`, `pbi-report-layer-pbir`, `pbi-quality-rules` (real
-  Best Practice Analyzer via the free Tabular Editor 2), `pbi-dashboard-documentation`
-- **Quality & docs:** `data-quality-testing`, `documentation-templates`
+  Best Practice Analyzer via the free Tabular Editor 2)
+- **Docs:** `documentation-templates` — runbooks, data dictionaries, metric defs, ADRs, and the
+  Power BI dashboard catalog, each as a separate template file
 - **Governance:** `creating-agents-and-skills` — guides you to add an agent/skill only when it
   helps, with quality, and keeps every installed tool folder in sync
 

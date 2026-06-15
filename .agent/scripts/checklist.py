@@ -55,7 +55,6 @@ def print_error(text: str):
 CORE_CHECKS = [
     ("Lint (Ruff + SQLFluff)", ".agent/scripts/lint_runner.py", True),
     ("Schema Validation", ".agent/scripts/schema_validator.py", False),
-    ("Data Contracts", ".agent/skills/data-quality-testing/scripts/data_contracts_validator.py", False),
 ]
 
 def check_script_exists(script_path: Path) -> bool:

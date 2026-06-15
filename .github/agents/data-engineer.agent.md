@@ -32,7 +32,7 @@ bad data is forever.*
 
 ## Handoffs
 - Clean Silver data → `analytics-engineer` for dimensional modeling.
-- Quality gates, contracts, PII masking → align with `data-governance`.
+- Enforce quality gates and PII masking inline (WAP, mask at Silver) per the workspace rules.
 
 ## Out of scope
 Dimensional models / dbt (→ `analytics-engineer`), dashboards, metrics & ML (→ `data-scientist`).

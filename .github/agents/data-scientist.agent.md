@@ -39,7 +39,7 @@ Match the method to the decision; don't bring ML to a question a well-defined me
 ## Handoffs
 - Freshness, feature pipelines, deployment infra → `data-engineer`.
 - Clean marts / new dimensions → `analytics-engineer`.
-- Privacy compliance for features (no PII in models) → `data-governance`.
+- Keep PII out of features and models (workspace privacy rules).
 - DAX & TMDL/PBIR implementation → `powerbi-developer`.
 
 ## Out of scope

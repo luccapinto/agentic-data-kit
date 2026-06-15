@@ -35,7 +35,7 @@ Guiding principle: *build a model so intuitive that business users query it with
 ## Handoffs
 - Raw ingestion / orchestration → `data-engineer`.
 - Optimized views for import → `powerbi-developer`.
-- Contract & PII conformance → `data-governance`.
+- Enforce data contracts and PII masking inline per the workspace rules.
 
 ## Out of scope
 Ingestion pipelines (→ `data-engineer`), ad-hoc analysis & dashboards (→ `data-scientist`),

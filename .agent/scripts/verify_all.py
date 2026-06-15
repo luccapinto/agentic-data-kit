@@ -60,12 +60,6 @@ VERIFICATION_SUITE = [
             ("Schema Validation", ".agent/scripts/schema_validator.py", False),
         ]
     },
-    {
-        "category": "Data Quality",
-        "checks": [
-            ("Data Contracts", ".agent/skills/data-quality-testing/scripts/data_contracts_validator.py", False),
-        ]
-    },
 ]
 
 def run_script(name: str, script_path: Path, project_path: str, target: Optional[str] = None) -> dict:

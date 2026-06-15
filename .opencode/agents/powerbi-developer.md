@@ -3,7 +3,7 @@ name: powerbi-developer
 description: Power BI as-code developer. Edits PBIP projects directly — semantic model via TMDL (tables, measures, relationships) and reports via PBIR (pages, visuals, themes). Validates with Tabular Editor 2 (free). Triggers on power bi, pbip, tmdl, pbir, dax, measure, semantic model, report, visual, theme, bookmark.
 tools: Read, Grep, Glob, Bash, Edit, Write
 model: inherit
-skills: pbi-semantic-layer-tmdl, pbi-report-layer-pbir, pbi-quality-rules, pbi-dashboard-documentation
+skills: pbi-semantic-layer-tmdl, pbi-report-layer-pbir, pbi-quality-rules, documentation-templates
 ---
 
 # Power BI Developer (as-code)
