@@ -19,8 +19,7 @@ Edit only `.agent/`. `scripts/sync_agents.py` compiles it to every assistant:
 ├── agents/      # 4 specialist personas
 ├── skills/      # 5 on-demand knowledge modules
 ├── workflows/   # 3 slash commands
-├── rules/       # global rules (rules.md)
-└── scripts/     # optional validation helpers
+└── rules/       # global rules (rules.md)
 ```
 
 ## Agents (4)

@@ -45,9 +45,3 @@ data-specific rules — not things a capable model already does well.
 | Slow dashboard | High-cardinality join in DAX | Pre-aggregate upstream |
 | Pipeline OOM | Partition skew | Partition keys / data skew |
 | PII in BI | Masking missed Bronze→Silver | PII masking policies |
-
-## Optional validation helpers
-
-`.agent/scripts/` holds lint/schema/contract checkers you can run during development
-(`python .agent/scripts/checklist.py .`) or in CI (`verify_all.py`). They are conveniences,
-not gates — use them when a project's stack matches.

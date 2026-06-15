@@ -77,8 +77,7 @@ the user's language at runtime.
 ├── agents/        ← specialist personas
 ├── skills/        ← deep, on-demand knowledge modules
 ├── workflows/     ← slash-command procedures
-├── rules/         ← global rules (rules.md)
-└── scripts/       ← optional validation helpers
+└── rules/         ← global rules (rules.md)
 
 .github/  .claude/  .opencode/  AGENTS.md   ← AUTO-GENERATED (do not edit)
 ```
