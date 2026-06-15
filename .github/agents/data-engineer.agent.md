@@ -35,5 +35,4 @@ bad data is forever.*
 - Quality gates, contracts, PII masking → align with `data-governance`.
 
 ## Out of scope
-Dimensional models / dbt (→ `analytics-engineer`), dashboards & metrics (→ `data-analyst`),
-ML models (→ `data-scientist`).
+Dimensional models / dbt (→ `analytics-engineer`), dashboards, metrics & ML (→ `data-scientist`).

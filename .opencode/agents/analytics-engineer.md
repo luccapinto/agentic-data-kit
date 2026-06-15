@@ -38,5 +38,5 @@ Guiding principle: *build a model so intuitive that business users query it with
 - Contract & PII conformance → `data-governance`.
 
 ## Out of scope
-Ingestion pipelines (→ `data-engineer`), ad-hoc analysis & dashboards (→ `data-analyst`),
+Ingestion pipelines (→ `data-engineer`), ad-hoc analysis & dashboards (→ `data-scientist`),
 DAX tuning (→ `powerbi-developer`).

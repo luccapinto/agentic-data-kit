@@ -23,14 +23,13 @@ Edit only `.agent/`. `scripts/sync_agents.py` compiles it to every assistant:
 └── scripts/     # optional validation helpers
 ```
 
-## Agents (6)
+## Agents (5)
 
 | Agent | Focus | Skills |
 |---|---|---|
 | `data-engineer` | ETL, pipelines, Medallion | — |
 | `analytics-engineer` | dbt, dimensional modeling | data-quality-testing |
-| `data-analyst` | Metrics, dashboards, semantic review | data-quality-testing |
-| `data-scientist` | ML, statistics, A/B testing | — |
+| `data-scientist` | Analysis, metrics, dashboards, ML, statistics, A/B testing | data-quality-testing |
 | `data-governance` | Quality, contracts, LGPD/GDPR | data-quality-testing |
 | `powerbi-developer` | Power BI as code (TMDL + PBIR) | pbi-semantic-layer-tmdl, pbi-report-layer-pbir, pbi-quality-rules, pbi-dashboard-documentation |
 

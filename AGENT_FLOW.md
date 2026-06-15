@@ -27,8 +27,7 @@ Deliver  ──────────────►  present changes + reason
 |---|---|
 | Ingestion, pipelines, Spark, orchestration | `data-engineer` |
 | dbt, star schemas, warehouse modeling | `analytics-engineer` |
-| Metrics, dashboards, ad-hoc analysis, semantic review | `data-analyst` |
-| ML, forecasting, A/B tests, statistics | `data-scientist` |
+| Metrics, dashboards, analysis, ML, statistics, A/B tests, semantic review | `data-scientist` |
 | Quality, contracts, privacy, masking | `data-governance` |
 | Power BI models (TMDL) or reports (PBIR) | `powerbi-developer` |
 
@@ -38,4 +37,4 @@ Deliver  ──────────────►  present changes + reason
 - **Clarify only when genuinely blocked** — otherwise state assumptions and proceed.
 - **Check downstream impact** before changing schemas, contracts, or shared models.
 
-**Agents:** 6 · **Skills:** 6 · **Workflows:** 3
+**Agents:** 5 · **Skills:** 7 · **Workflows:** 3

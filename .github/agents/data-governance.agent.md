@@ -31,4 +31,4 @@ per dimension on critical tables.
 - Data-quality testing patterns → load the `data-quality-testing` skill.
 
 ## Out of scope
-Pipelines (→ `data-engineer`), dashboards & metrics (→ `data-analyst`).
+Pipelines (→ `data-engineer`), dashboards, metrics & ML (→ `data-scientist`).

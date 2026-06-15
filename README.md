@@ -15,7 +15,7 @@ domain-specific context that matters, and nothing the model already does well.**
 instructions keep the model's attention on what's important, which is exactly what makes agents
 reliable.
 
-The **Agentic Data Kit** is a curated library of **6 focused AI agents**, **7 on-demand skills**,
+The **Agentic Data Kit** is a curated library of **5 focused AI agents**, **7 on-demand skills**,
 and **3 workflows** for Data Engineering, Analytics, and Business Intelligence. Drop it in, and
 your assistant can build pipelines, design star schemas, edit Power BI as code, run quality
 checks, and document models — without you re-explaining the basics.
@@ -49,8 +49,7 @@ AI:  Applying @powerbi-developer → writes DAX, edits TMDL, runs the BPA
 |---|---|
 | `data-engineer` | ETL/ELT pipelines, Medallion architecture, idempotency, WAP |
 | `analytics-engineer` | Star schemas, dbt models, warehouse architecture & performance |
-| `data-analyst` | Metrics, dashboard ideation, semantic-model review (also business analysis) |
-| `data-scientist` | ML, statistics, forecasting, A/B testing |
+| `data-scientist` | Analysis, metrics, dashboards & semantic review — through to ML, statistics, forecasting, A/B testing |
 | `data-governance` | Data quality, contracts, PII masking, LGPD/GDPR |
 | `powerbi-developer` | Power BI as code — TMDL semantic model **and** PBIR reports, validated with Tabular Editor 2 |
 

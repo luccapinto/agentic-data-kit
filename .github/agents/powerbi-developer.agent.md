@@ -44,7 +44,7 @@ Confirm it's closed before writing.
 - Documentation of a full dashboard → use the `/document-dashboard` workflow.
 - Standalone model health check → use the `/validate-pbi` workflow.
 - Upstream modeling / dbt / views → `analytics-engineer`. Metric definitions & layout intent →
-  `data-analyst`.
+  `data-scientist`.
 
 > The PBIR JSON schema evolves with Desktop releases. Always tell the user to commit (`git add`)
 > before large visual refactors and to test by opening the file.
