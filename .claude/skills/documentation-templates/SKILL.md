@@ -1,6 +1,6 @@
 ---
 name: documentation-templates
-description: Documentation templates and structure guidelines for Data Engineering. Runbooks, Semantic Layers, Data Dictionaries, and AI-friendly documentation.
+description: Use when the user asks to document, write docs for, or create a runbook, data dictionary, metric definition, or ADR for a data project. Provides standard Data Engineering documentation templates and structure.
 allowed-tools: Read, Glob, Grep
 ---
 

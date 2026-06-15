@@ -20,10 +20,14 @@ data-specific rules — not things a capable model already does well.
 1. **Route to a specialist.** Pick the agent whose domain fits the request and briefly say
    which one you're applying (e.g. "Applying @data-engineer"). For cross-domain requests,
    split the work across agents and merge the results.
-2. **Load skills on demand.** When an agent lists `skills:`, read that `SKILL.md` only when
-   the task needs it. Don't preload every file in a skill folder — open referenced files
-   when you actually need them.
-3. **Clarify only when genuinely blocked.** If the request is ambiguous enough that you'd
+2. **Skills activate themselves.** Every skill declares when it applies in its `description`.
+   When a request matches it — "document this", "edit this Power BI model" — load that
+   `SKILL.md` on demand, **with or without an agent involved**. Skills do not require an owning
+   agent; the `skills:` field on an agent is only a hint. Don't preload every file in a folder.
+3. **Creating or changing an agent/skill/workflow?** Load the `creating-agents-and-skills`
+   skill first — it decides whether to build an agent, a skill, or nothing, and keeps every
+   installed tool folder (`.agent`, `.claude`, `.github`, `.opencode`) in sync.
+4. **Clarify only when genuinely blocked.** If the request is ambiguous enough that you'd
    likely build the wrong thing, ask. Otherwise state your assumptions and proceed.
 
 ## Data engineering principles (always apply)

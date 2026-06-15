@@ -17,7 +17,7 @@ Edit only `.agent/`. `scripts/sync_agents.py` compiles it to every assistant:
 ```
 .agent/
 ├── agents/      # 6 specialist personas
-├── skills/      # 6 on-demand knowledge modules
+├── skills/      # 7 on-demand knowledge modules
 ├── workflows/   # 3 slash commands
 ├── rules/       # global rules (rules.md)
 └── scripts/     # optional validation helpers
@@ -34,10 +34,13 @@ Edit only `.agent/`. `scripts/sync_agents.py` compiles it to every assistant:
 | `data-governance` | Quality, contracts, LGPD/GDPR | data-quality-testing |
 | `powerbi-developer` | Power BI as code (TMDL + PBIR) | pbi-semantic-layer-tmdl, pbi-report-layer-pbir, pbi-quality-rules, pbi-dashboard-documentation |
 
-## Skills (6)
+## Skills (7)
+
+Skills self-activate by their `description` — no agent required. They load on demand.
 
 | Skill | Description |
 |---|---|
+| `creating-agents-and-skills` | Governance gate for adding agents/skills/workflows + multi-folder sync |
 | `data-quality-testing` | dbt tests, Great Expectations, contracts, WAP |
 | `documentation-templates` | Runbooks, data dictionaries, ADRs |
 | `pbi-semantic-layer-tmdl` | Author TMDL semantic models |
