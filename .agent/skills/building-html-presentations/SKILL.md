@@ -1,6 +1,6 @@
 ---
 name: building-html-presentations
-description: Use when the user wants to build a presentation, deck, slides, pitch, readout, or interactive report from data work — exploratory analysis, dashboards, business plans, proposals. Covers three as-code formats (reveal.js deck, interactive one-page site, Markdown→PDF via Marp), how to choose between them, and ready-to-edit starters. Default engine is reveal.js.
+description: Use when the user wants to build a presentation, deck, slides, pitch, readout, or interactive report from data work — exploratory analysis, dashboards, business plans, proposals. Covers as-code HTML formats (reveal.js deck, flexible scrollable deck, interactive site, consulting-style PDF, Marp) plus a chart cookbook, how to choose between them, and ready-to-edit starters. Default engine is reveal.js. For native editable PowerPoint use the generating-pptx skill.
 ---
 
 # Skill: building-html-presentations
@@ -18,6 +18,7 @@ with `applying-visual-identity` to make the output on-brand.
 | **Interactive site** | Self-serve exploration; one long scrolling page with anchors | single static HTML page (`interactive-site.html`) | HTML |
 | **Designed report PDF** | Polished consulting-style document (action titles, exhibits) | HTML print template (`report-pdf.html`) | PDF (print) |
 | **Quick handout PDF/PPTX** | Plain Markdown deliverable, no custom design | **Marp** (Markdown → PDF/PPTX) | PDF, PPTX |
+| **Editable PowerPoint** | The deliverable must be a native, editable `.pptx` | → use the `generating-pptx` skill (python-pptx) | PPTX |
 
 Default to **reveal.js**: most mature, pure HTML/CSS (easy theming from `DESIGN.md`), and it
 exports to PDF — so one source covers deck + site + print. Reach for **Marp** only when the
@@ -69,14 +70,23 @@ don't default to it.
   print-first A4, light theme, page header/footer chrome, **full-sentence action titles**, numbered
   **Exhibits** with source lines, an executive summary with numbered key findings + a takeaways box.
   Export via Chrome Print → Save as PDF (A4, margins none, background graphics on).
+- `charts-reference.html` — a **chart cookbook**: a live gallery of ~18 chart patterns (ECharts +
+  CSS-only) — line, area, multi-line, combo, bar, grouped, stacked, horizontal, scatter, bubble,
+  pie/doughnut, gauge, radar, heatmap, treemap, funnel, boxplot, waterfall, sparkline. Each card
+  names the type and when to use it. **Consult this to pick a chart and copy its config** into any
+  template, instead of defaulting to line + bar every time.
 - `marp-deck.md` — Markdown deck for a quick, plain PDF/PPTX deliverable (no custom design).
 - `data-story-outline.md` — fill-in narrative skeleton for analyses, EDA, and business plans.
 
 All HTML starters use a generic **sales review** as demo content — replace it with your own.
 
 ## Charts & data
-- Embed charts as inline SVG or a small JS lib (e.g. Chart.js / ECharts via pinned CDN). Prefer
-  static SVG for PDF targets.
+- **Match the chart to the question** — see `templates/charts-reference.html` for the full palette
+  and a "pick by question" guide (trend → line/area; compare → bar; composition → stacked;
+  correlation → scatter; part-of-whole → pie; KPI vs goal → gauge; matrix → heatmap; etc.).
+  Don't reach for the same line+bar by reflex.
+- Use **ECharts** (pinned CDN, SVG renderer) for rich charts; pure-CSS bars/heatmap when it must
+  print or stay JS-free. Prefer SVG for PDF targets.
 - Every data slide states **source, grain, date range, filters**. Never invent numbers — mark
   unknowns `TODO`.
 

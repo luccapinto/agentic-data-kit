@@ -17,7 +17,7 @@ Edit only `.agent/`. `scripts/sync_agents.py` compiles it to every assistant:
 ```
 .agent/
 ├── agents/      # 5 specialist personas
-├── skills/      # 7 on-demand knowledge modules
+├── skills/      # 8 on-demand knowledge modules
 ├── workflows/   # 3 slash commands
 └── rules/       # global rules (rules.md)
 ```
@@ -30,12 +30,12 @@ Edit only `.agent/`. `scripts/sync_agents.py` compiles it to every assistant:
 | `analytics-engineer` | dbt, dimensional modeling | — |
 | `data-scientist` | Analysis, metrics, dashboards, ML, statistics, A/B testing | — |
 | `powerbi-developer` | Power BI as code (TMDL + PBIR) | pbi-semantic-layer-tmdl, pbi-report-layer-pbir, pbi-quality-rules, documentation-templates |
-| `presentation-designer` | Presentations as code (decks, sites, PDF) + brand | building-html-presentations, applying-visual-identity |
+| `presentation-designer` | Presentations as code (decks, sites, PDF, editable PPTX) + brand | building-html-presentations, generating-pptx, applying-visual-identity |
 
 Governance is cross-cutting, not a role — PII masking, WAP, contracts, and downstream-impact
 checks live in `rules/rules.md` and apply to every agent.
 
-## Skills (7)
+## Skills (8)
 
 Skills self-activate by their `description` — no agent required. They load on demand.
 
@@ -46,7 +46,8 @@ Skills self-activate by their `description` — no agent required. They load on 
 | `pbi-semantic-layer-tmdl` | Author TMDL semantic models |
 | `pbi-report-layer-pbir` | Edit PBIR reports, visuals, themes |
 | `pbi-quality-rules` | Real BPA via free Tabular Editor 2 CLI |
-| `building-html-presentations` | Build decks / interactive sites / PDFs as code (reveal.js default) |
+| `building-html-presentations` | Decks / flex-deck / sites / consulting PDF as code + chart cookbook (reveal.js default) |
+| `generating-pptx` | Native, editable PowerPoint via python-pptx (real charts/text, not images) |
 | `applying-visual-identity` | Apply a brand from `DESIGN.md` (Google Labs spec) to any output |
 
 ## Workflows (3)

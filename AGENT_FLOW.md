@@ -40,4 +40,4 @@ Deliver  ──────────────►  present changes + reason
 - **Clarify only when genuinely blocked** — otherwise state assumptions and proceed.
 - **Check downstream impact** before changing schemas, contracts, or shared models.
 
-**Agents:** 5 · **Skills:** 7 · **Workflows:** 3
+**Agents:** 5 · **Skills:** 8 · **Workflows:** 3

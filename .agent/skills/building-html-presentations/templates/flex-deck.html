@@ -184,6 +184,20 @@
           </div>
         </div>
 
+        <!-- Second charts row — more chart variety (grouped bar + scatter) -->
+        <div class="row">
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Attainment: plan vs. actual</div>
+            <div class="sub">% of target, by segment</div>
+            <div id="chart-seg" class="chart"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Deal size vs. win rate</div>
+            <div class="sub">each point = a segment</div>
+            <div id="chart-scatter" class="chart"></div>
+          </div>
+        </div>
+
         <!-- Narrative row -->
         <div class="row">
           <div class="panel">
@@ -307,7 +321,25 @@
           {name:'LATAM',value:18,itemStyle:{color:WARN}},
           {name:'APAC',value:12,itemStyle:{color:'#5B6675'}}]}]});
     }
-    addEventListener('load',()=>{drawTrend('bookings');drawRegion();});
+    // grouped bar — plan vs actual attainment by segment
+    function drawSeg(){
+      const c=echarts.init(document.getElementById('chart-seg'),null,{renderer:'svg'});
+      c.setOption({grid:{left:38,right:14,top:18,bottom:40},legend:{bottom:0,textStyle:{color:DIM}},
+        xAxis:{type:'category',data:['Enterprise','Mid-market','SMB'],...axis},yAxis:{type:'value',...split},
+        series:[{name:'Plan',type:'bar',data:[100,100,100],itemStyle:{color:'#5B6675'}},
+                {name:'Actual',type:'bar',data:[122,99,73],itemStyle:{color:ACCENT,borderRadius:[3,3,0,0]}}]});
+      addEventListener('resize',()=>c.resize());
+    }
+    // scatter — deal size vs win rate
+    function drawScatter(){
+      const c=echarts.init(document.getElementById('chart-scatter'),null,{renderer:'svg'});
+      c.setOption({grid:{left:42,right:16,top:18,bottom:30},
+        xAxis:{type:'value',name:'Avg deal ($K)',nameTextStyle:{color:DIM},...axis},
+        yAxis:{type:'value',name:'Win %',nameTextStyle:{color:DIM},...split},
+        series:[{type:'scatter',symbolSize:14,data:[[5.1,31],[3.5,29],[2.6,26],[2.4,22]],itemStyle:{color:ACCENT}}]});
+      addEventListener('resize',()=>c.resize());
+    }
+    addEventListener('load',()=>{drawTrend('bookings');drawRegion();drawSeg();drawScatter();});
 
     // toggle: swap trend series
     document.getElementById('tg-trend').addEventListener('click',e=>{
