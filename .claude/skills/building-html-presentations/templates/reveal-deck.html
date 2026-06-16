@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+  reveal.js data-story starter — single file, self-contained.
+  Brand: CSS variables below mirror DESIGN.md tokens. If a DESIGN.md exists,
+  copy its colors/typography into :root (see the applying-visual-identity skill).
+  Export to PDF: open this file with ?print-pdf appended, then print → Save as PDF.
+  Pin the version (here 5.x) — do not rely on "latest" so the deck is reproducible.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deck Title — Subtitle</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css" id="theme" />
+  <style>
+    /* === Brand tokens (map from DESIGN.md) ============================ */
+    :root {
+      --brand-primary:   #1A1C1E;
+      --brand-accent:    #2563EB;
+      --brand-bg:        #FFFFFF;
+      --brand-text:      #1A1C1E;
+      --brand-muted:     #6C7278;
+      --font-heading:    "Public Sans", system-ui, sans-serif;
+      --font-body:       system-ui, -apple-system, sans-serif;
+    }
+    .reveal { font-family: var(--font-body); color: var(--brand-text); }
+    .reveal h1, .reveal h2, .reveal h3 { font-family: var(--font-heading); color: var(--brand-primary); }
+    .reveal section { background: var(--brand-bg); }
+    .reveal .accent { color: var(--brand-accent); }
+    .reveal .muted  { color: var(--brand-muted); font-size: 0.6em; }
+    .reveal .source { position: absolute; bottom: 0.5em; left: 0; right: 0;
+                      font-size: 0.4em; color: var(--brand-muted); }
+    .reveal table { font-size: 0.7em; }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- 1. Title -->
+      <section>
+        <h1>Deck Title</h1>
+        <p class="muted">What this answers · Audience · Date</p>
+      </section>
+
+      <!-- 2. BLUF — lead with the conclusion -->
+      <section>
+        <h2>The takeaway</h2>
+        <p>State the single most important conclusion here, in one sentence.</p>
+        <p class="muted">Bottom line up front — details follow.</p>
+      </section>
+
+      <!-- 3. Insight slide: title = the insight, not the metric -->
+      <section>
+        <h2><span class="accent">Revenue fell 12%</span> in EMEA last quarter</h2>
+        <!-- Chart placeholder: drop inline SVG or a pinned chart lib here -->
+        <div id="chart1" style="height:380px;">[ chart ]</div>
+        <p class="source">Source: gold.fct_revenue · grain: order · 2026-Q1 · filters: region=EMEA</p>
+      </section>
+
+      <!-- 4. Evidence: table with explicit source/grain -->
+      <section>
+        <h2>Supporting numbers</h2>
+        <table>
+          <thead><tr><th>Segment</th><th>Q4</th><th>Q1</th><th>Δ</th></tr></thead>
+          <tbody>
+            <tr><td>Enterprise</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>SMB</td><td>—</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p class="source">Source / grain / date range / filters — fill in. TODO: real values.</p>
+      </section>
+
+      <!-- 5. So what / next steps -->
+      <section>
+        <h2>So what — and next</h2>
+        <ul>
+          <li>Implication of the finding</li>
+          <li>Recommended action + owner</li>
+          <li>What we'd measure to confirm</li>
+        </ul>
+      </section>
+
+      <!-- 6+. Appendix (vertical stack) -->
+      <section>
+        <section><h2>Appendix</h2><p class="muted">Detail for the technical audience.</p></section>
+        <section><h3>Methodology</h3><p>Data sources, joins, assumptions.</p></section>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({ hash: true, slideNumber: 'c/t' });
+    // Add a chart library (pinned) here if needed, e.g. Chart.js / ECharts, and render into #chart1.
+  </script>
+</body>
+</html>

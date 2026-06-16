@@ -36,6 +36,27 @@ rules by hand: for each rule, read its `Scope` and `Expression` from `bpa-rules.
 the equivalent check to the parsed objects (measures, tables, columns, relationships). This is
 less robust than the real BPA — say so, and recommend installing Tabular Editor 2 for accuracy.
 
+## Deterministic hook — measure metadata (optional, Claude Code)
+For an *always-on* guardrail (not dependent on the model remembering), `scripts/` ships a
+deterministic check that flags any **measure** missing `Description`, `DisplayFolder`, or
+`FormatString` — the same enforcement as data-goblin's hooks.
+
+```bash
+# Manual / CI — pass files or the .SemanticModel folder:
+python .claude/skills/pbi-quality-rules/scripts/check_tmdl_metadata.py "Sales.SemanticModel"
+```
+
+- `scripts/hooks-config.yaml` toggles it: `enabled`, `mode` (`warn` reports only / `block`
+  stops the save), and per-field requirements. Default is **warn**.
+- **Wire it as a Claude Code hook** so it fires automatically on every TMDL save: the kit's
+  `scripts/sync_agents.py` writes a `PostToolUse` entry into `.claude/settings.json` that runs
+  this script on `Edit`/`Write` to `*.tmdl`. In `block` mode a non-zero exit stops the tool and
+  feeds the missing-metadata list back to the model.
+- Hooks are Claude-Code-specific; on other tools run the script in CI or on demand — the rule
+  itself stays portable.
+
+This complements the BPA: the hook is a fast pre-flight on save; the BPA is the full audit.
+
 ## Agent flow
 1. Run after large model edits / refactors, or on demand.
 2. Show errors first; for each `error`, offer an immediate fix. For `warning`, suggest but

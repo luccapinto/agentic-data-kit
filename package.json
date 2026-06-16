@@ -1,6 +1,6 @@
 {
   "name": "@luccapinto/agentic-data-kit",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Lean AI agents, skills, and workflows for Data Teams (Claude Code, GitHub Copilot, OpenCode, Antigravity)",
   "type": "module",
   "main": "bin/cli.js",
@@ -25,6 +25,10 @@
     "power-bi",
     "tmdl",
     "data-engineering",
+    "presentations",
+    "reveal-js",
+    "design-md",
+    "hooks",
     "templates"
   ],
   "author": "Lucca Pinto",

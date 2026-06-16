@@ -15,7 +15,7 @@ Load skills on demand  ──►  read a SKILL.md only when the task needs it
 Execute  ──────────────►  build / edit pipelines, models, DAX, TMDL, PBIR, docs
    │
    ▼
-Validate  ──────────────►  Power BI: /validate-pbi (real BPA via Tabular Editor 2)
+Validate  ──────────────►  Power BI: /validate-pbi (BPA) + deterministic TMDL save-hook
    │
    ▼
 Deliver  ──────────────►  present changes + reasoning, in the user's language
@@ -29,6 +29,7 @@ Deliver  ──────────────►  present changes + reason
 | dbt, star schemas, warehouse modeling | `analytics-engineer` |
 | Metrics, dashboards, analysis, ML, statistics, A/B tests, semantic review | `data-scientist` |
 | Power BI models (TMDL) or reports (PBIR) | `powerbi-developer` |
+| Presentations, decks, pitches, readouts, business plans, brand/`DESIGN.md` | `presentation-designer` |
 
 > Quality, privacy, contracts, and masking are **cross-cutting rules** (in `rules.md`), applied
 > by every agent — not a routing target.
@@ -39,4 +40,4 @@ Deliver  ──────────────►  present changes + reason
 - **Clarify only when genuinely blocked** — otherwise state assumptions and proceed.
 - **Check downstream impact** before changing schemas, contracts, or shared models.
 
-**Agents:** 4 · **Skills:** 5 · **Workflows:** 3
+**Agents:** 5 · **Skills:** 7 · **Workflows:** 3

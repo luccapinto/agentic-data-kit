@@ -15,10 +15,11 @@ domain-specific context that matters, and nothing the model already does well.**
 instructions keep the model's attention on what's important, which is exactly what makes agents
 reliable.
 
-The **Agentic Data Kit** is a curated library of **4 focused AI agents**, **5 on-demand skills**,
+The **Agentic Data Kit** is a curated library of **5 focused AI agents**, **7 on-demand skills**,
 and **3 workflows** for Data Engineering, Analytics, and Business Intelligence. Drop it in, and
 your assistant can build pipelines, design star schemas, edit Power BI as code, run quality
-checks, and document models — without you re-explaining the basics.
+checks, document models, and turn analyses into on-brand presentations — without you
+re-explaining the basics.
 
 ## 🚀 Quick Start
 
@@ -51,6 +52,7 @@ AI:  Applying @powerbi-developer → writes DAX, edits TMDL, runs the BPA
 | `analytics-engineer` | Star schemas, dbt models, warehouse architecture & performance |
 | `data-scientist` | Analysis, metrics, dashboards & semantic review — through to ML, statistics, forecasting, A/B testing |
 | `powerbi-developer` | Power BI as code — TMDL semantic model **and** PBIR reports, validated with Tabular Editor 2 |
+| `presentation-designer` | Analyses → presentations as code — reveal.js decks, interactive sites, PDFs — on-brand via `DESIGN.md` |
 
 Governance (PII masking, WAP, contracts, downstream-impact) is cross-cutting — it lives in the
 always-on workspace rules, not a separate agent.
@@ -61,7 +63,9 @@ Skills **activate themselves** from their description (progressive disclosure) �
 required, no need to name them. Ask "document this" and the docs skill fires on its own.
 
 - **Power BI:** `pbi-semantic-layer-tmdl`, `pbi-report-layer-pbir`, `pbi-quality-rules` (real
-  Best Practice Analyzer via the free Tabular Editor 2)
+  Best Practice Analyzer via the free Tabular Editor 2 + a deterministic TMDL save-hook)
+- **Presentations:** `building-html-presentations` (reveal.js decks, sites, PDF) and
+  `applying-visual-identity` (apply your brand from a `DESIGN.md`)
 - **Docs:** `documentation-templates` — runbooks, data dictionaries, metric defs, ADRs, and the
   Power BI dashboard catalog, each as a separate template file
 - **Governance:** `creating-agents-and-skills` — guides you to add an agent/skill only when it
@@ -94,7 +98,7 @@ python scripts/sync_agents.py
 | Target | Output |
 |---|---|
 | Antigravity | `.agent/` (native) |
-| Claude Code | `.claude/` + `CLAUDE.md` |
+| Claude Code | `.claude/` + `CLAUDE.md` + `settings.json` (hooks) |
 | GitHub Copilot | `.github/` + `copilot-instructions.md` |
 | OpenCode | `.opencode/` + `AGENTS.md` |
 | Cursor / others | root `AGENTS.md` |
