@@ -169,7 +169,7 @@
   <div id="progress"></div>
   <div class="deck-top">
     <span id="section-tag">Overview</span>
-    <span id="counter"><b>01</b> / 07</span>
+    <span id="counter"><b>01</b> / 08</span>
   </div>
 
   <div class="reveal">
@@ -250,7 +250,26 @@
         <p class="source">Source: gold.fct_bookings · grain: deal · FY2026 Q1 · filters: closed-won — TODO real values</p>
       </section>
 
-      <!-- ░░ 4 · DRILLDOWN / RANKING ░░ -->
+      <!-- ░░ 4 · MIX & PROFILE (donut + radar) ░░ -->
+      <section data-section="Mix & profile">
+        <div class="eyebrow">Section 01 · Mix &amp; profile</div>
+        <h2 class="slide-title">Channel <span class="accent">mix</span> & segment profile</h2>
+        <div class="panel-grid" style="grid-auto-rows:auto;">
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Bookings by channel</div>
+            <div class="panel-sub">share of total</div>
+            <div id="chart-donut" class="chart" style="flex:1;min-height:0;height:300px;"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Enterprise vs. SMB profile</div>
+            <div class="panel-sub">indexed, 0–100</div>
+            <div id="chart-radar" class="chart" style="flex:1;min-height:0;height:300px;"></div>
+          </div>
+        </div>
+        <p class="source">Source: gold.fct_bookings · grain: deal · FY2026 Q1 — TODO real values</p>
+      </section>
+
+      <!-- ░░ 5 · DRILLDOWN / RANKING ░░ -->
       <section data-section="Drilldown">
         <div class="eyebrow">Section 02 · Drilldown</div>
         <h2 class="slide-title">Product lines — <span class="accent">winners</span> & laggards</h2>
@@ -390,6 +409,27 @@
       });
       window.addEventListener('resize', () => chart.resize());
       Reveal.on('slidechanged', () => chart.resize());
+
+      // Donut — bookings by channel
+      const donut = echarts.init(document.getElementById('chart-donut'), null, { renderer: 'svg' });
+      donut.setOption({ tooltip:{trigger:'item'}, series:[{ type:'pie', radius:['52%','78%'],
+        itemStyle:{borderColor:'#0B0F16',borderWidth:2}, label:{color:DIM}, data:[
+          {name:'Direct',value:48,itemStyle:{color:ACCENT}},
+          {name:'Partner',value:27,itemStyle:{color:css.getPropertyValue('--pos').trim()}},
+          {name:'Self-serve',value:15,itemStyle:{color:css.getPropertyValue('--warn').trim()}},
+          {name:'Marketplace',value:10,itemStyle:{color:'#5B6675'}} ]}] });
+
+      // Radar — enterprise vs SMB profile
+      const radar = echarts.init(document.getElementById('chart-radar'), null, { renderer: 'svg' });
+      radar.setOption({ legend:{textStyle:{color:DIM},bottom:0},
+        radar:{ indicator:[{name:'Win'},{name:'Deal size'},{name:'Cycle'},{name:'Expansion'},{name:'NRR'}],
+          axisName:{color:DIM}, splitLine:{lineStyle:{color:'rgba(255,255,255,0.08)'}}, splitArea:{show:false} },
+        series:[{ type:'radar', data:[
+          {name:'Enterprise',value:[88,92,70,85,90],lineStyle:{color:ACCENT},areaStyle:{color:'rgba(91,141,239,0.22)'}},
+          {name:'SMB',value:[62,40,85,55,60],lineStyle:{color:css.getPropertyValue('--warn').trim()}} ]}] });
+
+      window.addEventListener('resize', () => { donut.resize(); radar.resize(); });
+      Reveal.on('slidechanged', () => { donut.resize(); radar.resize(); });
     });
   </script>
 </body>

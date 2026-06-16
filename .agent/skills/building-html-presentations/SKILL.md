@@ -67,9 +67,12 @@ don't default to it.
   active-link highlight, reading-progress bar, hero + KPI band, scroll-reveal sections, a sticky
   data table, and ECharts (line + donut). Same tokens as the deck. Use for self-serve exploration.
 - `report-pdf.html` — a **consulting-style report** (McKinsey/Deloitte feel) built for PDF export:
-  print-first A4, light theme, page header/footer chrome, **full-sentence action titles**, numbered
-  **Exhibits** with source lines, an executive summary with numbered key findings + a takeaways box.
-  Export via Chrome Print → Save as PDF (A4, margins none, background graphics on).
+  print-first A4, light theme, running header/footer chrome, a **contents page**, **full-sentence
+  action titles**, an exec summary (key findings + takeaways), an **"at a glance" small-multiples**
+  page, 10 numbered **Exhibits** with varied charts (combo, grouped bar, scatter w/ quadrant lines,
+  waterfall bridge, donut, gauge, CSS bars), **insight callouts** + **margin notes**, a data-bar
+  table, and a recommendations table (owner/timeline/measure). Export via Chrome Print → Save as
+  PDF (A4, margins none, background graphics on).
 - `charts-reference.html` — a **chart cookbook**: a live gallery of ~18 chart patterns (ECharts +
   CSS-only) — line, area, multi-line, combo, bar, grouped, stacked, horizontal, scatter, bubble,
   pie/doughnut, gauge, radar, heatmap, treemap, funnel, boxplot, waterfall, sparkline. Each card

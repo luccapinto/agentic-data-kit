@@ -102,6 +102,7 @@
       <a href="#overview" class="on">Overview</a>
       <a href="#trend">Trend</a>
       <a href="#regions">Regions</a>
+      <a href="#segments">Segments</a>
       <a href="#products">Products</a>
       <a href="#next">Next</a>
     </nav>
@@ -166,9 +167,28 @@
       </div>
     </section>
 
+    <!-- SEGMENTS -->
+    <section id="segments" class="reveal">
+      <div class="eyebrow">03 · Segments</div>
+      <h2 style="font-size:34px;margin-top:10px;">Enterprise outperforms; SMB is the drag</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Attainment: plan vs. actual</h3>
+          <div class="sub">% of target, by segment</div>
+          <div id="chart-seg" class="chart"></div>
+        </div>
+        <div class="card">
+          <h3>Deal size vs. win rate</h3>
+          <div class="sub">each point = a segment</div>
+          <div id="chart-scatter" class="chart"></div>
+        </div>
+      </div>
+      <p class="source">Source: gold.fct_bookings · grain: deal · FY2026 Q1 — TODO real values</p>
+    </section>
+
     <!-- PRODUCTS -->
     <section id="products" class="reveal">
-      <div class="eyebrow">03 · Products</div>
+      <div class="eyebrow">04 · Products</div>
       <h2 style="font-size:34px;margin-top:10px;">Product line detail</h2>
       <table>
         <thead><tr><th>Product</th><th>Bookings</th><th>vs. target</th><th>Deals</th><th>Avg deal</th></tr></thead>
@@ -248,7 +268,20 @@
             {name:'LATAM',value:18,itemStyle:{color:WARN}},
             {name:'APAC',value:12,itemStyle:{color:'#5B6675'}} ]}],
       });
-      addEventListener('resize', () => { trend.resize(); region.resize(); });
+      // grouped bar — plan vs actual attainment by segment
+      const seg = echarts.init(document.getElementById('chart-seg'), null, { renderer: 'svg' });
+      seg.setOption({ grid:{left:38,right:14,top:18,bottom:40}, legend:{bottom:0,textStyle:{color:DIM}},
+        xAxis:{type:'category',data:['Enterprise','Mid-market','SMB'],axisLine:{lineStyle:{color:DIM}},axisLabel:{color:DIM}},
+        yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(255,255,255,0.06)'}},axisLabel:{color:DIM}},
+        series:[{name:'Plan',type:'bar',data:[100,100,100],itemStyle:{color:'#5B6675'}},
+                {name:'Actual',type:'bar',data:[122,99,73],itemStyle:{color:ACCENT,borderRadius:[3,3,0,0]}}] });
+      // scatter — deal size vs win rate
+      const scatter = echarts.init(document.getElementById('chart-scatter'), null, { renderer: 'svg' });
+      scatter.setOption({ grid:{left:42,right:16,top:18,bottom:30},
+        xAxis:{type:'value',name:'Avg deal ($K)',nameTextStyle:{color:DIM},axisLine:{lineStyle:{color:DIM}},axisLabel:{color:DIM},splitLine:{show:false}},
+        yAxis:{type:'value',name:'Win %',nameTextStyle:{color:DIM},splitLine:{lineStyle:{color:'rgba(255,255,255,0.06)'}},axisLabel:{color:DIM}},
+        series:[{type:'scatter',symbolSize:14,data:[[5.1,31],[3.5,29],[2.6,26],[2.4,22]],itemStyle:{color:ACCENT}}] });
+      addEventListener('resize', () => { trend.resize(); region.resize(); seg.resize(); scatter.resize(); });
     });
   </script>
 </body>
