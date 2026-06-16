@@ -35,8 +35,17 @@ don't default to it.
 5. **Export** if needed: reveal.js → open with `?print-pdf` and print to PDF; Marp → `marp deck.md --pdf`.
 
 ## Starters (in `templates/`)
-- `reveal-deck.html` — single-file reveal.js deck wired to `DESIGN.md`-style CSS variables, with
-  example data-story slides (title, takeaway, chart placeholder, table-with-source, appendix).
+- `reveal-deck.html` — a sophisticated, single-file **data-dashboard deck system** (dark theme,
+  brand tokens in `:root` mapped from `DESIGN.md`). Ships reusable layout primitives:
+  - **Cover** with KPI grid + stat chips + CTA bar; **section dividers**.
+  - **2×2 dashboard panels** mixing charts and narrative with colored keyword highlights.
+  - **Ranking bars** (CSS, value + ±pp delta, semantic colors); **heatmap matrix** with a
+    score-band color scale and metric **toggle pills**; **quote cards** with category tags.
+  - **Custom chrome**: zero-padded `01 / 07` counter, top progress bar, section tag, and a
+    dots + prev/next nav wired to the reveal.js API.
+  - **Charts**: pure-CSS bars for rankings + **ECharts** (pinned) for line/combo charts.
+  Copy it, swap the tokens, replace the demo content. Reach for the panel/bar/heatmap classes
+  rather than hand-rolling layout each time.
 - `marp-deck.md` — Markdown deck for clean PDF/PPTX export with brand front-matter.
 - `data-story-outline.md` — fill-in narrative skeleton for analyses, EDA, and business plans.
 
