@@ -11,7 +11,6 @@ Mapeamento:
   🟠 CLAUDE  : .claude/agents/*.md      | .claude/skills/ | .claude/workflows/           | .claude/CLAUDE.md
 """
 
-import json
 import re
 import shutil
 import sys
@@ -52,10 +51,6 @@ CLAUDE_AGENTS     = CLAUDE / "agents"
 CLAUDE_SKILLS     = CLAUDE / "skills"
 CLAUDE_WORKFLOWS  = CLAUDE / "workflows"
 CLAUDE_MD         = CLAUDE / "CLAUDE.md"
-CLAUDE_SETTINGS   = CLAUDE / "settings.json"
-
-# Deterministic hooks (Claude Code only). Command paths are relative to the project root.
-TMDL_HOOK_CMD = "python .claude/skills/pbi-quality-rules/scripts/check_tmdl_metadata.py"
 
 # 🔵 Destino OpenCode (.opencode)
 OPENCODE          = ROOT / ".opencode"
@@ -237,43 +232,6 @@ def claude_build_claude_md() -> None:
     print(f"  ✅  CLAUDE.md gerado com {len(commands_lines)} comando(s)")
 
 
-def claude_build_settings() -> None:
-    """Inject the deterministic TMDL PostToolUse hook into .claude/settings.json.
-
-    Safe-merge: preserves any existing user settings and other hooks; only refreshes
-    the managed entry (identified by our script command). Skips if the skill is absent.
-    """
-    hook_skill = SKILLS_SRC / "pbi-quality-rules" / "scripts" / "check_tmdl_metadata.py"
-    if not hook_skill.exists():
-        print("  ⚠️  hook script ausente — settings.json não tocado")
-        return
-
-    settings: dict = {}
-    if CLAUDE_SETTINGS.exists():
-        try:
-            settings = json.loads(CLAUDE_SETTINGS.read_text(encoding="utf-8")) or {}
-        except json.JSONDecodeError:
-            print("  ⚠️  settings.json inválido — recriando do zero")
-            settings = {}
-
-    hooks = settings.setdefault("hooks", {})
-    post = hooks.setdefault("PostToolUse", [])
-    # Drop any prior managed entry so re-running sync is idempotent.
-    post = [
-        e for e in post
-        if not any(TMDL_HOOK_CMD in h.get("command", "")
-                   for h in e.get("hooks", []) if isinstance(h, dict))
-    ]
-    post.append({
-        "matcher": "Edit|Write",
-        "hooks": [{"type": "command", "command": TMDL_HOOK_CMD}],
-    })
-    hooks["PostToolUse"] = post
-
-    CLAUDE_SETTINGS.write_text(json.dumps(settings, indent=2) + "\n", encoding="utf-8")
-    print(f"  ✅  settings.json — hook TMDL (PostToolUse) sincronizado")
-
-
 # ===========================================================================
 # 🔵 BLOCO OPENCODE (.opencode)
 # ===========================================================================
@@ -373,8 +331,6 @@ def main() -> None:
     claude_sync_workflows()
     print("  📋 CLAUDE.md:")
     claude_build_claude_md()
-    print("  🪝 settings.json (hooks):")
-    claude_build_settings()
 
     # ------------------------------------------------------------------
     print("\n🔵 [OPENCODE] Sincronizando para .opencode/...")

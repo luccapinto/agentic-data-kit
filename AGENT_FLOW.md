@@ -15,7 +15,7 @@ Load skills on demand  ──►  read a SKILL.md only when the task needs it
 Execute  ──────────────►  build / edit pipelines, models, DAX, TMDL, PBIR, docs
    │
    ▼
-Validate  ──────────────►  Power BI: /validate-pbi (BPA) + deterministic TMDL save-hook
+Validate  ──────────────►  Power BI: /validate-pbi (real BPA via Tabular Editor 2)
    │
    ▼
 Deliver  ──────────────►  present changes + reasoning, in the user's language

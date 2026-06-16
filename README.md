@@ -63,7 +63,7 @@ Skills **activate themselves** from their description (progressive disclosure) â
 required, no need to name them. Ask "document this" and the docs skill fires on its own.
 
 - **Power BI:** `pbi-semantic-layer-tmdl`, `pbi-report-layer-pbir`, `pbi-quality-rules` (real
-  Best Practice Analyzer via the free Tabular Editor 2 + a deterministic TMDL save-hook)
+  Best Practice Analyzer via the free Tabular Editor 2)
 - **Presentations:** `building-html-presentations` (reveal.js decks, sites, PDF) and
   `applying-visual-identity` (apply your brand from a `DESIGN.md`)
 - **Docs:** `documentation-templates` â€” runbooks, data dictionaries, metric defs, ADRs, and the
@@ -98,7 +98,7 @@ python scripts/sync_agents.py
 | Target | Output |
 |---|---|
 | Antigravity | `.agent/` (native) |
-| Claude Code | `.claude/` + `CLAUDE.md` + `settings.json` (hooks) |
+| Claude Code | `.claude/` + `CLAUDE.md` |
 | GitHub Copilot | `.github/` + `copilot-instructions.md` |
 | OpenCode | `.opencode/` + `AGENTS.md` |
 | Cursor / others | root `AGENTS.md` |

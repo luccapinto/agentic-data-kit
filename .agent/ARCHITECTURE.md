@@ -45,16 +45,9 @@ Skills self-activate by their `description` — no agent required. They load on 
 | `documentation-templates` | Runbooks, data dictionaries, metric defs, ADRs, Power BI catalog (templates in separate files) |
 | `pbi-semantic-layer-tmdl` | Author TMDL semantic models |
 | `pbi-report-layer-pbir` | Edit PBIR reports, visuals, themes |
-| `pbi-quality-rules` | Real BPA via free Tabular Editor 2 CLI + deterministic TMDL metadata hook |
+| `pbi-quality-rules` | Real BPA via free Tabular Editor 2 CLI |
 | `building-html-presentations` | Build decks / interactive sites / PDFs as code (reveal.js default) |
 | `applying-visual-identity` | Apply a brand from `DESIGN.md` (Google Labs spec) to any output |
-
-## Deterministic hooks (Claude Code)
-
-`scripts/sync_agents.py` writes a `PostToolUse` hook into `.claude/settings.json` that runs
-`pbi-quality-rules/scripts/check_tmdl_metadata.py` on every TMDL save — flagging measures
-missing `Description`/`DisplayFolder`/`FormatString`. Toggle via `hooks-config.yaml`
-(`warn`/`block`). Hooks are Claude-Code-specific; the rule stays portable via the skill + CI.
 
 ## Workflows (3)
 
