@@ -13,8 +13,9 @@ with `applying-visual-identity` to make the output on-brand.
 
 | Output | Use when | Engine | Export |
 |---|---|---|---|
-| **Slide deck** | Live readout / meeting; linear narrative | **reveal.js** (default) | HTML, PDF (`?print-pdf`) |
-| **Interactive site** | Self-serve exploration; scroll, anchors, embedded charts | single static HTML page (`interactive-site.html`) | HTML |
+| **Slide deck** | Live readout / meeting; linear narrative, fixed canvas | **reveal.js** (default) | HTML, PDF (`?print-pdf`) |
+| **Flexible / scrollable deck** | Slides that hold more than one screen and need in-slide scroll + buttons to switch visuals | custom vanilla JS (`flex-deck.html`) | HTML |
+| **Interactive site** | Self-serve exploration; one long scrolling page with anchors | single static HTML page (`interactive-site.html`) | HTML |
 | **PDF / print handout** | Leave-behind, email, no-JS audience | **Marp** (Markdown → PDF/PPTX) | PDF, PPTX |
 
 Default to **reveal.js**: most mature, pure HTML/CSS (easy theming from `DESIGN.md`), and it
@@ -56,13 +57,17 @@ don't default to it.
   - **Charts**: pure-CSS bars for rankings + **ECharts** (pinned) for line/combo charts.
   Copy it, swap the tokens, replace the demo content. Reach for the panel/bar/heatmap classes
   rather than hand-rolling layout each time.
+- `flex-deck.html` — a **flexible, scrollable deck** (no framework, no fixed aspect ratio): each
+  slide is a full-width sub-page that can be **taller than the screen and scrolls vertically**,
+  while ← → moves between slides. Includes **dynamic toggle buttons** that swap the visual in place
+  (chart series, and chart ↔ table). Use when a deck slide carries dashboard-density content.
 - `interactive-site.html` — a single-file **scrolling report site** (not slides): sticky nav with
   active-link highlight, reading-progress bar, hero + KPI band, scroll-reveal sections, a sticky
   data table, and ECharts (line + donut). Same tokens as the deck. Use for self-serve exploration.
 - `marp-deck.md` — Markdown deck for clean PDF/PPTX export with brand front-matter.
 - `data-story-outline.md` — fill-in narrative skeleton for analyses, EDA, and business plans.
 
-Both HTML starters use a generic **sales review** as demo content — replace it with your own.
+All HTML starters use a generic **sales review** as demo content — replace it with your own.
 
 ## Charts & data
 - Embed charts as inline SVG or a small JS lib (e.g. Chart.js / ECharts via pinned CDN). Prefer
