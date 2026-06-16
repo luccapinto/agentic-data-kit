@@ -1,6 +1,6 @@
 {
   "name": "@luccapinto/agentic-data-kit",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "Lean AI agents, skills, and workflows for Data Teams (Claude Code, GitHub Copilot, OpenCode, Antigravity)",
   "type": "module",
   "main": "bin/cli.js",
