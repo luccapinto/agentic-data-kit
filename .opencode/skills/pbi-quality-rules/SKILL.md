@@ -1,55 +1,42 @@
 ---
 name: pbi-quality-rules
-description: Mecanismo de validação de qualidade de modelos Power BI executado via PowerShell/TMDL.
+description: Validate a Power BI semantic model with the real Best Practice Analyzer (BPA) via the free Tabular Editor 2 CLI, using a shareable BPA rules file.
 ---
 
-# 🛡️ Skill: pbi-quality-rules
+# Skill: pbi-quality-rules
 
-Substituto funcional do Best Practice Analyzer (BPA) do Tabular Editor. Permite ao agente validar o modelo contra regras declarativas de qualidade contidas em YAML.
+Run the **Best Practice Analyzer (BPA)** — the industry-standard model linter — against a PBIP
+semantic model. This skill uses the *real* BPA engine from **Tabular Editor 2 (free, open
+source)** instead of a homegrown checker, so results match what Power BI developers expect and
+the rules are portable.
 
-## 📝 A Abordagem
+## Rule set
+`bpa-rules.json` (next to this file) holds the team's BPA rules in Tabular Editor's native
+format (`ID`, `Name`, `Category`, `Severity`, `Scope`, `Expression` in Dynamic LINQ over the
+TOM). Severity: `3` = error, `2` = warning, `1` = info. Edit this file to add or tune rules;
+it loads directly into Tabular Editor's BPA UI too.
 
-O BPA do Tabular Editor é o padrão da indústria, mas requer o TE instalado. No Agentic Data Kit, processamos essas mesmas regras através de:
-1. O arquivo `.agent/skills/pbi-quality-rules/pbi-quality-rules.yaml` carregado como base de conhecimento.
-2. Parsing offline de TMDL para validar essas regras em loop.
+## Primary path — Tabular Editor 2 CLI (recommended)
+Requires Tabular Editor 2 (free). Desktop should be closed so disk reflects the latest state.
 
-## 📊 Estrutura e Parsing (Como o Agente Executa)
-
-Quando solicitado para rodar o check de qualidade:
-
-1. Carregue o modelo via parsing de arquivos `TMDL`.
-2. Parseie e carregue o YAML em `pbi-quality-rules.yaml`.
-3. Para cada regra no YAML:
-    * Se `applies_to` é `measure`, itere sobre as Measures no TMDL.
-    * Valide a condição PowerShell da propriedade `check`. Por exemplo `Name -cnotmatch '^[A-Z]'`.
-4. Capture o array de violações com `{id, severity, object_name, message}`.
-5. Formate as violações para o usuário (omitindo `info` a não ser que pedido).
-
-### Categorias de Regras
-1. **Nomeação:** Títulos e propriedades base. (Ex: Primeira letra maiúscula).
-2. **DAX:** Eficiência das expressões. (Ex: Measures com BLANK() ou falta de comentários).
-3. **Modelo / Relacionamentos:** Bidirecionais desnecessários, island tables.
-4. **Performance:** Auto-DateTime ativado, Colunas de alta cardinalidade não essenciais.
-5. **Documentação:** Presença mandatória da tag `description`.
-
-## ⚙️ Exemplo de Script de Execução
-
-Se você estiver em modo PowerShell interativo, a validação de regras ocorre mais ou menos assim:
-
-```powershell
-$rulesYaml = Get-Content ".\.agent\skills\pbi-quality-rules\pbi-quality-rules.yaml" | ConvertFrom-Yaml
-# Iterate
-foreach ($rule in $rulesYaml.rules) {
-   if ($rule.applies_to -eq "measure") {
-       foreach ($measure in $table.Measures) {
-           $violation = Invoke-Expression $rule.check
-           if ($violation) { Write-Host "[$($rule.id)] $($measure.Name) - $($rule.description)" }
-       }
-   }
-}
+```bash
+# Windows (TabularEditor.exe on PATH). Point at the .SemanticModel folder (TMDL) or model.bim.
+TabularEditor.exe "Sales.SemanticModel" -A ".agent/skills/pbi-quality-rules/bpa-rules.json" -V
 ```
 
-## 🔄 Fluxo do Agente
-1. Rode automaticamente após as grandes sessões de edição e refatorações de modelo semântico.
-2. Apresente ao usuário os `error` e `warning` apenas.
-3. Se o erro for `[error]`, ofereça correção imediata. Se for `[warning]`, sugira, mas não obrigue.
+- `-A <rulesfile>` runs the BPA with the given rules; `-V` writes violations to the console
+  (and sets a non-zero exit code on error-severity hits — useful in CI).
+- The cross-platform `te` CLI (preview) accepts the same rules file if installed instead.
+
+Parse the console output, then present **errors and warnings only** (omit info unless asked).
+
+## Fallback — no Tabular Editor installed
+The kit stays usable without the tool. Parse the TMDL files directly and evaluate the same
+rules by hand: for each rule, read its `Scope` and `Expression` from `bpa-rules.json` and apply
+the equivalent check to the parsed objects (measures, tables, columns, relationships). This is
+less robust than the real BPA — say so, and recommend installing Tabular Editor 2 for accuracy.
+
+## Agent flow
+1. Run after large model edits / refactors, or on demand.
+2. Show errors first; for each `error`, offer an immediate fix. For `warning`, suggest but
+   don't force. Group by category so the report is scannable.

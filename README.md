@@ -9,83 +9,107 @@
 
 ## 🧠 Why This Exists
 
-Stop explaining the same concepts to your AI over and over. Generic LLMs don't know *your* stack, *your* standards, or *your* architecture.
+Generic LLMs don't know *your* stack, *your* standards, or *your* architecture — but they
+already know how to write clean code. So this kit follows one rule: **capture only the
+domain-specific context that matters, and nothing the model already does well.** Lean
+instructions keep the model's attention on what's important, which is exactly what makes agents
+reliable.
 
-The **Agentic Data Kit** is a curated library of **9 dedicated AI agents**, **6 specialized skills**, and **3 automated workflows** — all pre-configured for Data Engineering, Analytics, and Business Intelligence.
-
-By dropping this kit into your repository, your AI assistant instantly knows how to build robust Data pipelines, edit Power BI reports programmatically, design star schemas, run data quality checks, and much more — without you having to teach it anything.
+The **Agentic Data Kit** is a curated library of **5 focused AI agents**, **8 on-demand skills**,
+and **3 workflows** for Data Engineering, Analytics, and Business Intelligence. Drop it in, and
+your assistant can build pipelines, design star schemas, edit Power BI as code, run quality
+checks, document models, and turn analyses into on-brand presentations — without you
+re-explaining the basics.
 
 ## 🚀 Quick Start
-
-### 1. Install the Kit
-
-In your terminal, navigate to your project folder and run the interactive CLI:
 
 ```bash
 npx @luccapinto/agentic-data-kit@latest init
 ```
 
-*Press `Enter`, choose your AI assistant (Antigravity, Copilot, or Claude), and the `.agent` folder will be dropped into your project.*
-
-### 2. Put Your Team to Work
-
-Start asking your AI to build things. The agents are already loaded and ready.
+Pick your AI assistant and the kit is installed. Then just ask:
 
 ```text
 You: "Build an ETL pipeline for customer data using Medallion Architecture"
-AI:  🤖 Applying @data-engineer... [builds complete Bronze → Silver → Gold pipeline]
+AI:  Applying @data-engineer → Bronze → Silver → Gold pipeline
 
-You: "Create a star schema for the sales domain"
-AI:  🤖 Applying @analytics-engineer... [designs fact and dimension tables]
-
-You: "Edit the Power BI report to add a new revenue measure"
-AI:  🤖 Applying @powerbi-developer... [writes DAX, updates TMDL]
+You: "Add a revenue measure to the Power BI model"
+AI:  Applying @powerbi-developer → writes DAX, edits TMDL, runs the BPA
 ```
+
+> Instructions are written in English for portability; the assistant replies in **your**
+> language automatically.
 
 ---
 
 ## 🎯 What's Inside
 
-### 🤖 Agents — Your Dedicated Specialists
+### 🤖 Agents — Focused Specialists
 
-| Agent | What It Does |
+| Agent | What it does |
 |---|---|
-| `data-engineer` | Builds ETL pipelines, architectures, and ensures data idempotency |
-| `analytics-engineer` | Designs star schemas, builds dimensional models and transformations |
-| `data-analyst` | Explores data, defines rigorous metrics, and ideates dashboards |
-| `data-scientist` | Builds ML pipelines, runs statistical models and A/B tests |
-| `data-governance` | Enforces data quality, contracts, PII masking, and LGPD/GDPR compliance |
-| `powerbi-developer` | Master orchestrator for Power BI models, DAX, and TMDL manipulation |
-| `powerbi-report-designer`| Designs Power BI themes and manipulates visuals via PBIR |
-| `documentation-writer` | Produces data dictionaries, runbooks, and standardized technical docs |
-| `agent-creator` | The architect gatekeeper that builds new agents and skills safely |
+| `data-engineer` | ETL/ELT pipelines, Medallion architecture, idempotency, WAP |
+| `analytics-engineer` | Star schemas, dbt models, warehouse architecture & performance |
+| `data-scientist` | Analysis, metrics, dashboards & semantic review — through to ML, statistics, forecasting, A/B testing |
+| `powerbi-developer` | Power BI as code — TMDL semantic model **and** PBIR reports, validated with Tabular Editor 2 |
+| `presentation-designer` | Analyses → presentations as code — reveal.js decks, interactive sites, consulting PDFs, **editable PPTX** — on-brand via `DESIGN.md` |
 
-### 🧩 Skills — Deep, Pre-Packaged Expertise
+Governance (PII masking, WAP, contracts, downstream-impact) is cross-cutting — it lives in the
+always-on workspace rules, not a separate agent.
 
-Instead of pasting documentation into a chat window, skills give the AI deep, structured expertise on specific tools and frameworks:
-- **Power BI Mastery:** `pbi-semantic-layer-tmdl`, `pbi-report-layer-pbir`, `pbi-quality-rules`, `pbi-dashboard-documentation`
-- **Quality & Docs:** `data-quality-testing`, `documentation-templates`
+### 🧩 Skills — Deep, On-Demand Expertise
 
-### 🔄 Workflows & Scripts
+Skills **activate themselves** from their description (progressive disclosure) — no agent
+required, no need to name them. Ask "document this" and the docs skill fires on its own.
 
-Built-in automation and CI/CD ready validation scripts:
-- **Commands:** `/plan` (Project scoping), `/validate-pbi` (Power BI Model validation), `/document-dashboard` (Auto-documentation)
-- **Validation:** `checklist.py` (Pre-commit checks), `verify_all.py` (Full CI/CD verification)
+- **Power BI:** `pbi-semantic-layer-tmdl`, `pbi-report-layer-pbir`, `pbi-quality-rules` (real
+  Best Practice Analyzer via the free Tabular Editor 2)
+- **Presentations:** `building-html-presentations` (reveal.js decks, flex-decks, interactive
+  sites, consulting PDFs + an 18-chart cookbook), `generating-pptx` (native **editable
+  PowerPoint** via python-pptx — real charts, not images), and `applying-visual-identity`
+  (apply your brand from a `DESIGN.md`)
+- **Docs:** `documentation-templates` — runbooks, data dictionaries, metric defs, ADRs, and the
+  Power BI dashboard catalog, each as a separate template file
+- **Governance:** `creating-agents-and-skills` — guides you to add an agent/skill only when it
+  helps, with quality, and keeps every installed tool folder in sync
+
+### 🔄 Workflows
+
+`/plan` (scope a task) · `/validate-pbi` (model health check via BPA) ·
+`/document-dashboard` (auto-generate a data catalog)
+
+---
+
+## 🛠️ Power BI: as code, not clicks
+
+The Power BI agent edits **PBIP** projects directly — **TMDL** for the semantic model and
+**PBIR** for reports — and validates with the **free Tabular Editor 2** Best Practice Analyzer.
+No paid tooling, no Fabric required. Microsoft's official `powerbi-modeling-mcp` (preview) is
+supported as an optional path for bulk refactors, but file editing is the default.
 
 ---
 
 ## 🔄 Multi-Platform Support
 
-The kit natively works with **Antigravity** (autonomous agents) via the `.agent` folder. If you also use **GitHub Copilot** or **Claude Code**, a sync script compiles the source into their formats:
+`.agent/` is the single source of truth. A sync script compiles it for every assistant:
 
 ```bash
 python scripts/sync_agents.py
 ```
 
+| Target | Output |
+|---|---|
+| Antigravity | `.agent/` (native) |
+| Claude Code | `.claude/` + `CLAUDE.md` |
+| GitHub Copilot | `.github/` + `copilot-instructions.md` |
+| OpenCode | `.opencode/` + `AGENTS.md` |
+| Cursor / others | root `AGENTS.md` |
+
 ---
 
 ## 🤝 Contributing & License
 
-Want to add a new agent or skill? Read the [CONTRIBUTING.md](CONTRIBUTING.md) guide. 
+Want to extend it? See [CONTRIBUTING.md](CONTRIBUTING.md) — especially the "should this agent
+exist?" gates.
 
 MIT © Lucca Pinto

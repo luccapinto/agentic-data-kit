@@ -1,7 +1,7 @@
 {
   "name": "@luccapinto/agentic-data-kit",
-  "version": "3.0.0",
-  "description": "AI Agent templates - Skills, Agents, and Workflows for Data Teams",
+  "version": "4.1.0",
+  "description": "Lean AI agents, skills, and workflows for Data Teams (Claude Code, GitHub Copilot, OpenCode, Antigravity)",
   "type": "module",
   "main": "bin/cli.js",
   "bin": {
@@ -19,8 +19,15 @@
     "agentic-ai",
     "ai",
     "agent",
-    "gemini",
     "skills",
+    "claude-code",
+    "github-copilot",
+    "power-bi",
+    "tmdl",
+    "data-engineering",
+    "presentations",
+    "reveal-js",
+    "design-md",
     "templates"
   ],
   "author": "Lucca Pinto",

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<!--
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  FLEX DECK — a "scrollable interactive deck" (no fixed PPT aspect ratio).   │
+  │                                                                            │
+  │  Each slide is a full-width sub-page that can be TALLER than the screen and │
+  │  scrolls vertically on its own; horizontal nav (arrows / dots / ‹ ›) moves  │
+  │  between slides. Includes DYNAMIC TOGGLE BUTTONS that swap the visual inside │
+  │  a slide (chart series, or chart↔table). No framework — pure HTML/CSS/JS so │
+  │  the layout is fully flexible. Same brand tokens as the other starters      │
+  │  (map from DESIGN.md). Demo content is a generic SALES review — replace it.  │
+  │  Pinned ECharts for reproducibility / offline once cached.                  │
+  └──────────────────────────────────────────────────────────────────────────┘
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Performance Review — Flex Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══ BRAND TOKENS — map from DESIGN.md ════════════════════════════════ */
+    :root{
+      --bg:#0B0F16; --surface:#121A24; --surface-2:#18222F; --border:rgba(255,255,255,0.08);
+      --text:#E7EEF6; --dim:#8593A6; --accent:#5B8DEF; --pos:#41C08A; --warn:#E0A949; --neg:#E0655B;
+      --font-display:"Space Grotesk","Inter",system-ui,sans-serif;
+      --font-body:"Inter",system-ui,-apple-system,sans-serif; --radius:14px; --pad:clamp(28px,5vw,72px);
+    }
+    *{box-sizing:border-box;} html,body{margin:0;height:100%;}
+    body{background:var(--bg);
+      background-image:radial-gradient(1200px 700px at 85% -5%,#16202E 0%,#0B0F16 55%);
+      color:var(--text);font-family:var(--font-body);line-height:1.6;overflow:hidden;}
+    h1,h2,h3{font-family:var(--font-display);line-height:1.1;letter-spacing:-0.5px;margin:0;}
+    .accent{color:var(--accent);}.pos{color:var(--pos);}.warn{color:var(--warn);}.neg{color:var(--neg);}
+    .eyebrow{font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--dim);}
+    .dim{color:var(--dim);}
+
+    /* ═══ DECK: horizontal track, each slide full-width & vertically scrollable */
+    .deck{display:flex;height:100vh;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;}
+    .deck::-webkit-scrollbar{display:none;} .deck{scrollbar-width:none;}
+    .slide{flex:0 0 100vw;height:100vh;overflow-y:auto;scroll-snap-align:start;
+      padding:var(--pad);padding-top:88px;padding-bottom:96px;scroll-behavior:smooth;}
+    .slide::-webkit-scrollbar{width:8px;} .slide::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;}
+    .slide.center{display:flex;flex-direction:column;justify-content:center;}
+    .wrap{max-width:1180px;margin:0 auto;}
+    .slide h1{font-size:clamp(36px,5.5vw,68px);font-weight:700;}
+    .slide h2.title{font-size:clamp(26px,3.4vw,40px);font-weight:700;margin-top:8px;}
+    .lead{color:var(--dim);font-size:clamp(15px,1.4vw,19px);max-width:760px;margin-top:14px;}
+
+    /* KPI band + grid */
+    .kpis{display:grid;gap:16px;margin-top:26px;}
+    .kpis.band{grid-template-columns:repeat(3,1fr);}
+    .kpis.grid{grid-template-columns:repeat(5,1fr);}
+    .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+    .kpi .val{font-family:var(--font-display);font-size:clamp(24px,2.4vw,34px);font-weight:700;color:var(--accent);}
+    .kpi .val.muted{color:var(--text);} .kpi .val.neg{color:var(--neg);} .kpi .val.warn{color:var(--warn);}
+    .kpi .lbl{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin-top:6px;}
+
+    /* panels */
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;}
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
+    .panel-head{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;font-size:18px;}
+    .panel-head .dot{width:8px;height:8px;border-radius:2px;background:var(--accent);}
+    .panel-head.pos .dot{background:var(--pos);}.panel-head.neg .dot{background:var(--neg);}
+    .panel .sub{font-size:13px;color:var(--dim);margin:4px 0 14px;}
+    .note{font-size:14px;color:var(--dim);} .note b.pos{color:var(--pos);}.note b.neg{color:var(--neg);}.note b.accent{color:var(--accent);}
+    .chart{height:300px;}
+
+    /* dynamic toggle buttons */
+    .toggle{display:inline-flex;gap:6px;background:var(--surface-2);border:1px solid var(--border);
+      border-radius:999px;padding:5px;margin-bottom:14px;}
+    .toggle button{background:none;border:none;color:var(--dim);font:inherit;font-size:13px;font-weight:600;
+      letter-spacing:0.5px;padding:7px 16px;border-radius:999px;cursor:pointer;}
+    .toggle button.on{background:var(--accent);color:#061018;}
+    [data-view]{display:none;} [data-view].on{display:block;}
+
+    /* bars */
+    .bars{display:flex;flex-direction:column;gap:11px;font-size:14px;margin-top:8px;}
+    .bar-row{display:grid;grid-template-columns:120px 1fr 56px 48px;align-items:center;gap:12px;}
+    .bar-track{background:var(--surface-2);border-radius:6px;height:14px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:6px;background:var(--accent);}
+    .bar-fill.pos{background:var(--pos);}.bar-fill.warn{background:var(--warn);}.bar-fill.neg{background:var(--neg);}
+    .bar-row .num{text-align:right;font-variant-numeric:tabular-nums;}
+    .bar-row .delta{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;}
+
+    /* table */
+    table{width:100%;border-collapse:collapse;font-size:14px;}
+    th,td{text-align:right;padding:11px 14px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;}
+    th:first-child,td:first-child{text-align:left;}
+    thead th{color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-size:12px;}
+    .source{font-size:12px;color:var(--dim);margin-top:18px;}
+    .scrollhint{margin-top:22px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);
+      display:flex;align-items:center;gap:8px;animation:bob 1.8s ease-in-out infinite;}
+    @keyframes bob{50%{transform:translateY(4px);}}
+
+    /* ═══ CHROME: counter, section tag, progress, nav ═════════════════════ */
+    .top{position:fixed;top:20px;left:0;right:0;display:flex;justify-content:space-between;padding:0 28px;
+      font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);z-index:30;pointer-events:none;}
+    #counter b{color:var(--accent);}
+    #progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:40;transition:width .35s ease;}
+    .nav{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;
+      background:rgba(18,26,36,0.82);border:1px solid var(--border);border-radius:999px;padding:8px 18px;z-index:30;
+      backdrop-filter:blur(6px);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);}
+    .nav button{background:none;border:none;color:var(--dim);cursor:pointer;font:inherit;letter-spacing:1.5px;text-transform:uppercase;}
+    .nav button:hover{color:var(--text);}
+    #dots{display:flex;gap:7px;} #dots i{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;}
+    #dots i.on{background:var(--accent);transform:scale(1.25);}
+    @media(max-width:760px){.kpis.band,.kpis.grid{grid-template-columns:repeat(2,1fr);}.row{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <div id="progress"></div>
+  <div class="top"><span id="section-tag">Overview</span><span id="counter"><b>01</b> / 04</span></div>
+
+  <div class="deck" id="deck">
+
+    <!-- ░░ 1 · COVER ░░ -->
+    <section class="slide center" data-section="Overview">
+      <div class="wrap">
+        <div class="eyebrow">Sales Performance Review · FY2026 · Q1</div>
+        <h1 style="margin:16px 0;">Q1 bookings closed <span class="accent">+12%</span> above plan</h1>
+        <p class="lead">A flexible, scrollable deck — each slide is a full sub-page you can scroll, with
+          buttons to switch visuals. Use ← → (or the nav below) to move between slides. Replace the demo
+          numbers with your own; never invent data.</p>
+        <div class="kpis band" style="margin-top:34px;">
+          <div class="kpi"><div class="val">$4.2M</div><div class="lbl">Bookings</div></div>
+          <div class="kpi"><div class="val">+12%</div><div class="lbl">vs. plan</div></div>
+          <div class="kpi"><div class="val muted">28%</div><div class="lbl">Win rate</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░ 2 · EXECUTIVE SUMMARY — TALL, scrolls vertically ░░ -->
+    <section class="slide" data-section="Executive summary">
+      <div class="wrap">
+        <div class="eyebrow">Section 01 · Summary</div>
+        <h2 class="title">Executive <span class="accent">summary</span></h2>
+        <p class="lead">General view, history, and priorities. This slide is taller than the screen —
+          scroll down inside it, then use → to advance.</p>
+
+        <!-- KPI band -->
+        <div class="kpis band">
+          <div class="kpi"><div class="val">86%</div><div class="lbl">Plan attainment</div></div>
+          <div class="kpi"><div class="val muted">60</div><div class="lbl">Net new logos</div></div>
+          <div class="kpi"><div class="val warn">87%</div><div class="lbl">Forecast accuracy</div></div>
+        </div>
+
+        <!-- Big KPI grid (like the reference's per-unit scores) -->
+        <h3 style="margin:30px 0 4px;font-size:20px;">Attainment by region & segment</h3>
+        <p class="dim" style="font-size:13px;margin:0 0 12px;">% of target · FY2026 Q1</p>
+        <div class="kpis grid">
+          <div class="kpi"><div class="val">118%</div><div class="lbl">North America</div></div>
+          <div class="kpi"><div class="val">104%</div><div class="lbl">EMEA</div></div>
+          <div class="kpi"><div class="val muted">96%</div><div class="lbl">LATAM</div></div>
+          <div class="kpi"><div class="val warn">88%</div><div class="lbl">APAC</div></div>
+          <div class="kpi"><div class="val">122%</div><div class="lbl">Enterprise</div></div>
+          <div class="kpi"><div class="val muted">99%</div><div class="lbl">Mid-market</div></div>
+          <div class="kpi"><div class="val neg">73%</div><div class="lbl">SMB</div></div>
+          <div class="kpi"><div class="val">131%</div><div class="lbl">Expansion</div></div>
+          <div class="kpi"><div class="val muted">94%</div><div class="lbl">New business</div></div>
+          <div class="kpi"><div class="val">112%</div><div class="lbl">Partner</div></div>
+        </div>
+
+        <!-- Charts row with a DYNAMIC toggle that swaps the series -->
+        <div class="row">
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Trend — last 4 quarters</div>
+            <div class="toggle" id="tg-trend">
+              <button class="on" data-series="bookings">Bookings ($M)</button>
+              <button data-series="win">Win rate (%)</button>
+            </div>
+            <div id="chart-trend" class="chart"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Region attainment</div>
+            <div class="sub">% of quarterly target</div>
+            <div class="bars">
+              <div class="bar-row"><span>North America</span><div class="bar-track"><div class="bar-fill pos" style="width:100%"></div></div><span class="num">118%</span><span class="delta pos">+18</span></div>
+              <div class="bar-row"><span>EMEA</span><div class="bar-track"><div class="bar-fill pos" style="width:96%"></div></div><span class="num">104%</span><span class="delta pos">+4</span></div>
+              <div class="bar-row"><span>LATAM</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><span class="num">96%</span><span class="delta neg">−4</span></div>
+              <div class="bar-row"><span>APAC</span><div class="bar-track"><div class="bar-fill warn" style="width:80%"></div></div><span class="num">88%</span><span class="delta neg">−12</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second charts row — more chart variety (grouped bar + scatter) -->
+        <div class="row">
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Attainment: plan vs. actual</div>
+            <div class="sub">% of target, by segment</div>
+            <div id="chart-seg" class="chart"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Deal size vs. win rate</div>
+            <div class="sub">each point = a segment</div>
+            <div id="chart-scatter" class="chart"></div>
+          </div>
+        </div>
+
+        <!-- Narrative row -->
+        <div class="row">
+          <div class="panel">
+            <div class="panel-head pos"><span class="dot"></span>What's working</div>
+            <p class="note" style="margin-top:10px;"><b class="pos">Enterprise</b> drove the beat — larger
+              deals, faster cycles. <b class="pos">Expansion</b> kept NRR above target. Double down on the
+              enterprise motion and the partner channel.</p>
+          </div>
+          <div class="panel">
+            <div class="panel-head neg"><span class="dot"></span>Where to focus</div>
+            <p class="note" style="margin-top:10px;"><b class="neg">SMB</b> win rate slipped on late-stage
+              stalls. <b class="accent">Discounting</b> pressured margin on competitive deals. Tighten
+              qualification and approval guardrails this quarter.</p>
+          </div>
+        </div>
+        <p class="source">Source: gold.fct_bookings · grain: deal · FY2026 Q1 — TODO real values</p>
+      </div>
+    </section>
+
+    <!-- ░░ 3 · REGIONS — DYNAMIC chart ↔ table toggle ░░ -->
+    <section class="slide" data-section="Regions">
+      <div class="wrap">
+        <div class="eyebrow">Section 02 · Regions</div>
+        <h2 class="title">Regional <span class="accent">detail</span></h2>
+        <p class="lead">Same data, two views — use the buttons to switch between the chart and the table.</p>
+
+        <div class="toggle" id="tg-view" style="margin-top:18px;">
+          <button class="on" data-target="chart">Chart</button>
+          <button data-target="table">Table</button>
+        </div>
+
+        <div class="panel">
+          <div data-view="chart" class="on"><div id="chart-region" class="chart" style="height:360px;"></div></div>
+          <div data-view="table">
+            <table>
+              <thead><tr><th>Region</th><th>Bookings</th><th>Attainment</th><th>Deals</th><th>Win rate</th></tr></thead>
+              <tbody>
+                <tr><td>North America</td><td>$1.8M</td><td class="pos">118%</td><td>402</td><td>31%</td></tr>
+                <tr><td>EMEA</td><td>$1.1M</td><td class="pos">104%</td><td>318</td><td>29%</td></tr>
+                <tr><td>LATAM</td><td>$0.7M</td><td>96%</td><td>266</td><td>26%</td></tr>
+                <tr><td>APAC</td><td>$0.6M</td><td class="neg">88%</td><td>254</td><td>22%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="source">Source: gold.fct_bookings · grain: deal · FY2026 Q1 — TODO real values</p>
+      </div>
+    </section>
+
+    <!-- ░░ 4 · NEXT ░░ -->
+    <section class="slide center" data-section="Next steps">
+      <div class="wrap">
+        <div class="eyebrow">So what — and next</div>
+        <h1 style="font-size:clamp(30px,4vw,52px);margin:12px 0 26px;">Three moves <span class="accent">from here</span></h1>
+        <div class="row" style="grid-template-columns:repeat(3,1fr);">
+          <div class="panel"><div class="panel-head"><span class="dot"></span>1 · Scale enterprise</div><p class="note" style="margin-top:10px;">Reallocate reps to the motion that beat plan. Owner · timeline.</p></div>
+          <div class="panel"><div class="panel-head"><span class="dot"></span>2 · Fix SMB funnel</div><p class="note" style="margin-top:10px;">Tighten qualification + discount guardrails. Measure: SMB win rate.</p></div>
+          <div class="panel"><div class="panel-head"><span class="dot"></span>3 · Revisit APAC</div><p class="note" style="margin-top:10px;">90-day ramp plan; re-check attainment next quarter.</p></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="nav">
+    <button id="prev">‹ Prev</button><div id="dots"></div><button id="next">Next ›</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script>
+    const css=getComputedStyle(document.documentElement);
+    const ACCENT=css.getPropertyValue('--accent').trim(), DIM=css.getPropertyValue('--dim').trim();
+    const POS=css.getPropertyValue('--pos').trim(), WARN=css.getPropertyValue('--warn').trim();
+
+    /* ── Horizontal navigation between full-width slides ── */
+    const deck=document.getElementById('deck');
+    const slides=[...document.querySelectorAll('.slide')];
+    const total=slides.length, dots=document.getElementById('dots');
+    slides.forEach((_,i)=>{const d=document.createElement('i');d.onclick=()=>go(i);dots.appendChild(d);});
+    const pad2=n=>String(n+1).padStart(2,'0');
+    let cur=0;
+    function go(i){cur=Math.max(0,Math.min(total-1,i));slides[cur].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'});refresh();}
+    function refresh(){
+      cur=Math.round(deck.scrollLeft/window.innerWidth);
+      document.getElementById('counter').innerHTML=`<b>${pad2(cur)}</b> / ${String(total).padStart(2,'0')}`;
+      document.getElementById('progress').style.width=((cur+1)/total*100)+'%';
+      document.getElementById('section-tag').textContent=slides[cur].dataset.section||'';
+      [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+    }
+    deck.addEventListener('scroll',()=>requestAnimationFrame(refresh),{passive:true});
+    document.getElementById('prev').onclick=()=>go(cur-1);
+    document.getElementById('next').onclick=()=>go(cur+1);
+    addEventListener('keydown',e=>{ // ←/→ change slide; ↑/↓ scroll within slide (native)
+      if(e.key==='ArrowRight'){e.preventDefault();go(cur+1);}
+      if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1);}
+    });
+    addEventListener('resize',()=>slides[cur].scrollIntoView({inline:'start',block:'nearest'}));
+    refresh();
+
+    /* ── Charts + dynamic toggles ── */
+    const axis={axisLine:{lineStyle:{color:DIM}},axisLabel:{color:DIM}};
+    const split={splitLine:{lineStyle:{color:'rgba(255,255,255,0.06)'}},axisLabel:{color:DIM}};
+    const Q=['Q2/25','Q3/25','Q4/25','Q1/26'];
+    const DATA={bookings:[3.1,3.5,3.8,4.2],win:[24,26,27,28]};
+    let trend;
+    function drawTrend(series){
+      trend=trend||echarts.init(document.getElementById('chart-trend'),null,{renderer:'svg'});
+      trend.setOption({grid:{left:38,right:16,top:20,bottom:28},
+        xAxis:{type:'category',data:Q,...axis},yAxis:{type:'value',...split},
+        series:[{type:'line',smooth:true,data:DATA[series],symbolSize:8,
+          lineStyle:{color:ACCENT,width:3},itemStyle:{color:ACCENT},
+          label:{show:true,color:'#E7EEF6'},areaStyle:{color:'rgba(91,141,239,0.12)'}}]});
+    }
+    let region;
+    function drawRegion(){
+      region=region||echarts.init(document.getElementById('chart-region'),null,{renderer:'svg'});
+      region.setOption({tooltip:{trigger:'item'},series:[{type:'pie',radius:['52%','78%'],
+        itemStyle:{borderColor:'#0B0F16',borderWidth:2},label:{color:DIM},data:[
+          {name:'North America',value:42,itemStyle:{color:ACCENT}},
+          {name:'EMEA',value:28,itemStyle:{color:POS}},
+          {name:'LATAM',value:18,itemStyle:{color:WARN}},
+          {name:'APAC',value:12,itemStyle:{color:'#5B6675'}}]}]});
+    }
+    // grouped bar — plan vs actual attainment by segment
+    function drawSeg(){
+      const c=echarts.init(document.getElementById('chart-seg'),null,{renderer:'svg'});
+      c.setOption({grid:{left:38,right:14,top:18,bottom:40},legend:{bottom:0,textStyle:{color:DIM}},
+        xAxis:{type:'category',data:['Enterprise','Mid-market','SMB'],...axis},yAxis:{type:'value',...split},
+        series:[{name:'Plan',type:'bar',data:[100,100,100],itemStyle:{color:'#5B6675'}},
+                {name:'Actual',type:'bar',data:[122,99,73],itemStyle:{color:ACCENT,borderRadius:[3,3,0,0]}}]});
+      addEventListener('resize',()=>c.resize());
+    }
+    // scatter — deal size vs win rate
+    function drawScatter(){
+      const c=echarts.init(document.getElementById('chart-scatter'),null,{renderer:'svg'});
+      c.setOption({grid:{left:42,right:16,top:18,bottom:30},
+        xAxis:{type:'value',name:'Avg deal ($K)',nameTextStyle:{color:DIM},...axis},
+        yAxis:{type:'value',name:'Win %',nameTextStyle:{color:DIM},...split},
+        series:[{type:'scatter',symbolSize:14,data:[[5.1,31],[3.5,29],[2.6,26],[2.4,22]],itemStyle:{color:ACCENT}}]});
+      addEventListener('resize',()=>c.resize());
+    }
+    addEventListener('load',()=>{drawTrend('bookings');drawRegion();drawSeg();drawScatter();});
+
+    // toggle: swap trend series
+    document.getElementById('tg-trend').addEventListener('click',e=>{
+      const b=e.target.closest('button'); if(!b)return;
+      [...e.currentTarget.children].forEach(x=>x.classList.toggle('on',x===b));
+      drawTrend(b.dataset.series);
+    });
+    // toggle: chart ↔ table
+    document.getElementById('tg-view').addEventListener('click',e=>{
+      const b=e.target.closest('button'); if(!b)return;
+      [...e.currentTarget.children].forEach(x=>x.classList.toggle('on',x===b));
+      document.querySelectorAll('[data-view]').forEach(v=>v.classList.toggle('on',v.dataset.view===b.dataset.target));
+      if(b.dataset.target==='chart'&&region) region.resize();
+    });
+    addEventListener('resize',()=>{trend&&trend.resize();region&&region.resize();});
+  </script>
+</body>
+</html>
