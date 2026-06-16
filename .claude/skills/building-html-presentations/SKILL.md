@@ -16,7 +16,8 @@ with `applying-visual-identity` to make the output on-brand.
 | **Slide deck** | Live readout / meeting; linear narrative, fixed canvas | **reveal.js** (default) | HTML, PDF (`?print-pdf`) |
 | **Flexible / scrollable deck** | Slides that hold more than one screen and need in-slide scroll + buttons to switch visuals | custom vanilla JS (`flex-deck.html`) | HTML |
 | **Interactive site** | Self-serve exploration; one long scrolling page with anchors | single static HTML page (`interactive-site.html`) | HTML |
-| **PDF / print handout** | Leave-behind, email, no-JS audience | **Marp** (Markdown → PDF/PPTX) | PDF, PPTX |
+| **Designed report PDF** | Polished consulting-style document (action titles, exhibits) | HTML print template (`report-pdf.html`) | PDF (print) |
+| **Quick handout PDF/PPTX** | Plain Markdown deliverable, no custom design | **Marp** (Markdown → PDF/PPTX) | PDF, PPTX |
 
 Default to **reveal.js**: most mature, pure HTML/CSS (easy theming from `DESIGN.md`), and it
 exports to PDF — so one source covers deck + site + print. Reach for **Marp** only when the
@@ -64,7 +65,11 @@ don't default to it.
 - `interactive-site.html` — a single-file **scrolling report site** (not slides): sticky nav with
   active-link highlight, reading-progress bar, hero + KPI band, scroll-reveal sections, a sticky
   data table, and ECharts (line + donut). Same tokens as the deck. Use for self-serve exploration.
-- `marp-deck.md` — Markdown deck for clean PDF/PPTX export with brand front-matter.
+- `report-pdf.html` — a **consulting-style report** (McKinsey/Deloitte feel) built for PDF export:
+  print-first A4, light theme, page header/footer chrome, **full-sentence action titles**, numbered
+  **Exhibits** with source lines, an executive summary with numbered key findings + a takeaways box.
+  Export via Chrome Print → Save as PDF (A4, margins none, background graphics on).
+- `marp-deck.md` — Markdown deck for a quick, plain PDF/PPTX deliverable (no custom design).
 - `data-story-outline.md` — fill-in narrative skeleton for analyses, EDA, and business plans.
 
 All HTML starters use a generic **sales review** as demo content — replace it with your own.

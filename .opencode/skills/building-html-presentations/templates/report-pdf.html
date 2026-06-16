@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<!--
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  CONSULTING REPORT (PDF) — McKinsey / Deloitte-style exploratory analysis.  │
+  │                                                                            │
+  │  Print-first, A4, light theme. Each .page is one physical sheet with a      │
+  │  running header (kicker + rule) and footer (source · page · confidential).  │
+  │  Signature elements: full-sentence ACTION TITLES, numbered EXHIBITS with     │
+  │  source lines, executive summary with numbered key findings + takeaways box. │
+  │                                                                            │
+  │  EXPORT TO PDF:  open in Chrome → Print (Ctrl/Cmd+P) → Destination "Save as │
+  │  PDF" → Paper A4, Margins "None", and TICK "Background graphics".            │
+  │  Brand tokens in :root map from DESIGN.md. Demo = generic SALES EDA — swap. │
+  └──────────────────────────────────────────────────────────────────────────┘
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Revenue Performance — An Exploratory Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══ BRAND TOKENS — map from DESIGN.md (light/print palette) ══════════ */
+    :root{
+      --ink:#1B2733; --accent:#14517B; --accent-2:#0E7C66; --muted:#6A7787;
+      --rule:#DCE2E9; --soft:#F3F6F9; --bg:#FFFFFF;
+      --pos:#1E7A4D; --neg:#B23A2E; --warn:#9A6B12;
+      --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+      --sans:"Inter",Arial,system-ui,sans-serif;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;background:#525964;font-family:var(--sans);color:var(--ink);}
+    h1,h2,h3,h4{margin:0;}
+
+    /* ═══ PAGE MODEL ═══════════════════════════════════════════════════════ */
+    .page{position:relative;width:210mm;min-height:297mm;background:var(--bg);margin:10mm auto;
+      padding:16mm 18mm;display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(0,0,0,0.3);}
+    .page-header{display:flex;justify-content:space-between;align-items:flex-end;
+      border-bottom:1px solid var(--rule);padding-bottom:8px;font-size:9.5px;letter-spacing:1.5px;
+      text-transform:uppercase;color:var(--muted);}
+    .page-header .accent-tab{color:var(--accent);font-weight:700;}
+    .page-body{flex:1;padding-top:22px;}
+    .page-footer{display:flex;justify-content:space-between;border-top:1px solid var(--rule);
+      padding-top:8px;font-size:9px;color:var(--muted);letter-spacing:0.3px;}
+
+    /* ═══ TYPE ═════════════════════════════════════════════════════════════ */
+    .kicker{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);}
+    .action-title{font-family:var(--sans);font-weight:700;font-size:21px;line-height:1.25;
+      letter-spacing:-0.3px;max-width:90%;margin-top:4px;}
+    .dek{font-size:12px;color:var(--muted);line-height:1.55;margin-top:10px;max-width:88%;}
+    p{font-size:12px;line-height:1.6;}
+
+    /* ═══ EXHIBITS ═════════════════════════════════════════════════════════ */
+    .exhibit{margin-top:22px;}
+    .exhibit-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--ink);border-left:3px solid var(--accent);padding-left:9px;}
+    .exhibit-title{font-family:var(--serif);font-weight:600;font-size:15px;margin:6px 0 2px 12px;}
+    .exhibit-sub{font-size:10.5px;color:var(--muted);margin:0 0 12px 12px;}
+    .exhibit-source{font-size:9px;color:var(--muted);margin-top:8px;margin-left:12px;font-style:italic;}
+    .chart{height:230px;margin-left:6px;}
+
+    /* CSS bar exhibit (always prints, no JS) */
+    .bars{display:flex;flex-direction:column;gap:9px;margin-left:12px;font-size:11px;}
+    .bar-row{display:grid;grid-template-columns:110px 1fr 46px;align-items:center;gap:10px;}
+    .bar-track{background:var(--soft);border-radius:3px;height:13px;overflow:hidden;}
+    .bar-fill{height:100%;background:var(--accent);border-radius:3px;}
+    .bar-fill.alt{background:var(--accent-2);}
+    .bar-row .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;}
+
+    /* ═══ EXEC SUMMARY ═════════════════════════════════════════════════════ */
+    .summary-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:28px;margin-top:20px;}
+    .findings{display:flex;flex-direction:column;gap:18px;}
+    .finding{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start;}
+    .finding .n{font-family:var(--serif);font-size:30px;font-weight:700;color:var(--accent);line-height:1;}
+    .finding h4{font-size:13px;margin-bottom:3px;}
+    .finding p{font-size:11px;color:var(--muted);margin:0;}
+    .takeaways{background:var(--soft);border-top:3px solid var(--accent);padding:20px 22px;}
+    .takeaways h4{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+    .takeaways ul{margin:0;padding-left:16px;} .takeaways li{font-size:11px;line-height:1.5;margin-bottom:10px;}
+
+    /* KPI strip */
+    .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--rule);
+      border-radius:6px;overflow:hidden;margin-top:18px;}
+    .kpi-strip .k{padding:14px 18px;border-right:1px solid var(--rule);}
+    .kpi-strip .k:last-child{border-right:none;}
+    .kpi-strip .v{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--accent);}
+    .kpi-strip .v.muted{color:var(--ink);}
+    .kpi-strip .l{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+    /* tables */
+    table{width:100%;border-collapse:collapse;font-size:11px;margin-left:6px;}
+    th,td{text-align:right;padding:9px 12px;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums;}
+    th:first-child,td:first-child{text-align:left;}
+    thead th{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1.5px solid var(--ink);}
+    tbody tr:last-child td{border-bottom:1.5px solid var(--ink);font-weight:700;}
+    .pos{color:var(--pos);} .neg{color:var(--neg);} .warn{color:var(--warn);}
+
+    /* recommendations */
+    .recs{counter-reset:r;margin-top:18px;}
+    .rec{display:grid;grid-template-columns:30px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--rule);}
+    .rec::before{counter-increment:r;content:counter(r);font-family:var(--serif);font-size:22px;font-weight:700;color:var(--accent);}
+    .rec h4{font-size:13px;margin-bottom:3px;} .rec p{font-size:11px;color:var(--muted);margin:0;}
+
+    /* ═══ COVER ════════════════════════════════════════════════════════════ */
+    .cover{justify-content:space-between;}
+    .cover .accent-bar{height:6px;width:120px;background:var(--accent);}
+    .cover .c-mid h1{font-family:var(--serif);font-size:46px;font-weight:700;line-height:1.05;letter-spacing:-1px;}
+    .cover .c-mid .sub{font-size:16px;color:var(--muted);margin-top:14px;max-width:80%;}
+    .cover .meta{display:flex;gap:48px;font-size:11px;}
+    .cover .meta .l{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+
+    /* screen-only helper banner */
+    .hint{max-width:210mm;margin:14px auto 0;color:#D6DCE4;font-size:12px;font-family:var(--sans);text-align:center;}
+    @media print{
+      body{background:#fff;} .hint{display:none;}
+      .page{margin:0;box-shadow:none;width:auto;min-height:auto;page-break-after:always;break-after:page;}
+      .page:last-child{page-break-after:auto;}
+      @page{size:A4;margin:0;}
+    }
+  </style>
+</head>
+<body>
+  <div class="hint">Screen preview · to export: Print (Ctrl/Cmd+P) → Save as PDF → A4, Margins “None”, tick “Background graphics”.</div>
+
+  <!-- ░░ PAGE 1 · COVER ░░ -->
+  <section class="page cover">
+    <div>
+      <div class="accent-bar"></div>
+      <div class="kicker" style="margin-top:18px;">Confidential — Draft for discussion</div>
+    </div>
+    <div class="c-mid">
+      <h1>Revenue Performance</h1>
+      <p class="sub">An exploratory analysis of FY2026 Q1 bookings — trends, concentration, and drivers</p>
+    </div>
+    <div class="meta">
+      <div><div class="l">Prepared for</div>Executive Committee</div>
+      <div><div class="l">Prepared by</div>Analytics Team</div>
+      <div><div class="l">Date</div>June 2026</div>
+    </div>
+  </section>
+
+  <!-- ░░ PAGE 2 · EXECUTIVE SUMMARY ░░ -->
+  <section class="page">
+    <div class="page-header"><span class="accent-tab">Executive summary</span><span>Revenue Performance · FY2026 Q1</span></div>
+    <div class="page-body">
+      <div class="kicker">Executive summary</div>
+      <h2 class="action-title">Bookings beat plan by 12%, but growth is concentrated in enterprise and increasingly at risk in SMB</h2>
+      <p class="dek">Q1 bookings reached $4.2M (+12% vs. plan, +35% over four quarters). The upside is real
+        but narrow: two regions and the enterprise segment carry most of it, while SMB and discounting are
+        early warning signs for H2.</p>
+
+      <div class="kpi-strip">
+        <div class="k"><div class="v">$4.2M</div><div class="l">Bookings</div></div>
+        <div class="k"><div class="v">+12%</div><div class="l">vs. plan</div></div>
+        <div class="k"><div class="v muted">28%</div><div class="l">Win rate</div></div>
+        <div class="k"><div class="v muted">$9.1M</div><div class="l">Pipeline</div></div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="findings">
+          <div class="finding"><div class="n">1</div><div><h4>Growth is steady but accelerating in enterprise</h4><p>Bookings rose every quarter; the Q4→Q1 step was the largest, led by enterprise deals.</p></div></div>
+          <div class="finding"><div class="n">2</div><div><h4>Concentration risk</h4><p>The top two regions account for ~70% of bookings, leaving the result exposed to a few accounts.</p></div></div>
+          <div class="finding"><div class="n">3</div><div><h4>SMB is softening</h4><p>SMB attainment fell to 73% as deals stalled late-stage; win rate dipped quarter-over-quarter.</p></div></div>
+          <div class="finding"><div class="n">4</div><div><h4>Margin pressure from discounting</h4><p>Competitive deals closed at higher discounts, diluting realized price on ~1 in 5 deals.</p></div></div>
+        </div>
+        <div class="takeaways">
+          <h4>Key takeaways</h4>
+          <ul>
+            <li>Double down on the enterprise motion that drove the beat.</li>
+            <li>De-risk concentration by broadening the mid-market pipeline.</li>
+            <li>Intervene on SMB qualification and discount governance now.</li>
+            <li>Re-forecast H2 with explicit downside scenarios.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer"><span>Source: company data (gold.fct_bookings)</span><span>Confidential · 2</span></div>
+  </section>
+
+  <!-- ░░ PAGE 3 · EXHIBIT 1 (trend) ░░ -->
+  <section class="page">
+    <div class="page-header"><span class="accent-tab">01 · Trend</span><span>Revenue Performance · FY2026 Q1</span></div>
+    <div class="page-body">
+      <div class="kicker">Trend</div>
+      <h2 class="action-title">Bookings grew every quarter, up 35% since Q2 and accelerating into Q1</h2>
+      <p class="dek">The four-quarter trajectory is consistently positive, with the steepest gain in the
+        most recent quarter — consistent with the enterprise deals closing later in the cycle.</p>
+
+      <div class="exhibit">
+        <div class="exhibit-label">Exhibit 1</div>
+        <div class="exhibit-title">Quarterly bookings, last four quarters</div>
+        <div class="exhibit-sub">$M, closed-won</div>
+        <div id="chart-trend" class="chart"></div>
+        <div class="exhibit-source">Source: company data; n = 1,240 closed-won deals. Figures illustrative — replace with real values.</div>
+      </div>
+    </div>
+    <div class="page-footer"><span>Source: company data (gold.fct_bookings)</span><span>Confidential · 3</span></div>
+  </section>
+
+  <!-- ░░ PAGE 4 · EXHIBITS 2 & 3 (concentration) ░░ -->
+  <section class="page">
+    <div class="page-header"><span class="accent-tab">02 · Concentration</span><span>Revenue Performance · FY2026 Q1</span></div>
+    <div class="page-body">
+      <div class="kicker">Concentration</div>
+      <h2 class="action-title">Two regions drive ~70% of bookings; enterprise outperforms while SMB lags</h2>
+      <p class="dek">Bookings are unevenly distributed across regions and segments. The pattern points to a
+        scalable enterprise motion and a structural weakness in SMB.</p>
+
+      <div class="exhibit">
+        <div class="exhibit-label">Exhibit 2</div>
+        <div class="exhibit-title">Bookings by region</div>
+        <div class="exhibit-sub">$M and share of total</div>
+        <div class="bars">
+          <div class="bar-row"><span>North America</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="num">$1.8M</span></div>
+          <div class="bar-row"><span>EMEA</span><div class="bar-track"><div class="bar-fill" style="width:61%"></div></div><span class="num">$1.1M</span></div>
+          <div class="bar-row"><span>LATAM</span><div class="bar-track"><div class="bar-fill" style="width:39%"></div></div><span class="num">$0.7M</span></div>
+          <div class="bar-row"><span>APAC</span><div class="bar-track"><div class="bar-fill" style="width:33%"></div></div><span class="num">$0.6M</span></div>
+        </div>
+        <div class="exhibit-source">Source: company data; shares sum to 100% of $4.2M total.</div>
+      </div>
+
+      <div class="exhibit">
+        <div class="exhibit-label">Exhibit 3</div>
+        <div class="exhibit-title">Attainment by segment</div>
+        <div class="exhibit-sub">% of quarterly target</div>
+        <div class="bars">
+          <div class="bar-row"><span>Enterprise</span><div class="bar-track"><div class="bar-fill alt" style="width:100%"></div></div><span class="num">122%</span></div>
+          <div class="bar-row"><span>Mid-market</span><div class="bar-track"><div class="bar-fill alt" style="width:81%"></div></div><span class="num">99%</span></div>
+          <div class="bar-row"><span>SMB</span><div class="bar-track"><div class="bar-fill alt" style="width:60%"></div></div><span class="num warn">73%</span></div>
+        </div>
+        <div class="exhibit-source">Source: company data; target set at FY2026 plan.</div>
+      </div>
+    </div>
+    <div class="page-footer"><span>Source: company data (gold.fct_bookings)</span><span>Confidential · 4</span></div>
+  </section>
+
+  <!-- ░░ PAGE 5 · DATA APPENDIX (table) ░░ -->
+  <section class="page">
+    <div class="page-header"><span class="accent-tab">Appendix</span><span>Revenue Performance · FY2026 Q1</span></div>
+    <div class="page-body">
+      <div class="kicker">Detail</div>
+      <h2 class="action-title">Region-level detail confirms the concentration and the SMB drag</h2>
+      <p class="dek">Supporting figures for the exhibits above; review alongside data lineage in the notes.</p>
+
+      <div class="exhibit">
+        <div class="exhibit-label">Exhibit 4</div>
+        <div class="exhibit-title">Bookings and performance by region</div>
+        <table>
+          <thead><tr><th>Region</th><th>Bookings</th><th>Attainment</th><th>Deals</th><th>Avg deal</th><th>Win rate</th></tr></thead>
+          <tbody>
+            <tr><td>North America</td><td>$1.8M</td><td class="pos">118%</td><td>402</td><td>$4.5K</td><td>31%</td></tr>
+            <tr><td>EMEA</td><td>$1.1M</td><td class="pos">104%</td><td>318</td><td>$3.5K</td><td>29%</td></tr>
+            <tr><td>LATAM</td><td>$0.7M</td><td>96%</td><td>266</td><td>$2.6K</td><td>26%</td></tr>
+            <tr><td>APAC</td><td>$0.6M</td><td class="neg">88%</td><td>254</td><td>$2.4K</td><td>22%</td></tr>
+            <tr><td>Total</td><td>$4.2M</td><td>112%</td><td>1,240</td><td>$3.4K</td><td>28%</td></tr>
+          </tbody>
+        </table>
+        <div class="exhibit-source">Source: company data. Figures illustrative — replace with real, sourced values; never invent data.</div>
+      </div>
+    </div>
+    <div class="page-footer"><span>Source: company data (gold.fct_bookings)</span><span>Confidential · 5</span></div>
+  </section>
+
+  <!-- ░░ PAGE 6 · RECOMMENDATIONS ░░ -->
+  <section class="page">
+    <div class="page-header"><span class="accent-tab">Recommendations</span><span>Revenue Performance · FY2026 Q1</span></div>
+    <div class="page-body">
+      <div class="kicker">So what — and next</div>
+      <h2 class="action-title">Four moves to protect the upside and de-risk the quarter</h2>
+      <div class="recs">
+        <div class="rec"><div><h4>Scale the enterprise motion</h4><p>Reallocate capacity to the segment that beat plan; formalize the winning play. Owner · timeline.</p></div></div>
+        <div class="rec"><div><h4>Broaden mid-market pipeline</h4><p>Reduce concentration risk by building coverage beyond the top two regions. Measure: pipeline by region.</p></div></div>
+        <div class="rec"><div><h4>Fix the SMB funnel</h4><p>Tighten qualification and approval guardrails; address late-stage stalls. Measure: SMB win rate.</p></div></div>
+        <div class="rec"><div><h4>Re-forecast H2 with scenarios</h4><p>Model explicit downside on SMB and discounting; set checkpoints for the next review.</p></div></div>
+      </div>
+    </div>
+    <div class="page-footer"><span>Source: company data (gold.fct_bookings)</span><span>Confidential · 6</span></div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script>
+    // SVG renderer prints cleanly. Charts render on load so Print captures them.
+    addEventListener('load',()=>{
+      if(!window.echarts)return;
+      const css=getComputedStyle(document.documentElement);
+      const ACCENT=css.getPropertyValue('--accent').trim(), MUTED=css.getPropertyValue('--muted').trim();
+      const c=echarts.init(document.getElementById('chart-trend'),null,{renderer:'svg'});
+      c.setOption({
+        grid:{left:34,right:14,top:24,bottom:26},
+        xAxis:{type:'category',data:['Q2/25','Q3/25','Q4/25','Q1/26'],
+          axisLine:{lineStyle:{color:MUTED}},axisLabel:{color:MUTED},axisTick:{show:false}},
+        yAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF1F5'}},axisLabel:{color:MUTED}},
+        series:[{type:'line',data:[3.1,3.5,3.8,4.2],smooth:false,symbolSize:7,
+          lineStyle:{color:ACCENT,width:2.5},itemStyle:{color:ACCENT},
+          label:{show:true,position:'top',color:'#1B2733',fontWeight:600}}],
+      });
+      addEventListener('resize',()=>c.resize());
+    });
+  </script>
+</body>
+</html>
