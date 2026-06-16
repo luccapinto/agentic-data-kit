@@ -14,7 +14,7 @@ with `applying-visual-identity` to make the output on-brand.
 | Output | Use when | Engine | Export |
 |---|---|---|---|
 | **Slide deck** | Live readout / meeting; linear narrative | **reveal.js** (default) | HTML, PDF (`?print-pdf`) |
-| **Interactive site** | Self-serve exploration; scroll, filters, embedded charts | reveal.js scroll mode *or* a single static HTML page | HTML |
+| **Interactive site** | Self-serve exploration; scroll, anchors, embedded charts | single static HTML page (`interactive-site.html`) | HTML |
 | **PDF / print handout** | Leave-behind, email, no-JS audience | **Marp** (Markdown → PDF/PPTX) | PDF, PPTX |
 
 Default to **reveal.js**: most mature, pure HTML/CSS (easy theming from `DESIGN.md`), and it
@@ -32,7 +32,17 @@ don't default to it.
    tokens to CSS variables (see that skill). Otherwise use the neutral defaults in the starter.
 4. **Build from a starter** (`templates/`), drop in real numbers and charts, keep it
    **self-contained** (works offline; pin CDN versions or vendor the files).
-5. **Export** if needed: reveal.js → open with `?print-pdf` and print to PDF; Marp → `marp deck.md --pdf`.
+5. **Export** if needed (see the export note below).
+
+## Exporting (incl. PowerPoint)
+- **reveal.js → PDF:** open the deck with `?print-pdf` appended, then print → Save as PDF. This is
+  the clean, high-fidelity export.
+- **reveal.js → PPTX:** there is **no native, editable** path. If a `.pptx` file is required, use
+  **Marp** (`marp deck.md --pptx`) — but note each slide becomes an **image** (not editable text).
+  A PDF→PPTX converter is equally image-based. For truly editable native PPTX, generate it
+  separately (e.g. `python-pptx`); tell the user it's a different workflow, not an HTML export.
+- **Marp → PDF / PPTX:** `marp deck.md --pdf` or `--pptx`.
+- **Interactive site:** ship the HTML file itself (or host it); it isn't meant for PDF/PPTX.
 
 ## Starters (in `templates/`)
 - `reveal-deck.html` — a sophisticated, single-file **data-dashboard deck system** (dark theme,
@@ -46,8 +56,13 @@ don't default to it.
   - **Charts**: pure-CSS bars for rankings + **ECharts** (pinned) for line/combo charts.
   Copy it, swap the tokens, replace the demo content. Reach for the panel/bar/heatmap classes
   rather than hand-rolling layout each time.
+- `interactive-site.html` — a single-file **scrolling report site** (not slides): sticky nav with
+  active-link highlight, reading-progress bar, hero + KPI band, scroll-reveal sections, a sticky
+  data table, and ECharts (line + donut). Same tokens as the deck. Use for self-serve exploration.
 - `marp-deck.md` — Markdown deck for clean PDF/PPTX export with brand front-matter.
 - `data-story-outline.md` — fill-in narrative skeleton for analyses, EDA, and business plans.
+
+Both HTML starters use a generic **sales review** as demo content — replace it with your own.
 
 ## Charts & data
 - Embed charts as inline SVG or a small JS lib (e.g. Chart.js / ECharts via pinned CDN). Prefer

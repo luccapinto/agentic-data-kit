@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!--
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  INTERACTIVE REPORT SITE — single-file, self-contained (no slides).        │
+  │                                                                            │
+  │  A scrolling, self-serve data report (vs. the linear reveal.js deck). Same │
+  │  brand tokens as reveal-deck.html — map them from your DESIGN.md. Features: │
+  │  sticky top nav with anchor links + active highlight, reading-progress bar, │
+  │  hero + KPI band, scroll-reveal sections, sticky-side TOC, ECharts, tables. │
+  │  Demo content is a generic SALES review — replace it; never invent numbers. │
+  │  Versions pinned for reproducibility / offline once cached.                 │
+  └──────────────────────────────────────────────────────────────────────────┘
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Performance Review — Interactive Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══ BRAND TOKENS — map from DESIGN.md ════════════════════════════════ */
+    :root {
+      --bg:#0B0F16; --surface:#121A24; --surface-2:#18222F; --border:rgba(255,255,255,0.08);
+      --text:#E7EEF6; --dim:#8593A6; --accent:#5B8DEF; --pos:#41C08A; --warn:#E0A949; --neg:#E0655B;
+      --font-display:"Space Grotesk","Inter",system-ui,sans-serif;
+      --font-body:"Inter",system-ui,-apple-system,sans-serif; --radius:14px; --maxw:1080px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+    body { margin:0; background:var(--bg);
+      background-image: radial-gradient(1200px 600px at 85% -5%, #16202E 0%, #0B0F16 55%);
+      color:var(--text); font-family:var(--font-body); line-height:1.6; }
+    h1,h2,h3 { font-family:var(--font-display); line-height:1.1; letter-spacing:-0.5px; margin:0; }
+    a { color:inherit; text-decoration:none; }
+    .accent{color:var(--accent);} .pos{color:var(--pos);} .warn{color:var(--warn);} .neg{color:var(--neg);}
+    .eyebrow{font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--dim);}
+    .dim{color:var(--dim);}
+
+    /* ═══ TOP BAR + PROGRESS ═══════════════════════════════════════════════ */
+    #progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:60;}
+    header.bar{position:fixed;top:0;left:0;right:0;height:64px;z-index:50;display:flex;
+      align-items:center;justify-content:space-between;padding:0 28px;
+      background:rgba(11,15,22,0.72);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);}
+    header .brand{font-family:var(--font-display);font-weight:700;letter-spacing:0.5px;}
+    header nav{display:flex;gap:24px;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);}
+    header nav a.on,header nav a:hover{color:var(--text);}
+    header nav a.on{border-bottom:2px solid var(--accent);padding-bottom:2px;}
+
+    /* ═══ LAYOUT ═══════════════════════════════════════════════════════════ */
+    main{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+    section{padding:84px 0;border-top:1px solid var(--border);}
+    section:first-of-type{border-top:none;}
+    .hero{min-height:88vh;display:flex;flex-direction:column;justify-content:center;border:none;}
+    .hero h1{font-size:clamp(40px,6vw,76px);font-weight:700;margin:18px 0;}
+    .hero p.lead{font-size:20px;color:var(--dim);max-width:680px;}
+
+    /* reveal-on-scroll */
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+    .reveal.in{opacity:1;transform:none;}
+
+    /* KPI band */
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:36px;}
+    .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;}
+    .kpi .val{font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--accent);}
+    .kpi .val.muted{color:var(--text);}
+    .kpi .lbl{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:8px;}
+
+    /* cards / grid */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:28px;}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px;}
+    .card h3{font-size:20px;margin-bottom:6px;}
+    .card .sub{font-size:13px;color:var(--dim);margin-bottom:18px;}
+    .chart{height:300px;}
+    .note b.pos{color:var(--pos);} .note b.neg{color:var(--neg);} .note b.accent{color:var(--accent);}
+
+    /* bars */
+    .bars{display:flex;flex-direction:column;gap:12px;font-size:14px;}
+    .bar-row{display:grid;grid-template-columns:120px 1fr 56px 48px;align-items:center;gap:12px;}
+    .bar-track{background:var(--surface-2);border-radius:6px;height:14px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:6px;background:var(--accent);}
+    .bar-fill.pos{background:var(--pos);}.bar-fill.warn{background:var(--warn);}.bar-fill.neg{background:var(--neg);}
+    .bar-row .num{text-align:right;font-variant-numeric:tabular-nums;}
+    .bar-row .delta{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;}
+
+    /* table */
+    table{width:100%;border-collapse:collapse;margin-top:24px;font-size:14px;}
+    th,td{text-align:right;padding:12px 14px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;}
+    th:first-child,td:first-child{text-align:left;}
+    thead th{color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-size:12px;font-weight:600;}
+    tbody tr:hover{background:var(--surface);}
+    .source{font-size:12px;color:var(--dim);margin-top:16px;}
+    footer{max-width:var(--maxw);margin:0 auto;padding:48px 28px 80px;color:var(--dim);font-size:13px;border-top:1px solid var(--border);}
+    @media(max-width:760px){.grid-2,.kpis{grid-template-columns:1fr;}header nav{display:none;}}
+  </style>
+</head>
+<body>
+  <div id="progress"></div>
+  <header class="bar">
+    <span class="brand">Acme · Sales Review</span>
+    <nav>
+      <a href="#overview" class="on">Overview</a>
+      <a href="#trend">Trend</a>
+      <a href="#regions">Regions</a>
+      <a href="#products">Products</a>
+      <a href="#next">Next</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section id="overview" class="hero">
+      <div class="eyebrow">Sales Performance Review · FY2026 · Q1</div>
+      <h1>Q1 bookings closed <span class="accent">+12%</span> above plan</h1>
+      <p class="lead">A self-serve report: scroll for the trend, regional attainment, product mix, and the
+        three moves for next quarter. Replace the demo numbers with your own — never invent data.</p>
+      <div class="kpis">
+        <div class="kpi reveal"><div class="val">$4.2M</div><div class="lbl">Bookings</div></div>
+        <div class="kpi reveal"><div class="val">+12%</div><div class="lbl">vs. plan</div></div>
+        <div class="kpi reveal"><div class="val muted">28%</div><div class="lbl">Win rate</div></div>
+        <div class="kpi reveal"><div class="val muted">$9.1M</div><div class="lbl">Pipeline</div></div>
+      </div>
+    </section>
+
+    <!-- TREND -->
+    <section id="trend" class="reveal">
+      <div class="eyebrow">01 · Trend</div>
+      <h2 style="font-size:34px;margin-top:10px;">Bookings grew four quarters running</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Bookings — last 4 quarters ($M)</h3>
+          <div class="sub">Source · grain: deal · FY2026</div>
+          <div id="chart-trend" class="chart"></div>
+        </div>
+        <div class="card">
+          <h3>What's driving it</h3>
+          <p class="note dim" style="margin-top:10px;"><b class="pos">Enterprise</b> deals — bigger and
+            faster — carried the beat, while <b class="pos">expansion</b> kept net revenue retention above
+            target. The watch item is <b class="neg">SMB win rate</b>, soft on late-stage stalls, and
+            <b class="accent">discounting</b> pressure on competitive deals.</p>
+        </div>
+      </div>
+      <p class="source">Source: gold.fct_bookings · grain: deal · FY2026 Q1 — TODO real values</p>
+    </section>
+
+    <!-- REGIONS -->
+    <section id="regions" class="reveal">
+      <div class="eyebrow">02 · Regions</div>
+      <h2 style="font-size:34px;margin-top:10px;">Region attainment vs. target</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>% of quarterly target</h3>
+          <div class="sub">Ordered by attainment</div>
+          <div class="bars" style="margin-top:8px;">
+            <div class="bar-row"><span>North America</span><div class="bar-track"><div class="bar-fill pos" style="width:100%"></div></div><span class="num">118%</span><span class="delta pos">+18</span></div>
+            <div class="bar-row"><span>EMEA</span><div class="bar-track"><div class="bar-fill pos" style="width:96%"></div></div><span class="num">104%</span><span class="delta pos">+4</span></div>
+            <div class="bar-row"><span>LATAM</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><span class="num">96%</span><span class="delta neg">−4</span></div>
+            <div class="bar-row"><span>APAC</span><div class="bar-track"><div class="bar-fill warn" style="width:80%"></div></div><span class="num">88%</span><span class="delta neg">−12</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Share of bookings</h3>
+          <div class="sub">By region, FY2026 Q1</div>
+          <div id="chart-region" class="chart"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section id="products" class="reveal">
+      <div class="eyebrow">03 · Products</div>
+      <h2 style="font-size:34px;margin-top:10px;">Product line detail</h2>
+      <table>
+        <thead><tr><th>Product</th><th>Bookings</th><th>vs. target</th><th>Deals</th><th>Avg deal</th></tr></thead>
+        <tbody>
+          <tr><td>Platform</td><td>$1.6M</td><td class="pos">+22%</td><td>312</td><td>$5.1K</td></tr>
+          <tr><td>Analytics</td><td>$1.2M</td><td class="pos">+14%</td><td>198</td><td>$6.1K</td></tr>
+          <tr><td>Add-ons</td><td>$0.8M</td><td class="pos">+6%</td><td>420</td><td>$1.9K</td></tr>
+          <tr><td>Services</td><td>$0.6M</td><td class="neg">−9%</td><td>88</td><td>$6.8K</td></tr>
+          <tr><td>Legacy SKU</td><td>$0.4M</td><td class="neg">−18%</td><td>140</td><td>$2.9K</td></tr>
+        </tbody>
+      </table>
+      <p class="source">Source: gold.fct_bookings · grain: deal · FY2026 Q1 — TODO real values</p>
+    </section>
+
+    <!-- NEXT -->
+    <section id="next" class="reveal">
+      <div class="eyebrow">So what — and next</div>
+      <h2 style="font-size:34px;margin:10px 0 4px;">Three moves <span class="accent">from here</span></h2>
+      <div class="grid-2" style="grid-template-columns:repeat(3,1fr);">
+        <div class="card"><h3>1 · Scale enterprise</h3><p class="note dim" style="margin-top:8px;">Reallocate reps to the motion that beat plan. Owner · timeline.</p></div>
+        <div class="card"><h3>2 · Fix SMB funnel</h3><p class="note dim" style="margin-top:8px;">Tighten qualification + discount guardrails. Measure: SMB win rate.</p></div>
+        <div class="card"><h3>3 · Revisit APAC</h3><p class="note dim" style="margin-top:8px;">90-day ramp plan; re-check attainment next quarter.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Built as code · replace demo data with real, sourced figures · brand tokens map from DESIGN.md.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script>
+    const css = getComputedStyle(document.documentElement);
+    const ACCENT = css.getPropertyValue('--accent').trim();
+    const DIM    = css.getPropertyValue('--dim').trim();
+    const POS    = css.getPropertyValue('--pos').trim();
+    const WARN   = css.getPropertyValue('--warn').trim();
+
+    // Reading progress bar
+    const prog = document.getElementById('progress');
+    addEventListener('scroll', () => {
+      const h = document.documentElement;
+      prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+    });
+
+    // Reveal-on-scroll + active nav link
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }),
+      { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    const links = [...document.querySelectorAll('header nav a')];
+    const navIo = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id));
+    }), { rootMargin: '-40% 0px -55% 0px' });
+    document.querySelectorAll('main section[id]').forEach(s => navIo.observe(s));
+
+    // Charts
+    addEventListener('load', () => {
+      if (!window.echarts) return;
+      const trend = echarts.init(document.getElementById('chart-trend'), null, { renderer: 'svg' });
+      trend.setOption({
+        grid: { left: 36, right: 16, top: 20, bottom: 28 },
+        xAxis: { type: 'category', data: ['Q2/25','Q3/25','Q4/25','Q1/26'],
+          axisLine:{lineStyle:{color:DIM}}, axisLabel:{color:DIM} },
+        yAxis: { type: 'value', splitLine:{lineStyle:{color:'rgba(255,255,255,0.06)'}}, axisLabel:{color:DIM} },
+        series: [{ type:'line', smooth:true, data:[3.1,3.5,3.8,4.2], symbolSize:8,
+          lineStyle:{color:ACCENT,width:3}, itemStyle:{color:ACCENT},
+          label:{show:true,color:'#E7EEF6'}, areaStyle:{color:'rgba(91,141,239,0.12)'} }],
+      });
+      const region = echarts.init(document.getElementById('chart-region'), null, { renderer: 'svg' });
+      region.setOption({
+        tooltip:{trigger:'item'},
+        series:[{ type:'pie', radius:['52%','78%'], itemStyle:{borderColor:'#0B0F16',borderWidth:2},
+          label:{color:DIM}, data:[
+            {name:'North America',value:42,itemStyle:{color:ACCENT}},
+            {name:'EMEA',value:28,itemStyle:{color:POS}},
+            {name:'LATAM',value:18,itemStyle:{color:WARN}},
+            {name:'APAC',value:12,itemStyle:{color:'#5B6675'}} ]}],
+      });
+      addEventListener('resize', () => { trend.resize(); region.resize(); });
+    });
+  </script>
+</body>
+</html>
