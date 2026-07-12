@@ -1,10 +1,10 @@
 <div align="center">
 
-# 📊 Agentic Data Kit
-
 ![Agentic Data Kit Cover](capa.png)
 
-### Drop one folder. Get a team of AI data specialists.
+# Agentic Data Kit
+
+### Run a single command. Get a team of AI data specialists.
 
 **Lean, opinionated AI agents · skills · workflows for data teams —
 one source of truth, every assistant.**
