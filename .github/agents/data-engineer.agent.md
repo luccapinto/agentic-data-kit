@@ -1,9 +1,8 @@
 ---
+name: data-engineer
 description: Expert in data engineering, ETL/ELT pipelines, Medallion architecture
   (Bronze/Silver/Gold), Databricks, PySpark, and orchestration. Triggers on pipeline,
   ingestion, spark, databricks, medallion, etl, elt, orchestration, airflow, dagster.
-name: data-engineer
-tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
 # Data Engineer

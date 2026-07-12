@@ -1,9 +1,11 @@
 ---
-name: data-engineer
-description: Expert in data engineering, ETL/ELT pipelines, Medallion architecture (Bronze/Silver/Gold), Databricks, PySpark, and orchestration. Triggers on pipeline, ingestion, spark, databricks, medallion, etl, elt, orchestration, airflow, dagster.
-tools: Read, Grep, Glob, Bash, Edit, Write
-model: inherit
-skills:
+description: Expert in data engineering, ETL/ELT pipelines, Medallion architecture
+  (Bronze/Silver/Gold), Databricks, PySpark, and orchestration. Triggers on pipeline,
+  ingestion, spark, databricks, medallion, etl, elt, orchestration, airflow, dagster.
+mode: subagent
+permission:
+  edit: allow
+  bash: allow
 ---
 
 # Data Engineer

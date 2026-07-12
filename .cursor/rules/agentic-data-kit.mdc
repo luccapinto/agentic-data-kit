@@ -1,5 +1,9 @@
 ---
-trigger: always_on
+description: 'Agentic Data Kit — always-on operating rules: agent routing, data engineering
+  principles (idempotency, Write-Audit-Publish, PII masking) and the data debugging
+  reference.'
+globs: ''
+alwaysApply: true
 ---
 
 # Agentic Data Kit — Operating Rules
@@ -24,7 +28,7 @@ data-specific rules — not things a capable model already does well.
    agent; the `skills:` field on an agent is only a hint. Don't preload every file in a folder.
 3. **Creating or changing an agent/skill/workflow?** Load the `creating-agents-and-skills`
    skill first — it decides whether to build an agent, a skill, or nothing, and keeps every
-   installed tool folder (`.agent`, `.claude`, `.github`, `.opencode`) in sync.
+   installed tool folder (`.agent`, `.claude`, `.github`, `.opencode`, `.cursor`) in sync.
 4. **Clarify only when genuinely blocked.** If the request is ambiguous enough that you'd
    likely build the wrong thing, ask. Otherwise state your assumptions and proceed.
 

@@ -1,11 +1,10 @@
 ---
+name: presentation-designer
 description: Turns data work — exploratory analyses, dashboards, business plans, project
   proposals — into polished, on-brand presentations as code. Builds HTML decks (reveal.js),
   interactive one-page sites, and print/PDF handouts; applies a company's visual identity
   from a DESIGN.md. Triggers on presentation, deck, slides, pitch, readout, report-out,
   business plan, storytelling, reveal.js, slidev, marp, DESIGN.md, brand, visual identity.
-name: presentation-designer
-tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
 # Presentation Designer

@@ -78,26 +78,29 @@ This is the kit repo or an Antigravity install. **Author in `.agent/` only, then
 ```bash
 python scripts/sync_agents.py
 ```
-The script regenerates `.claude/`, `.github/`, `.opencode/`, and root `AGENTS.md`. Never
-hand-edit those — they're overwritten. Done.
+The script regenerates `.claude/`, `.github/`, `.opencode/`, `.cursor/`, and root `AGENTS.md`
+(which also covers OpenAI Codex). Never hand-edit those — they're overwritten. Done.
 
 ### Path B — No source of truth (user installed one or more tool flavors)
-Detect which folders exist and write the artifact into **each present folder** in its format,
-keeping the body content identical. Format mapping:
+Detect which folders exist and write the artifact into **each present folder** in its native
+format (the body content stays identical; only frontmatter changes). Format mapping:
 
-| Concept | `.agent` (Antigravity) | `.claude` (Claude Code) | `.github` (Copilot) | `.opencode` (OpenCode) |
-|---|---|---|---|---|
-| Agent | `agents/<n>.md` | `agents/<n>.md` (identical) | `agents/<n>.agent.md` — frontmatter `name`, `description`, `tools` only | `agents/<n>.md` (identical) |
-| Skill | `skills/<n>/SKILL.md` | `skills/<n>/SKILL.md` (identical) | `skills/<n>/SKILL.md` (identical) | `skills/<n>/SKILL.md` (identical) |
-| Workflow | `workflows/<n>.md` | `workflows/<n>.md` (identical) | `prompts/<n>.prompt.md` — frontmatter `name`, `description`; body starts `**Context:** ${selection}` | `commands/<n>.md` (identical) |
-| Global rule | `rules/rules.md` | `CLAUDE.md` (rules + commands section) | `copilot-instructions.md` (rules) | `AGENTS.md` (rules) |
+| Concept | `.agent` (Antigravity) | `.claude` (Claude Code) | `.github` (Copilot) | `.opencode` (OpenCode) | `.cursor` (Cursor) |
+|---|---|---|---|---|---|
+| Agent | `agents/<n>.md` | `agents/<n>.md` (identical) | `agents/<n>.agent.md` — frontmatter `name`, `description` only (no `tools`) | `agents/<n>.md` — frontmatter `description`, `mode: subagent`, `permission` (drop `tools`/`model`/`name`/`skills`) | — (Cursor has no file-based agents) |
+| Skill | `skills/<n>/SKILL.md` | `skills/<n>/SKILL.md` (identical) | `skills/<n>/SKILL.md` (identical) | `skills/<n>/SKILL.md` (identical) | — (no skills concept) |
+| Workflow | `workflows/<n>.md` | `commands/<n>.md` (native slash command) + `workflows/<n>.md` | `prompts/<n>.prompt.md` — frontmatter `name`, `description`; body starts `**Context:** ${selection}` | `commands/<n>.md` (identical) | `commands/<n>.md` (identical) |
+| Global rule | `rules/rules.md` (with `trigger: always_on`) | `CLAUDE.md` (rules + commands section) | `copilot-instructions.md` (rules) | root `AGENTS.md` (rules) | `rules/<n>.mdc` — frontmatter `description`, `globs`, `alwaysApply: true` |
 
 Rules:
-- Only the **Copilot agent** (`*.agent.md`) and **Copilot prompt** (`*.prompt.md`) need format
-  changes; everywhere else the file is a verbatim copy.
+- **Strip the `trigger: always_on` frontmatter** from `rules.md` when writing it anywhere
+  outside `.agent/` — it's Antigravity-only and is noise everywhere else.
+- **OpenCode reads the root `AGENTS.md`**, not `.opencode/AGENTS.md` — don't create the latter.
+  The same root `AGENTS.md` is what **OpenAI Codex** reads, so Codex needs no dedicated folder.
+- Frontmatter differs per tool (Copilot agent/prompt, OpenCode agent, Cursor rule/mdc); the
+  **body is a verbatim copy** everywhere.
 - Create the same `<name>` in all present folders — do not leave a tool behind.
-- If the user installed only one folder but wants multi-tool support, offer to add the other
-  folders too.
+- If the user installed only one folder but wants multi-tool support, offer to add the others.
 
 ### Verify parity
 After either path, confirm the artifact exists in every present tool folder and that no folder
@@ -108,4 +111,4 @@ references something that no longer exists. State which folders you wrote.
 ## Anti-patterns
 - Creating an agent for a single tool or task (e.g. "GitAgent"). Tools don't need agents.
 - Putting episodic guidance in the always-on rules — it belongs in a skill like this one.
-- Editing generated folders (`.claude`/`.github`/`.opencode`/`AGENTS.md`) when `.agent/` exists.
+- Editing generated folders (`.claude`/`.github`/`.opencode`/`.cursor`/`AGENTS.md`) when `.agent/` exists.

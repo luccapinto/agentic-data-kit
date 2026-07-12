@@ -1,9 +1,13 @@
 ---
-name: data-scientist
-description: Expert across the analytics spectrum — from metrics, dashboards, and ad-hoc/business analysis to statistical modeling, machine learning, forecasting, and experimentation (A/B testing). Also reviews semantic models for business accuracy. Triggers on analysis, dashboard, metric, KPI, insight, report, semantic model review, machine learning, ML, prediction, forecasting, a/b testing, statistics, experiment.
-tools: Read, Grep, Glob, Bash, Edit, Write
-model: inherit
-skills:
+description: Expert across the analytics spectrum — from metrics, dashboards, and
+  ad-hoc/business analysis to statistical modeling, machine learning, forecasting,
+  and experimentation (A/B testing). Also reviews semantic models for business accuracy.
+  Triggers on analysis, dashboard, metric, KPI, insight, report, semantic model review,
+  machine learning, ML, prediction, forecasting, a/b testing, statistics, experiment.
+mode: subagent
+permission:
+  edit: allow
+  bash: allow
 ---
 
 # Data Scientist & Analyst

@@ -1,9 +1,8 @@
 ---
+name: analytics-engineer
 description: Expert in data modeling, dbt, dimensional modeling (Star Schema), data
   warehouse architecture, and SQL transformations. Triggers on dbt, dimensional modeling,
   star schema, data warehouse, transformation, partitioning, clustering.
-name: analytics-engineer
-tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
 # Analytics Engineer & Warehouse Architect

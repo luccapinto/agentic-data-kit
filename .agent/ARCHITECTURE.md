@@ -8,10 +8,11 @@ with `.agent/` as the single source of truth.
 Edit only `.agent/`. `scripts/sync_agents.py` compiles it to every assistant:
 
 ```
-.agent/        →  .claude/ (+ CLAUDE.md)        Claude Code
-               →  .github/ (+ copilot-instructions.md)   GitHub Copilot
-               →  .opencode/ (+ AGENTS.md)       OpenCode
-               →  AGENTS.md (root)               Cursor / cross-tool standard
+.agent/        →  .claude/ (+ CLAUDE.md, native commands/)   Claude Code
+               →  .github/ (+ copilot-instructions.md)        GitHub Copilot
+               →  .opencode/ (agents mode: subagent)          OpenCode  (reads root AGENTS.md)
+               →  .cursor/ (rules/*.mdc, commands/)           Cursor    (also reads root AGENTS.md)
+               →  AGENTS.md (root)                             OpenAI Codex / cross-tool standard
 ```
 
 ```

@@ -169,10 +169,11 @@ python scripts/sync_agents.py
 | Target | Output |
 |---|---|
 | Antigravity | `.agent/` (native source) |
-| Claude Code | `.claude/` + `CLAUDE.md` |
+| Claude Code | `.claude/` (agents · skills · workflows · `commands/`) + `CLAUDE.md` |
 | GitHub Copilot | `.github/` + `copilot-instructions.md` |
-| OpenCode | `.opencode/` + `AGENTS.md` |
-| Cursor / others | root `AGENTS.md` |
+| OpenCode | `.opencode/` (agents `mode: subagent` · skills · commands) + root `AGENTS.md` |
+| Cursor | `.cursor/` (`rules/*.mdc` · `commands/`) + root `AGENTS.md` |
+| OpenAI Codex / cross-tool | root `AGENTS.md` |
 
 ```text
 .agent/                ← edit here (source of truth)
@@ -181,7 +182,7 @@ python scripts/sync_agents.py
 ├── workflows/         # 3 slash commands
 └── rules/             # global rules (rules.md)
 
-.claude/  .github/  .opencode/  AGENTS.md   ← auto-generated (do not edit)
+.claude/  .github/  .opencode/  .cursor/  AGENTS.md   ← auto-generated (do not edit)
 ```
 
 ---
