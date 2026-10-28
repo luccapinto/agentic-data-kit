@@ -1,0 +1,41 @@
+/// Calendar. Grain: one row per day.
+table Date
+
+	column DateKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: DateKey
+
+	column Date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Month
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Month
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = #table(
+				        type table [DateKey = Int64.Type, Date = Date.Type, Month = Text.Type],
+				        {
+				            {20260105, #date(2026, 1, 5), "2026-01"},
+				            {20260112, #date(2026, 1, 12), "2026-01"},
+				            {20260203, #date(2026, 2, 3), "2026-02"},
+				            {20260214, #date(2026, 2, 14), "2026-02"},
+				            {20260302, #date(2026, 3, 2), "2026-03"},
+				            {20260318, #date(2026, 3, 18), "2026-03"}
+				        }
+				    )
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

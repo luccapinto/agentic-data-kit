@@ -13,6 +13,9 @@ node_modules/
 __pycache__/
 *.pyc
 
+# Power BI Desktop local state (written when a PBIP is opened)
+.pbi/
+
 # OS metadata
 .DS_Store
 Thumbs.db
