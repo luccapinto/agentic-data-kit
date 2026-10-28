@@ -26,13 +26,15 @@ deliverable is fundamentally a document (Markdown-only, clean PDF/PPTX, no inter
 **Slidev** is a fine choice for fully technical audiences already on Node/Vue — mention it,
 don't default to it.
 
-## Workflow
-1. **Audience & format.** Exec → fewer slides, takeaway titles, no code. Technical → allow
-   detail/appendix. Choose deck vs site vs PDF (table above) and say which.
-2. **Outline before slides.** Agree the storyline (5–9 beats) before writing HTML. Lead with
-   the conclusion (BLUF), then evidence, then "so what / next".
-3. **Apply the brand.** If a `DESIGN.md` exists, load `applying-visual-identity` and map its
-   tokens to CSS variables (see that skill). Otherwise use the neutral defaults in the starter.
+## Working order
+1. **Find the brand.** Look for a `DESIGN.md` in the project root. If present, load
+   `applying-visual-identity` and map its tokens to CSS variables. If absent, offer to scaffold
+   one (don't invent a brand silently) and use the neutral defaults in the starter meanwhile.
+2. **Pick the format** from the table above and say which and why. A native `.pptx` that must be
+   editable in PowerPoint → `generating-pptx`.
+3. **Story before charts.** Know the audience (exec → fewer slides, takeaway titles, no code;
+   technical → allow detail/appendix). Agree the storyline (5–9 beats) before writing HTML: lead
+   with the conclusion (BLUF), then evidence, then "so what / next". Use `data-story-outline.md`.
 4. **Build from a starter** (`templates/`), drop in real numbers and charts, keep it
    **self-contained** (works offline; pin CDN versions or vendor the files).
 5. **Export** if needed (see the export note below).
@@ -93,7 +95,13 @@ All HTML starters use a generic **sales review** as demo content — replace it 
 - Every data slide states **source, grain, date range, filters**. Never invent numbers — mark
   unknowns `TODO`.
 
+## Data storytelling rules
+- **Title = insight.** "Revenue fell 12% in EMEA", not "Revenue by region".
+- **One idea per slide.** Move supporting detail to an appendix section.
+- **Label the source & grain** on any data slide (table, date range, filters). Trust is the point.
+- **Never fabricate data.** Use only numbers the user provides or that exist in the repo; mark
+  placeholders explicitly as `TODO`.
+
 ## Rules
-- One idea per slide; the title is the **insight**, not the field name.
 - Keep it self-contained and offline-capable; pin versions, don't rely on live network at present time.
 - Accessibility: real text (not images of text), sufficient contrast, logical heading order.
