@@ -13,7 +13,8 @@ project root.
 
 ## Steps
 
-1. **Inventory.** Use `pbi-semantic-layer-tmdl` to confirm the PBIP project and count tables,
+1. **Inventory.** If Power BI Desktop is open, have the user save first so the PBIP on disk
+   reflects the current model. Use `pbi-semantic-layer-tmdl` to confirm the PBIP project and count tables,
    measures, relationships, pages, and visuals.
 2. **Parse both layers.**
    - **Semantic model (`.tmdl`):** names, data types, `description`, DAX `expressions`, and

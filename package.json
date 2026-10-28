@@ -26,7 +26,7 @@
   "scripts": {
     "sync": "python3 scripts/sync_agents.py",
     "sync:check": "python3 scripts/sync_agents.py --check",
-    "test": "python3 -B -m unittest discover -s tests -t . -v",
+    "test": "python3 -B -m unittest discover -s tests -v",
     "prepack": "python3 scripts/sync_agents.py"
   },
   "repository": {

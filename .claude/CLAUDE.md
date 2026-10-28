@@ -56,4 +56,4 @@ workflow file and follow its instructions step by step.
 
 - **/document-dashboard**: Auto-generate complete Markdown documentation for a PBIP project. — Load context from `.claude/workflows/document-dashboard.md` and follow its steps.
 - **/plan**: Draft an implementation plan for a data task — a plan file only, no code. — Load context from `.claude/workflows/plan.md` and follow its steps.
-- **/validate-pbi**: Run a full quality check on a PBIP project (BPA via Tabular Editor 2 + structural review). — Load context from `.claude/workflows/validate-pbi.md` and follow its steps.
+- **/validate-pbi**: Run a full quality check on a PBIP project (BPA via Tabular Editor 2 or the Python fallback, PBIR validation, structural review). — Load context from `.claude/workflows/validate-pbi.md` and follow its steps.
