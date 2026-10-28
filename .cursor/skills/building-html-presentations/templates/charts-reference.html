@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<!--
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  CHART COOKBOOK — the palette of chart types for the HTML starters.         │
+  │                                                                            │
+  │  A live gallery of ECharts patterns (+ CSS-only patterns) so the agent and  │
+  │  the user can see what's possible and copy a config into any deck/site/PDF  │
+  │  template. Each card names the chart and when to use it. Same brand tokens  │
+  │  as the other starters (map from DESIGN.md). Pinned ECharts.                │
+  │                                                                            │
+  │  Pick by question, not by looks:                                            │
+  │   • Trend over time → line / area / combo      • Part-of-whole → pie/donut   │
+  │   • Compare categories → bar / grouped bar      • Composition → stacked bar  │
+  │   • Correlation → scatter / bubble              • Single KPI vs goal → gauge │
+  │   • Multi-metric profile → radar                • Density/matrix → heatmap   │
+  │   • Hierarchy → treemap                         • Stage drop-off → funnel    │
+  │   • Distribution → boxplot                      • Bridge of changes → waterfall
+  └──────────────────────────────────────────────────────────────────────────┘
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chart Cookbook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0B0F16;--surface:#121A24;--border:rgba(255,255,255,0.08);--text:#E7EEF6;--dim:#8593A6;
+      --accent:#5B8DEF;--accent2:#38BDF8;--pos:#41C08A;--warn:#E0A949;--neg:#E0655B;
+      --font-display:"Space Grotesk",sans-serif;--font-body:"Inter",system-ui,sans-serif;}
+    body{margin:0;background:var(--bg);background-image:radial-gradient(1200px 600px at 85% -10%,#16202E,#0B0F16 60%);
+      color:var(--text);font-family:var(--font-body);padding:40px;}
+    h1{font-family:var(--font-display);font-size:34px;margin:0;}
+    .sub{color:var(--dim);margin:8px 0 32px;max-width:760px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px;}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;}
+    .card h3{font-family:var(--font-display);font-size:17px;margin:0;}
+    .card .hint{color:var(--dim);font-size:12.5px;margin:4px 0 12px;}
+    .chart{height:230px;}
+    /* CSS-only patterns */
+    .bars{display:flex;flex-direction:column;gap:9px;font-size:13px;}
+    .bar-row{display:grid;grid-template-columns:80px 1fr 40px;align-items:center;gap:10px;}
+    .bar-track{background:#18222F;border-radius:6px;height:13px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:6px;background:var(--accent);}
+    table.heat{border-collapse:separate;border-spacing:4px;font-size:12px;width:100%;}
+    table.heat td{text-align:center;border-radius:5px;padding:8px 0;color:#07120C;font-weight:600;}
+    .s6{background:#2FA876;}.s5{background:#5FB97E;}.s4{background:#9ECB7A;}.s3{background:#E0C766;}.s2{background:#E0A04E;}.s1{background:#D26A57;color:#fff;}
+    .spark{display:flex;align-items:center;gap:12px;}
+    .spark .v{font-family:var(--font-display);font-size:30px;font-weight:700;color:var(--accent);}
+  </style>
+</head>
+<body>
+  <h1>Chart cookbook</h1>
+  <p class="sub">Copy a config into any starter. Choose by the question you're answering (see the
+    comment at the top of this file), not by appearance. All charts use the brand tokens in <code>:root</code>.</p>
+  <div class="grid" id="grid">
+    <div class="card"><h3>Line</h3><div class="hint">Trend over time, single metric.</div><div class="chart" id="line"></div></div>
+    <div class="card"><h3>Area</h3><div class="hint">Trend with magnitude / cumulative feel.</div><div class="chart" id="area"></div></div>
+    <div class="card"><h3>Multi-line</h3><div class="hint">Compare a few series over time.</div><div class="chart" id="multiline"></div></div>
+    <div class="card"><h3>Combo (bar + line)</h3><div class="hint">Two units, e.g. volume vs rate.</div><div class="chart" id="combo"></div></div>
+    <div class="card"><h3>Bar (vertical)</h3><div class="hint">Compare categories.</div><div class="chart" id="bar"></div></div>
+    <div class="card"><h3>Grouped bar</h3><div class="hint">Compare categories across groups (plan vs actual).</div><div class="chart" id="grouped"></div></div>
+    <div class="card"><h3>Stacked bar</h3><div class="hint">Composition within each category.</div><div class="chart" id="stacked"></div></div>
+    <div class="card"><h3>Horizontal bar</h3><div class="hint">Rankings, long labels.</div><div class="chart" id="hbar"></div></div>
+    <div class="card"><h3>Scatter</h3><div class="hint">Correlation between two metrics.</div><div class="chart" id="scatter"></div></div>
+    <div class="card"><h3>Bubble</h3><div class="hint">Correlation + a third metric (size).</div><div class="chart" id="bubble"></div></div>
+    <div class="card"><h3>Pie / Doughnut</h3><div class="hint">Part-of-whole (few slices).</div><div class="chart" id="pie"></div></div>
+    <div class="card"><h3>Gauge</h3><div class="hint">Single KPI vs a goal.</div><div class="chart" id="gauge"></div></div>
+    <div class="card"><h3>Radar</h3><div class="hint">Multi-dimension profile.</div><div class="chart" id="radar"></div></div>
+    <div class="card"><h3>Heatmap</h3><div class="hint">Density across two dimensions.</div><div class="chart" id="heatmap"></div></div>
+    <div class="card"><h3>Treemap</h3><div class="hint">Hierarchy / share by size.</div><div class="chart" id="treemap"></div></div>
+    <div class="card"><h3>Funnel</h3><div class="hint">Stage-by-stage drop-off.</div><div class="chart" id="funnel"></div></div>
+    <div class="card"><h3>Boxplot</h3><div class="hint">Distribution & outliers.</div><div class="chart" id="boxplot"></div></div>
+    <div class="card"><h3>Waterfall</h3><div class="hint">Bridge of additive changes.</div><div class="chart" id="waterfall"></div></div>
+    <div class="card"><h3>CSS bars (no JS)</h3><div class="hint">Lightweight ranking; always prints.</div>
+      <div class="bars"><div class="bar-row"><span>A</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><span>92</span></div>
+      <div class="bar-row"><span>B</span><div class="bar-track"><div class="bar-fill" style="width:74%"></div></div><span>74</span></div>
+      <div class="bar-row"><span>C</span><div class="bar-track"><div class="bar-fill" style="width:58%"></div></div><span>58</span></div></div></div>
+    <div class="card"><h3>CSS heatmap (no JS)</h3><div class="hint">Matrix with a score-band scale.</div>
+      <table class="heat"><tr><td class="s6">96</td><td class="s5">88</td><td class="s3">79</td><td class="s2">72</td></tr>
+      <tr><td class="s5">90</td><td class="s4">83</td><td class="s2">71</td><td class="s1">64</td></tr></table></div>
+    <div class="card"><h3>Big-number + sparkline</h3><div class="hint">A KPI with its mini-trend.</div>
+      <div class="spark"><div class="v">$4.2M</div><div class="chart" id="spark" style="height:60px;flex:1;"></div></div></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script>
+    const css=getComputedStyle(document.documentElement);
+    const ACCENT=css.getPropertyValue('--accent').trim(),ACCENT2=css.getPropertyValue('--accent2').trim();
+    const DIM=css.getPropertyValue('--dim').trim(),POS=css.getPropertyValue('--pos').trim();
+    const WARN=css.getPropertyValue('--warn').trim(),NEG=css.getPropertyValue('--neg').trim();
+    const cat=['Q2','Q3','Q4','Q1'], gridc='rgba(255,255,255,0.06)';
+    const ax={axisLine:{lineStyle:{color:DIM}},axisLabel:{color:DIM},axisTick:{show:false}};
+    const val={splitLine:{lineStyle:{color:gridc}},axisLabel:{color:DIM}};
+    const base={grid:{left:38,right:14,top:18,bottom:24},textStyle:{color:DIM}};
+    const R=(id)=>echarts.init(document.getElementById(id),null,{renderer:'svg'});
+    const opts={
+      line:{...base,xAxis:{type:'category',data:cat,...ax},yAxis:{type:'value',...val},
+        series:[{type:'line',smooth:true,data:[3.1,3.5,3.8,4.2],lineStyle:{color:ACCENT,width:3},itemStyle:{color:ACCENT}}]},
+      area:{...base,xAxis:{type:'category',data:cat,...ax},yAxis:{type:'value',...val},
+        series:[{type:'line',smooth:true,data:[3.1,3.5,3.8,4.2],lineStyle:{color:ACCENT},itemStyle:{color:ACCENT},areaStyle:{color:'rgba(91,141,239,0.2)'}}]},
+      multiline:{...base,legend:{textStyle:{color:DIM},bottom:0},xAxis:{type:'category',data:cat,...ax},yAxis:{type:'value',...val},
+        series:[{name:'NA',type:'line',data:[1.2,1.4,1.6,1.8],itemStyle:{color:ACCENT}},{name:'EMEA',type:'line',data:[0.8,0.9,1.0,1.1],itemStyle:{color:POS}}]},
+      combo:{...base,legend:{textStyle:{color:DIM},bottom:0},xAxis:{type:'category',data:cat,...ax},
+        yAxis:[{type:'value',...val},{type:'value',...val}],
+        series:[{name:'Bookings',type:'bar',data:[3.1,3.5,3.8,4.2],itemStyle:{color:ACCENT}},
+                {name:'Win %',type:'line',yAxisIndex:1,data:[24,26,27,28],itemStyle:{color:WARN}}]},
+      bar:{...base,xAxis:{type:'category',data:['NA','EMEA','LATAM','APAC'],...ax},yAxis:{type:'value',...val},
+        series:[{type:'bar',data:[1.8,1.1,0.7,0.6],itemStyle:{color:ACCENT,borderRadius:[4,4,0,0]}}]},
+      grouped:{...base,legend:{textStyle:{color:DIM},bottom:0},xAxis:{type:'category',data:['Ent','Mid','SMB'],...ax},yAxis:{type:'value',...val},
+        series:[{name:'Plan',type:'bar',data:[100,100,100],itemStyle:{color:DIM}},{name:'Actual',type:'bar',data:[122,99,73],itemStyle:{color:ACCENT}}]},
+      stacked:{...base,legend:{textStyle:{color:DIM},bottom:0},xAxis:{type:'category',data:cat,...ax},yAxis:{type:'value',...val},
+        series:[{name:'New',type:'bar',stack:'t',data:[2,2.1,2.2,2.4],itemStyle:{color:ACCENT}},
+                {name:'Expansion',type:'bar',stack:'t',data:[1.1,1.4,1.6,1.8],itemStyle:{color:POS}}]},
+      hbar:{...base,grid:{left:70,right:20,top:10,bottom:20},xAxis:{type:'value',...val},yAxis:{type:'category',data:['APAC','LATAM','EMEA','NA'],...ax},
+        series:[{type:'bar',data:[0.6,0.7,1.1,1.8],itemStyle:{color:ACCENT,borderRadius:[0,4,4,0]}}]},
+      scatter:{...base,xAxis:{type:'value',...val},yAxis:{type:'value',...val},
+        series:[{type:'scatter',symbolSize:10,data:[[10,28],[14,31],[8,22],[18,35],[12,26]],itemStyle:{color:ACCENT}}]},
+      bubble:{...base,xAxis:{type:'value',...val},yAxis:{type:'value',...val},
+        series:[{type:'scatter',data:[[10,28,20],[14,31,40],[8,22,12],[18,35,55]],symbolSize:d=>d[2],itemStyle:{color:'rgba(91,141,239,0.6)'}}]},
+      pie:{...base,tooltip:{trigger:'item'},series:[{type:'pie',radius:['45%','72%'],label:{color:DIM},
+        data:[{name:'NA',value:42,itemStyle:{color:ACCENT}},{name:'EMEA',value:28,itemStyle:{color:POS}},{name:'LATAM',value:18,itemStyle:{color:WARN}},{name:'APAC',value:12,itemStyle:{color:'#5B6675'}}]}]},
+      gauge:{series:[{type:'gauge',min:0,max:150,progress:{show:true,itemStyle:{color:ACCENT}},
+        axisLine:{lineStyle:{width:10,color:[[1,'#18222F']]}},axisLabel:{color:DIM},pointer:{itemStyle:{color:ACCENT}},
+        detail:{valueAnimation:true,formatter:'{value}%',color:'#E7EEF6'},data:[{value:112}]}]},
+      radar:{...base,radar:{indicator:[{name:'Win'},{name:'Deal size'},{name:'Speed'},{name:'Pipeline'},{name:'NRR'}],
+        axisName:{color:DIM},splitLine:{lineStyle:{color:gridc}},splitArea:{show:false}},
+        series:[{type:'radar',data:[{value:[80,70,90,60,85],areaStyle:{color:'rgba(91,141,239,0.25)'},lineStyle:{color:ACCENT}}]}]},
+      heatmap:{...base,grid:{left:50,right:14,top:10,bottom:30},xAxis:{type:'category',data:cat,...ax},yAxis:{type:'category',data:['NA','EMEA','APAC'],...ax},
+        visualMap:{min:0,max:130,show:false,inRange:{color:['#D26A57','#E0C766','#2FA876']}},
+        series:[{type:'heatmap',data:[[0,0,118],[1,0,104],[2,0,88],[0,1,96],[1,1,90],[2,1,82],[0,2,73],[1,2,80],[2,2,71]],label:{show:true,color:'#07120C'}}]},
+      treemap:{series:[{type:'treemap',roam:false,breadcrumb:{show:false},label:{color:'#fff'},
+        data:[{name:'NA',value:42,itemStyle:{color:ACCENT}},{name:'EMEA',value:28,itemStyle:{color:'#3E6FBF'}},{name:'LATAM',value:18,itemStyle:{color:'#2F5599'}},{name:'APAC',value:12,itemStyle:{color:'#243F73'}}]}]},
+      funnel:{series:[{type:'funnel',left:'10%',width:'80%',label:{color:DIM},
+        data:[{value:100,name:'Leads',itemStyle:{color:ACCENT}},{value:60,name:'Qualified',itemStyle:{color:'#3E6FBF'}},{value:34,name:'Proposal',itemStyle:{color:'#2F5599'}},{value:28,name:'Won',itemStyle:{color:POS}}]}]},
+      boxplot:(()=>{const raw=[[22,26,28,31,35],[18,24,26,29,33],[20,25,27,30,34]];
+        return {...base,xAxis:{type:'category',data:['Ent','Mid','SMB'],...ax},yAxis:{type:'value',...val},
+        series:[{type:'boxplot',data:raw,itemStyle:{color:'rgba(91,141,239,0.3)',borderColor:ACCENT}}]};})(),
+      waterfall:{...base,xAxis:{type:'category',data:['Start','New','Expansion','Churn','End'],...ax},yAxis:{type:'value',...val},
+        series:[{type:'bar',stack:'w',itemStyle:{borderColor:'transparent',color:'transparent'},data:[0,3.1,3.6,3.9,0]},
+                {type:'bar',stack:'w',data:[3.1,0.5,0.3,-0.0,4.2].map((v,i)=>({value:Math.abs(i===3?0.3:v),itemStyle:{color:i===3?NEG:(i===0||i===4?ACCENT:POS)}}))}]},
+      spark:{grid:{left:0,right:0,top:4,bottom:4},xAxis:{type:'category',show:false,data:cat},yAxis:{type:'value',show:false},
+        series:[{type:'line',smooth:true,symbol:'none',data:[3.1,3.5,3.8,4.2],lineStyle:{color:ACCENT,width:2},areaStyle:{color:'rgba(91,141,239,0.15)'}}]},
+    };
+    addEventListener('load',()=>{Object.keys(opts).forEach(id=>{const el=document.getElementById(id);if(el)R(id).setOption(opts[id]);});});
+    addEventListener('resize',()=>{Object.keys(opts).forEach(id=>{const el=document.getElementById(id);if(el)echarts.getInstanceByDom(el)&&echarts.getInstanceByDom(el).resize();});});
+  </script>
+</body>
+</html>

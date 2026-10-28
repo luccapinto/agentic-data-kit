@@ -1,7 +1,7 @@
 ---
+name: validate-pbi
 description: Run a full quality check on a PBIP project (BPA via Tabular Editor 2
   + structural review).
-name: validate-pbi
 ---
 
 **Context:** ${selection}

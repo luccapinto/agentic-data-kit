@@ -1,0 +1,92 @@
+[
+  {
+    "ID": "NAMING_MEASURE_PASCAL",
+    "Name": "Measures should start with an uppercase letter",
+    "Category": "Naming Conventions",
+    "Description": "Measure names must begin with a capital letter for a consistent field list.",
+    "Severity": 2,
+    "Scope": "Measure",
+    "Expression": "RegEx.IsMatch(Name, \"^[a-z]\")"
+  },
+  {
+    "ID": "NAMING_MEASURE_DISPLAYFOLDER",
+    "Name": "Measures should live in a DisplayFolder",
+    "Category": "Naming Conventions",
+    "Description": "Organize measures into DisplayFolders so the field list stays navigable.",
+    "Severity": 2,
+    "Scope": "Measure",
+    "Expression": "string.IsNullOrEmpty(DisplayFolder)"
+  },
+  {
+    "ID": "DAX_EMPTY_EXPRESSION",
+    "Name": "Measure has an empty expression",
+    "Category": "DAX Expressions",
+    "Description": "The measure is blank or returns BLANK() directly with no logic.",
+    "Severity": 3,
+    "Scope": "Measure",
+    "Expression": "string.IsNullOrWhitespace(Expression) or Expression.Replace(\" \", \"\").ToUpper() == \"BLANK()\""
+  },
+  {
+    "ID": "DAX_IFERROR_USAGE",
+    "Name": "Avoid IFERROR (masks underlying errors)",
+    "Category": "DAX Expressions",
+    "Description": "IFERROR hides real errors and is slow; prefer DIVIDE() or explicit handling.",
+    "Severity": 2,
+    "Scope": "Measure",
+    "Expression": "Expression.ToUpper().Contains(\"IFERROR\")"
+  },
+  {
+    "ID": "MODEL_BIDIRECTIONAL",
+    "Name": "Bidirectional relationship",
+    "Category": "Model",
+    "Description": "Both-directions cross-filtering hurts the engine and can cause ambiguity; justify each one.",
+    "Severity": 2,
+    "Scope": "Relationship",
+    "Expression": "CrossFilteringBehavior == \"BothDirections\""
+  },
+  {
+    "ID": "MODEL_ISLAND_TABLE",
+    "Name": "Island table (no relationships)",
+    "Category": "Model",
+    "Description": "An imported table with no relationships is usually a modeling mistake (unless it is a disconnected parameter table).",
+    "Severity": 2,
+    "Scope": "Table",
+    "Expression": "UsedInRelationships.Count() == 0 and not Name.StartsWith(\"LocalDateTable_\") and not Name.StartsWith(\"DateTableTemplate_\")"
+  },
+  {
+    "ID": "PERF_AUTO_DATETIME",
+    "Name": "Auto date/time tables present",
+    "Category": "Performance",
+    "Description": "Auto date/time creates hidden LocalDateTable_/DateTableTemplate_ tables that bloat the model. Disable it and use a real Date table.",
+    "Severity": 2,
+    "Scope": "Table",
+    "Expression": "Name.StartsWith(\"LocalDateTable_\") or Name.StartsWith(\"DateTableTemplate_\")"
+  },
+  {
+    "ID": "DOC_TABLE_DESCRIPTION",
+    "Name": "Table is missing a description",
+    "Category": "Maintainability",
+    "Description": "Tables should carry a description for documentation and the data catalog.",
+    "Severity": 2,
+    "Scope": "Table",
+    "Expression": "string.IsNullOrWhitespace(Description)"
+  },
+  {
+    "ID": "DOC_MEASURE_DESCRIPTION",
+    "Name": "Measure is missing a description",
+    "Category": "Maintainability",
+    "Description": "Measures should carry a description for documentation and the data catalog.",
+    "Severity": 2,
+    "Scope": "Measure",
+    "Expression": "string.IsNullOrWhitespace(Description)"
+  },
+  {
+    "ID": "DOC_KEY_COLUMN_HIDDEN",
+    "Name": "Key columns should be hidden",
+    "Category": "Maintainability",
+    "Description": "Surrogate/foreign key columns ending in ID carry no meaning for end users and should be hidden.",
+    "Severity": 1,
+    "Scope": "Column",
+    "Expression": "RegEx.IsMatch(Name, \"ID$\") and not IsHidden"
+  }
+]

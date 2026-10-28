@@ -1,6 +1,6 @@
 ---
-description: Auto-generate complete Markdown documentation for a PBIP project.
 name: document-dashboard
+description: Auto-generate complete Markdown documentation for a PBIP project.
 ---
 
 **Context:** ${selection}

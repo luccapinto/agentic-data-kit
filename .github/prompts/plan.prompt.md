@@ -1,6 +1,6 @@
 ---
-description: Draft an implementation plan for a data task — a plan file only, no code.
 name: plan
+description: Draft an implementation plan for a data task — a plan file only, no code.
 ---
 
 **Context:** ${selection}
