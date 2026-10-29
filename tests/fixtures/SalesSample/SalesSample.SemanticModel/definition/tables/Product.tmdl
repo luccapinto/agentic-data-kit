@@ -1,0 +1,36 @@
+table Product
+
+	column ProductID
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: ProductID
+
+	column Product
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Product
+
+	column Category
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Category
+
+	partition Product = m
+		mode: import
+		source =
+				let
+				    Source = #table(
+				        type table [ProductID = Int64.Type, Product = Text.Type, Category = Text.Type],
+				        {
+				            {1, "Laptop", "Hardware"},
+				            {2, "Monitor", "Hardware"},
+				            {3, "Support plan", "Services"}
+				        }
+				    )
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

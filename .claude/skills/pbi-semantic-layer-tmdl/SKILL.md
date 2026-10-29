@@ -1,69 +1,99 @@
 ---
 name: pbi-semantic-layer-tmdl
-description: Edit the Power BI semantic model as code by authoring TMDL files in a PBIP project (offline, Desktop closed). Covers structure, syntax, and post-edit verification.
+description: Change the Power BI semantic model — measures, columns, tables, relationships, RLS, DAX — with Power BI Desktop OPEN through the Power BI Modeling (Authoring) MCP server, saving to TMDL in a PBIP project; or by editing TMDL files with Desktop closed. Includes a semantic-model review checklist. Use for any request to add or fix a measure, DAX, relationship, table, column or model metadata.
 ---
 
 # Skill: pbi-semantic-layer-tmdl
 
-Author and edit the semantic model (tables, columns, measures, relationships, RLS) by writing
-**TMDL** files directly. TMDL is the GA, human-readable text format for tabular models — great
-diffs, one file per table, fully scriptable.
+With Desktop open, the model lives in Desktop's memory (a local Analysis Services instance). Edit
+it **there**, live, through the Power BI Modeling MCP server — then the user saves and Desktop
+writes the TMDL into the PBIP. Editing the `.tmdl` files while Desktop is open does nothing
+until a model reload and is overwritten by the next save.
 
-## Hard precondition
-**Power BI Desktop must be CLOSED** before saving. Desktop keeps the model in memory and
-overwrites disk on save, so editing live corrupts files or loses work.
+## Default: Desktop open + Modeling MCP
+Setup and the tool list: [references/modeling-mcp.md](references/modeling-mcp.md).
+1. **Connect:** "Connect to '<file name>' in Power BI Desktop". Confirm with a read: list the
+   tables and measures. If the MCP is not registered, stop and point the user to the setup —
+   do not fall back to editing TMDL silently.
+2. **Inspect through the MCP**, not the `.tmdl` files: while connected, the live model is the
+   truth and disk may be stale.
+3. **Change** in dependency order: tables/partitions → columns → relationships → measures.
+   Check that every referenced table/column exists and that the name is not taken.
+4. **Prove it:** run a DAX query through the MCP (`EVALUATE SUMMARIZECOLUMNS(..., "x", [New Measure])`
+   or `EVALUATE { [New Measure] }`) and show the value. A measure that only "was created" is not done.
+5. **Save:** ask the user to press Ctrl+S in Desktop. That writes the TMDL into
+   `<Name>.SemanticModel/definition/` — the diff the team reviews and commits.
+6. **Quality:** run `pbi-quality-rules` (BPA) after significant changes — on disk, so after step 5.
+7. If a visual must use the new measure, continue in `pbi-report-layer-pbir`. Report reloads do
+   not touch the model and are not needed for MCP changes.
+
+## Alternative: Desktop closed (no MCP, older Desktop, CI)
+Edit the TMDL files directly:
+1. Make sure Desktop is **closed** — it overwrites disk on save.
+2. Edit `.tmdl` files following the syntax below; run `pbi-quality-rules`.
+3. Ask the user to open the `.pbip`: field list populates, no error banner, each new measure on a
+   Card shows a value. On error, re-read the edited TMDL and fix the reference/syntax.
+
+If Desktop must stay open and the MCP is unavailable, edit TMDL, then reload model + report with
+`powerbi-report-author preview <folder> --host desktop --reload-with-model` after the same
+unsaved-changes gate as `pbi-report-layer-pbir`. It reloads definitions only — the user must
+refresh data for new/changed imported columns.
 
 ## `.SemanticModel` structure
 ```
-<Project>.SemanticModel/
+<Name>.SemanticModel/
   definition.pbism          ← pointer (do not hand-edit)
   definition/
-    model.tmdl              ← model-level definition, lists tables
-    database.tmdl           ← compatibility level / annotations
-    tables/<Table>.tmdl     ← ONE table per file (golden rule)
-    relationships.tmdl      ← all relationships
+    database.tmdl           ← compatibilityLevel
+    model.tmdl              ← model properties, `ref table` order, annotations
+    tables/<Table>.tmdl     ← one table per file
+    relationships.tmdl
     expressions.tmdl        ← shared M expressions / parameters
-    cultures/               ← translations
     roles.tmdl              ← RLS
-  .pbi/                     ← local cache/settings — NEVER edit (localSettings.json, cache.abf)
+    cultures/               ← translations
+  .pbi/                     ← local cache/settings — never edit, keep out of git
 ```
-Edit `.tmdl` files only. One table per file — never define every table inside `model.tmdl`.
 
-## TMDL syntax reference
+## TMDL syntax
 ```tmdl
-table 'Sales'
-    description: "Primary sales fact."
+/// Order lines. Grain: one row per order line.
+table Sales
 
-    measure 'Total Sales' = SUM(Sales[Amount])
-        formatString: "#,##0.00"
-        displayFolder: "Financials"
-        description: "Sum of sales amount."
+	/// Sum of the order line amount.
+	measure 'Total Sales' = SUM(Sales[Amount])
+		formatString: #,##0.00
+		displayFolder: Revenue
 
-    column 'Amount'
-        dataType: decimal
-        sourceColumn: BaseAmount
+	measure 'Margin %' =
+			DIVIDE([Total Sales] - [Total Cost], [Total Sales])
+		formatString: 0.0%
+		displayFolder: Revenue
+
+	column Amount
+		dataType: decimal
+		summarizeBy: sum
+		sourceColumn: Amount
 ```
 ```tmdl
-relationship Sales_Date
-    fromColumn: Sales.DateId
-    toColumn: Date.DateId
-    fromCardinality: many
-    toCardinality: one
+relationship 5f0c2a4e-9b1d-4c3a-8e2f-1a6b7c8d9e01
+	fromColumn: Sales.DateKey
+	toColumn: Date.DateKey
 ```
+- Indent with tabs; properties one level under their object.
+- Descriptions are `///` lines directly above the object.
+- Multi-line DAX: leave the `=` line empty and indent the expression two levels deeper than the
+  object, or wrap it in a ```` ``` ```` block.
+- Quote names with spaces or symbols: `'Margin %'`; double a quote inside: `'Customer''s'`.
 
-**Serialization rules:** keep functional properties (`dataType`, `sourceColumn`) before
-cosmetic ones; match the file's existing indentation; for multi-line DAX, break with `\` at the
-end of the line.
-
-## Tooling
-- **Tabular Editor 2 (free)** can open the `.SemanticModel` folder, validate, batch-edit, and
-  re-serialize clean TMDL. Use it to sanity-check non-trivial edits.
-- **Optional:** Microsoft's `powerbi-modeling-mcp` (preview) edits the same PBIP/TMDL files and
-  is handy for bulk operations. File editing remains the default, accessible path.
-
-## Post-edit verification
-1. Ask the user to open the `.pbip` in Desktop and wait for the field list to populate.
-2. **View → Diagnostics** — report any error/warning shown.
-3. For each new/changed measure, drop it on a **Card** and confirm the value (no red error icon).
-4. On error: re-read the edited TMDL, find the syntax/reference issue, propose the fix.
-5. Run the `pbi-quality-rules` skill (BPA) after significant changes.
+## Review checklist (run it on any model you change or are asked to review)
+- **Names** are business-friendly: no `tbl_`/`dim_` prefixes or `_id` columns visible to users.
+- **Every measure** has a `formatString`, a `displayFolder` and a `///` description (what it
+  means and its grain/filters in plain words).
+- **Relationships** match reality: many-to-one from fact to dimension, single direction unless a
+  documented reason exists; no ambiguous paths.
+- **A real Date table** (marked as date table) drives time intelligence; auto date/time is off
+  (`annotation __PBI_TimeIntelligenceEnabled = 0` in `model.tmdl`).
+- **Technical keys hidden** (`isHidden` on `...ID`/`...Key` columns); explicit measures instead
+  of implicit column aggregation for anything a report shows.
+- **DAX:** `DIVIDE` instead of `/` + `IFERROR`; variables for repeated sub-expressions; no
+  measure that just returns `BLANK()`.

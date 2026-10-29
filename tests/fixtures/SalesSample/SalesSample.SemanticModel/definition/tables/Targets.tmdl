@@ -1,0 +1,31 @@
+/// Monthly sales targets typed in by Finance. Grain: one row per month.
+table Targets
+
+	column Month
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Month
+
+	column Target
+		dataType: decimal
+		formatString: #,##0.00
+		summarizeBy: sum
+		sourceColumn: Target
+
+	partition Targets = m
+		mode: import
+		source =
+				let
+				    Source = #table(
+				        type table [Month = Text.Type, Target = Currency.Type],
+				        {
+				            {"2026-01", 200},
+				            {"2026-02", 220},
+				            {"2026-03", 150}
+				        }
+				    )
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

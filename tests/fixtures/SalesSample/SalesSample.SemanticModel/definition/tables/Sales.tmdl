@@ -1,0 +1,75 @@
+/// Order lines. Grain: one row per order line.
+table Sales
+
+	/// Sum of the order line amount.
+	measure 'Total Sales' = SUM(Sales[Amount])
+		formatString: #,##0.00
+		displayFolder: Revenue
+
+	measure 'total cost' = SUM(Sales[Cost])
+		formatString: #,##0.00
+
+	/// Gross margin as a share of sales.
+	measure 'Margin %' =
+			IFERROR(
+				( [Total Sales] - [total cost] ) / [Total Sales],
+				BLANK()
+			)
+		formatString: 0.0%
+		displayFolder: Revenue
+
+	/// Placeholder kept for a future forecast KPI.
+	measure Forecast = BLANK()
+		displayFolder: Planning
+
+	column OrderId
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: OrderId
+
+	column DateKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: DateKey
+
+	column ProductID
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: ProductID
+
+	column Amount
+		dataType: decimal
+		formatString: #,##0.00
+		summarizeBy: sum
+		sourceColumn: Amount
+
+	column Cost
+		dataType: decimal
+		formatString: #,##0.00
+		summarizeBy: sum
+		sourceColumn: Cost
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = #table(
+				        type table [OrderId = Int64.Type, DateKey = Int64.Type, ProductID = Int64.Type, Amount = Currency.Type, Cost = Currency.Type],
+				        {
+				            {1, 20260105, 1, 120, 70},
+				            {2, 20260112, 2, 80, 50},
+				            {3, 20260203, 1, 150, 90},
+				            {4, 20260214, 3, 60, 20},
+				            {5, 20260302, 2, 95, 55},
+				            {6, 20260318, 3, 40, 15}
+				        }
+				    )
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

@@ -1,19 +1,37 @@
 {
   "name": "@luccapinto/agentic-data-kit",
-  "version": "4.1.1",
-  "description": "Lean AI agents, skills, and workflows for Data Teams (Claude Code, GitHub Copilot, OpenCode, Antigravity)",
+  "version": "5.0.0",
+  "description": "Power BI as code with Desktop open (Modeling MCP + Desktop Bridge), plus lean skills for data teams — for Claude Code, GitHub Copilot, OpenCode, Cursor and Antigravity",
   "type": "module",
   "main": "bin/cli.js",
   "bin": {
     "agentic-data-kit": "bin/cli.js",
     "ag-data-kit": "bin/cli.js"
   },
+  "files": [
+    "bin/",
+    ".agent/",
+    ".claude/",
+    ".cursor/",
+    ".opencode/",
+    ".github/agents/",
+    ".github/prompts/",
+    ".github/skills/",
+    ".github/copilot-instructions.md",
+    "AGENTS.md",
+    "scripts/sync_agents.py",
+    "CHANGELOG.md",
+    "THIRD_PARTY_NOTICES.md"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "sync": "python3 scripts/sync_agents.py",
+    "sync:check": "python3 scripts/sync_agents.py --check",
+    "test": "python3 -B -m unittest discover -s tests -v",
+    "prepack": "python3 scripts/sync_agents.py"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luccapinto/agentic-ai-kit.git"
+    "url": "git+https://github.com/luccapinto/agentic-data-kit.git"
   },
   "keywords": [
     "agentic-ai",
@@ -22,20 +40,25 @@
     "skills",
     "claude-code",
     "github-copilot",
+    "opencode",
+    "cursor",
     "power-bi",
+    "power-bi-desktop",
+    "pbip",
+    "pbir",
     "tmdl",
+    "mcp",
+    "best-practice-analyzer",
     "data-engineering",
     "presentations",
-    "reveal-js",
-    "design-md",
-    "templates"
+    "design-md"
   ],
   "author": "Lucca Pinto",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/luccapinto/agentic-ai-kit/issues"
+    "url": "https://github.com/luccapinto/agentic-data-kit/issues"
   },
-  "homepage": "https://github.com/luccapinto/agentic-ai-kit#readme",
+  "homepage": "https://github.com/luccapinto/agentic-data-kit#readme",
   "dependencies": {
     "@inquirer/prompts": "^8.3.0",
     "boxen": "^8.0.1",

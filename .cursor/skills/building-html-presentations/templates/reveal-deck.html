@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<!--
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  DATA-DASHBOARD DECK — reveal.js starter (single file, self-contained)     │
+  │                                                                            │
+  │  A sophisticated, dark "analyst readout" system. Copy this file, swap the  │
+  │  brand tokens in :root (map them from your DESIGN.md), then replace the     │
+  │  demo content. Layout primitives provided: cover with KPI grid, section    │
+  │  divider, 2×2 dashboard panels, ranking bars, heatmap matrix, quote cards. │
+  │                                                                            │
+  │  Charts: pure-CSS bars + ECharts (pinned) for lines. Custom nav (counter,  │
+  │  progress, dots, prev/next) is wired to the reveal.js API at the bottom.    │
+  │  Export to PDF: append ?print-pdf to the URL, then print → Save as PDF.     │
+  │  Versions are pinned on purpose — reproducible, works offline once cached.  │
+  └──────────────────────────────────────────────────────────────────────────┘
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Performance Review — FY2026</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══ 1. BRAND TOKENS — map these from your DESIGN.md ═══════════════════ */
+    :root {
+      --bg:        #0B0F16;   /* deep slate base                      */
+      --bg-grad:   radial-gradient(1200px 600px at 80% -10%, #16202E 0%, #0B0F16 60%);
+      --surface:   #121A24;   /* panel / card background              */
+      --surface-2: #18222F;   /* nested cell background               */
+      --border:    rgba(255,255,255,0.08);
+      --text:      #E7EEF6;   /* primary text                         */
+      --dim:       #8593A6;   /* captions, sources, eyebrows          */
+      --accent:    #5B8DEF;   /* single brand accent (SWAP per brand) */
+      --pos:       #41C08A;   /* good / above benchmark               */
+      --warn:      #E0A949;   /* attention                            */
+      --neg:       #E0655B;   /* below / risk                         */
+      --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+      --font-body:    "Inter", system-ui, -apple-system, sans-serif;
+      --radius: 14px;
+      --pad: 56px;
+    }
+
+    /* ═══ 2. BASE ══════════════════════════════════════════════════════════ */
+    .reveal { font-family: var(--font-body); color: var(--text); font-size: 22px; }
+    .reveal .slides { text-align: left; }
+    .reveal .slides section { height: 100%; padding: var(--pad); box-sizing: border-box;
+      display: flex; flex-direction: column; }
+    html, .reveal-viewport { background: var(--bg); background-image: var(--bg-grad); }
+    .reveal h1, .reveal h2, .reveal h3 { font-family: var(--font-display); color: var(--text);
+      margin: 0; line-height: 1.08; text-transform: none; letter-spacing: -0.5px; }
+    .reveal p { margin: 0; }
+    .reveal strong { color: var(--text); }
+    .accent { color: var(--accent); }
+    .pos { color: var(--pos); } .warn { color: var(--warn); } .neg { color: var(--neg); }
+
+    /* Shared bits */
+    .eyebrow { font-family: var(--font-body); font-size: 0.62em; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase; color: var(--dim); }
+    .lead { color: var(--dim); font-size: 0.74em; line-height: 1.5; max-width: 60%; }
+    .source { font-size: 0.5em; color: var(--dim); margin-top: auto; padding-top: 16px; }
+    .slide-title { font-size: 2.1em; font-weight: 700; }
+    .slide-title .accent { color: var(--accent); }
+
+    /* ═══ 3. KPI GRID & CHIPS (cover / stat rows) ══════════════════════════ */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 44px; }
+    .kpi .val { font-family: var(--font-display); font-size: 2.4em; font-weight: 700;
+      color: var(--accent); line-height: 1; }
+    .kpi .val.muted { color: var(--text); }
+    .kpi .lbl { font-size: 0.5em; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--dim); margin-top: 8px; }
+    .chips { display: flex; gap: 12px; flex-wrap: wrap; }
+    .chip { border: 1px solid var(--border); border-radius: 999px; padding: 8px 18px;
+      font-size: 0.58em; letter-spacing: 1px; text-transform: uppercase; color: var(--text);
+      background: rgba(255,255,255,0.02); }
+    .chip b { color: var(--accent); }
+    .cta-bar { margin-top: 8px; border: 1px solid var(--accent); color: var(--accent);
+      border-radius: 12px; padding: 18px; text-align: center; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase; font-size: 0.62em; }
+
+    /* ═══ 4. PANELS (2×2 dashboard grid) ═══════════════════════════════════ */
+    .panel-grid { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr;
+      gap: 22px; flex: 1; min-height: 0; margin-top: 22px; }
+    .panel { background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px 26px; display: flex; flex-direction: column;
+      min-height: 0; }
+    .panel-head { display: flex; align-items: center; gap: 10px; font-family: var(--font-display);
+      font-weight: 600; font-size: 0.82em; margin-bottom: 4px; }
+    .panel-head .dot { width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+    .panel-head.pos .dot { background: var(--pos); } .panel-head.neg .dot { background: var(--neg); }
+    .panel-sub { font-size: 0.54em; color: var(--dim); margin-bottom: 16px; }
+    .panel .note { font-size: 0.56em; color: var(--dim); line-height: 1.55; margin-top: auto; }
+    .panel .note b.pos { color: var(--pos); } .panel .note b.neg { color: var(--neg); }
+    .panel .note b.accent { color: var(--accent); }
+
+    /* ═══ 5. CSS BAR CHARTS / RANKINGS ═════════════════════════════════════ */
+    .bars { display: flex; flex-direction: column; gap: 11px; font-size: 0.56em; }
+    .bar-row { display: grid; grid-template-columns: 130px 1fr 42px 48px; align-items: center;
+      gap: 12px; }
+    .bar-row .name { color: var(--text); white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; }
+    .bar-track { background: var(--surface-2); border-radius: 6px; height: 14px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; background: var(--accent); }
+    .bar-fill.pos { background: var(--pos); } .bar-fill.warn { background: var(--warn); }
+    .bar-fill.neg { background: var(--neg); }
+    .bar-row .num { text-align: right; font-variant-numeric: tabular-nums; color: var(--text); }
+    .bar-row .delta { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+    /* ═══ 6. HEATMAP MATRIX ════════════════════════════════════════════════ */
+    .pills { display: flex; gap: 10px; margin: 14px 0 18px; }
+    .pill { font-size: 0.52em; letter-spacing: 1px; text-transform: uppercase; padding: 7px 16px;
+      border-radius: 999px; border: 1px solid var(--border); color: var(--dim); }
+    .pill.on { background: var(--accent); color: #061018; border-color: var(--accent); font-weight: 600; }
+    .legend { display: flex; gap: 8px; align-items: center; font-size: 0.46em; color: var(--dim);
+      margin-bottom: 12px; }
+    .legend i { width: 22px; height: 12px; border-radius: 3px; display: inline-block; }
+    table.heat { border-collapse: separate; border-spacing: 4px; font-size: 0.5em; width: 100%; }
+    table.heat th { color: var(--dim); font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.5px; padding: 4px; text-align: center; }
+    table.heat td.rowh { text-align: left; color: var(--text); }
+    table.heat td.cell { text-align: center; border-radius: 5px; color: #07120C;
+      font-variant-numeric: tabular-nums; padding: 7px 0; font-weight: 600; }
+    /* green→red scale (assign per value) */
+    .s6 { background:#2FA876; } .s5 { background:#5FB97E; } .s4 { background:#9ECB7A; }
+    .s3 { background:#E0C766; } .s2 { background:#E0A04E; color:#fff; } .s1 { background:#D26A57; color:#fff; }
+
+    /* ═══ 7. QUOTE CARDS ═══════════════════════════════════════════════════ */
+    .quote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; flex: 1; min-height: 0;
+      margin-top: 22px; }
+    .quote-card { background: var(--surface); border: 1px solid var(--border);
+      border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 22px 24px;
+      display: flex; flex-direction: column; }
+    .quote-card.warn { border-left-color: var(--warn); }
+    .quote-card h3 { font-size: 0.8em; }
+    .quote-card .q { font-size: 0.6em; color: var(--text); line-height: 1.55; font-style: italic;
+      margin: 12px 0; }
+    .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+    .tag { font-size: 0.46em; letter-spacing: 0.5px; text-transform: uppercase; color: var(--dim);
+      border: 1px solid var(--border); border-radius: 6px; padding: 4px 9px; }
+    .callout { display: flex; gap: 12px; align-items: center; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 0.54em;
+      color: var(--dim); margin-top: 18px; }
+    .callout b { color: var(--accent); }
+
+    /* ═══ 8. CUSTOM CHROME (counter, section tag, progress, nav) ═══════════ */
+    .deck-top { position: fixed; top: 22px; left: 0; right: 0; display: flex;
+      justify-content: space-between; padding: 0 32px; font-size: 13px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--dim); z-index: 30; pointer-events: none; }
+    #counter b { color: var(--accent); }
+    #progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--accent);
+      z-index: 40; transition: width 0.3s ease; }
+    .deck-nav { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 18px; background: rgba(18,26,36,0.8);
+      border: 1px solid var(--border); border-radius: 999px; padding: 8px 18px; z-index: 30;
+      backdrop-filter: blur(6px); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--dim); }
+    .deck-nav button { background: none; border: none; color: var(--dim); cursor: pointer;
+      font: inherit; letter-spacing: 1.5px; text-transform: uppercase; }
+    .deck-nav button:hover { color: var(--text); }
+    #dots { display: flex; gap: 7px; }
+    #dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+    #dots i.on { background: var(--accent); transform: scale(1.25); }
+  </style>
+</head>
+<body>
+  <div id="progress"></div>
+  <div class="deck-top">
+    <span id="section-tag">Overview</span>
+    <span id="counter"><b>01</b> / 08</span>
+  </div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ░░ 1 · COVER ░░ -->
+      <section data-section="Overview">
+        <div class="eyebrow">Sales Performance Review · FY2026 · Q1</div>
+        <div style="display:grid; grid-template-columns: 1.1fr 1fr; gap:40px; flex:1; align-items:center;">
+          <div>
+            <h1 style="font-size:3.4em; font-weight:700;">Q1 bookings closed<br><span class="accent">+12%</span> above plan</h1>
+            <p class="lead" style="max-width:none; margin-top:22px;">Consolidated bookings across 5 regions
+              and 4 product lines — 1,240 closed-won deals vs. plan and prior quarter. Replace with your
+              own figures; never invent numbers.</p>
+            <div class="chips" style="margin-top:26px;">
+              <div class="chip"><b>1,240</b> deals</div>
+              <div class="chip"><b>38</b> reps</div>
+              <div class="chip"><b>5</b> regions</div>
+            </div>
+          </div>
+          <div>
+            <div class="kpi-grid">
+              <div class="kpi"><div class="val">$4.2M</div><div class="lbl">Bookings</div></div>
+              <div class="kpi"><div class="val">+12%</div><div class="lbl">vs. plan</div></div>
+              <div class="kpi"><div class="val">+9%</div><div class="lbl">vs. last Q</div></div>
+              <div class="kpi"><div class="val muted">28%</div><div class="lbl">Win rate</div></div>
+              <div class="kpi"><div class="val muted">$34K</div><div class="lbl">Avg deal</div></div>
+              <div class="kpi"><div class="val muted">$9.1M</div><div class="lbl">Pipeline</div></div>
+            </div>
+            <div class="cta-bar" style="margin-top:34px;">Start →</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ░░ 2 · SECTION DIVIDER ░░ -->
+      <section data-section="Executive summary" data-background-color="#0B0F16"
+               style="justify-content:center;">
+        <div class="eyebrow">Section 01</div>
+        <h1 style="font-size:3.6em; font-weight:700; margin-top:12px;">Executive <span class="accent">summary</span></h1>
+        <p class="lead" style="margin-top:18px;">Bookings beat plan on <strong>enterprise</strong> strength
+          and healthy expansion; <strong>SMB win rate</strong> and discounting are the risks to watch this
+          quarter.</p>
+      </section>
+
+      <!-- ░░ 3 · DASHBOARD 2×2 (charts + narrative) ░░ -->
+      <section data-section="Executive summary">
+        <div class="eyebrow">Section 01 · Summary</div>
+        <h2 class="slide-title">How the <span class="accent">quarter</span> landed</h2>
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Bookings — last 4 quarters ($M)</div>
+            <div class="panel-sub">Source · grain · date range · filters</div>
+            <div id="chart-line" style="flex:1; min-height:0;"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Region attainment</div>
+            <div class="panel-sub">% of quarterly target</div>
+            <div class="bars" style="margin-top:6px;">
+              <div class="bar-row"><span class="name">North America</span><div class="bar-track"><div class="bar-fill pos" style="width:100%"></div></div><span class="num">118%</span><span class="delta pos">+18</span></div>
+              <div class="bar-row"><span class="name">EMEA</span><div class="bar-track"><div class="bar-fill pos" style="width:96%"></div></div><span class="num">104%</span><span class="delta pos">+4</span></div>
+              <div class="bar-row"><span class="name">LATAM</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><span class="num">96%</span><span class="delta neg">−4</span></div>
+              <div class="bar-row"><span class="name">APAC</span><div class="bar-track"><div class="bar-fill warn" style="width:84%"></div></div><span class="num">88%</span><span class="delta neg">−12</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head pos"><span class="dot"></span>What's working</div>
+            <p class="note" style="margin-top:8px;"><b class="pos">Enterprise</b> segment drove the beat —
+              larger deals, faster cycles. <b class="pos">Expansion / upsell</b> net revenue retention above
+              target. Double down on the enterprise motion.</p>
+          </div>
+          <div class="panel">
+            <div class="panel-head neg"><span class="dot"></span>Where to focus</div>
+            <p class="note" style="margin-top:8px;"><b class="neg">SMB win rate</b> slipped as deals stalled
+              late-stage. <b class="accent">Discounting</b> pressured margin on competitive deals. Tighten
+              qualification and the approval guardrails.</p>
+          </div>
+        </div>
+        <p class="source">Source: gold.fct_bookings · grain: deal · FY2026 Q1 · filters: closed-won — TODO real values</p>
+      </section>
+
+      <!-- ░░ 4 · MIX & PROFILE (donut + radar) ░░ -->
+      <section data-section="Mix & profile">
+        <div class="eyebrow">Section 01 · Mix &amp; profile</div>
+        <h2 class="slide-title">Channel <span class="accent">mix</span> & segment profile</h2>
+        <div class="panel-grid" style="grid-auto-rows:auto;">
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Bookings by channel</div>
+            <div class="panel-sub">share of total</div>
+            <div id="chart-donut" class="chart" style="flex:1;min-height:0;height:300px;"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="dot"></span>Enterprise vs. SMB profile</div>
+            <div class="panel-sub">indexed, 0–100</div>
+            <div id="chart-radar" class="chart" style="flex:1;min-height:0;height:300px;"></div>
+          </div>
+        </div>
+        <p class="source">Source: gold.fct_bookings · grain: deal · FY2026 Q1 — TODO real values</p>
+      </section>
+
+      <!-- ░░ 5 · DRILLDOWN / RANKING ░░ -->
+      <section data-section="Drilldown">
+        <div class="eyebrow">Section 02 · Drilldown</div>
+        <h2 class="slide-title">Product lines — <span class="accent">winners</span> & laggards</h2>
+        <div class="panel-grid" style="grid-auto-rows:auto;">
+          <div class="panel">
+            <div class="panel-head pos"><span class="dot"></span>Above target</div>
+            <div class="bars" style="margin-top:14px;">
+              <div class="bar-row"><span class="name">Platform</span><div class="bar-track"><div class="bar-fill pos" style="width:100%"></div></div><span class="num">$1.6M</span><span class="delta pos">+22%</span></div>
+              <div class="bar-row"><span class="name">Analytics</span><div class="bar-track"><div class="bar-fill pos" style="width:78%"></div></div><span class="num">$1.2M</span><span class="delta pos">+14%</span></div>
+              <div class="bar-row"><span class="name">Add-ons</span><div class="bar-track"><div class="bar-fill pos" style="width:52%"></div></div><span class="num">$0.8M</span><span class="delta pos">+6%</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head neg"><span class="dot"></span>Below target</div>
+            <div class="bars" style="margin-top:14px;">
+              <div class="bar-row"><span class="name">Services</span><div class="bar-track"><div class="bar-fill warn" style="width:39%"></div></div><span class="num">$0.6M</span><span class="delta neg">−9%</span></div>
+              <div class="bar-row"><span class="name">Legacy SKU</span><div class="bar-track"><div class="bar-fill neg" style="width:26%"></div></div><span class="num">$0.4M</span><span class="delta neg">−18%</span></div>
+              <div class="bar-row"><span class="name">Trials → paid</span><div class="bar-track"><div class="bar-fill neg" style="width:18%"></div></div><span class="num">$0.3M</span><span class="delta neg">−24%</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="source">Bars = bookings ($); delta = vs. target. Ordered by attainment. — TODO real values</p>
+      </section>
+
+      <!-- ░░ 5 · HEATMAP MATRIX ░░ -->
+      <section data-section="Matrix">
+        <div class="eyebrow">Section 03 · Matrix</div>
+        <h2 class="slide-title">Attainment by <span class="accent">region × product</span></h2>
+        <div class="pills">
+          <span class="pill on">Attainment (%)</span>
+          <span class="pill">Δ vs. target (pp)</span>
+        </div>
+        <div class="legend">
+          <i class="s6"></i><i class="s5"></i><i class="s4"></i><i class="s3"></i><i class="s2"></i><i class="s1"></i>
+          <span>high → low</span>
+        </div>
+        <table class="heat">
+          <thead><tr><th style="text-align:left">Product</th><th>NA</th><th>EMEA</th><th>LATAM</th><th>APAC</th><th>Global</th></tr></thead>
+          <tbody>
+            <tr><td class="rowh">Platform</td><td class="cell s6">128</td><td class="cell s6">112</td><td class="cell s5">98</td><td class="cell s4">90</td><td class="cell s6">122</td></tr>
+            <tr><td class="rowh">Analytics</td><td class="cell s6">119</td><td class="cell s5">106</td><td class="cell s5">94</td><td class="cell s4">88</td><td class="cell s5">114</td></tr>
+            <tr><td class="rowh">Add-ons</td><td class="cell s5">104</td><td class="cell s5">101</td><td class="cell s4">90</td><td class="cell s3">82</td><td class="cell s5">106</td></tr>
+            <tr><td class="rowh">Services</td><td class="cell s4">92</td><td class="cell s3">86</td><td class="cell s2">74</td><td class="cell s2">71</td><td class="cell s3">91</td></tr>
+            <tr><td class="rowh">Legacy SKU</td><td class="cell s2">76</td><td class="cell s2">73</td><td class="cell s1">62</td><td class="cell s1">58</td><td class="cell s2">82</td></tr>
+          </tbody>
+        </table>
+        <p class="source">Color = attainment band. TODO: replace with real values; keep one band scale.</p>
+      </section>
+
+      <!-- ░░ 6 · QUOTES / OPEN COMMENTS ░░ -->
+      <section data-section="Comments">
+        <div class="eyebrow">Section 04 · Win / Loss</div>
+        <h2 class="slide-title">Why we <span class="accent">win</span> & why we lose</h2>
+        <div class="callout">💬 <span><b>Reading note:</b> themes summarized from closed-deal notes in the CRM
+          — representative, not edited. TODO: paste real, de-identified excerpts.</span></div>
+        <div class="quote-grid">
+          <div class="quote-card">
+            <h3 class="pos">Why we win</h3>
+            <p class="q">"Short, representative quote from a won deal — e.g. product fit, time-to-value, or a
+              champion-led evaluation."</p>
+            <div class="tags"><span class="tag">Product fit</span><span class="tag">Time-to-value</span><span class="tag">Champion</span></div>
+          </div>
+          <div class="quote-card warn">
+            <h3 class="warn">Why we lose</h3>
+            <p class="q">"Short, representative quote from a lost deal — e.g. price, missing feature, or a
+              stalled procurement process."</p>
+            <div class="tags"><span class="tag">Price</span><span class="tag">Feature gap</span><span class="tag">Procurement</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ░░ 7 · SO WHAT / NEXT ░░ -->
+      <section data-section="Next steps" style="justify-content:center;">
+        <div class="eyebrow">So what — and next</div>
+        <h1 style="font-size:2.6em; font-weight:700; margin:12px 0 26px;">Three moves <span class="accent">from here</span></h1>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:22px;">
+          <div class="panel"><div class="panel-head"><span class="dot"></span>1 · Scale enterprise</div><p class="note" style="margin-top:10px;">Reallocate reps to the enterprise motion that beat plan. Owner · timeline.</p></div>
+          <div class="panel"><div class="panel-head"><span class="dot"></span>2 · Fix SMB funnel</div><p class="note" style="margin-top:10px;">Tighten qualification + discount guardrails. Measure: SMB win rate.</p></div>
+          <div class="panel"><div class="panel-head"><span class="dot"></span>3 · Revisit APAC</div><p class="note" style="margin-top:10px;">90-day APAC ramp plan; re-check attainment next quarter.</p></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Custom navigation -->
+  <div class="deck-nav">
+    <button onclick="Reveal.left()">‹ Prev</button>
+    <div id="dots"></div>
+    <button onclick="Reveal.right()">Next ›</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script>
+    Reveal.initialize({
+      width: 1280, height: 720, margin: 0.0, center: false,
+      controls: false, progress: false, slideNumber: false,
+      hash: true, transition: 'fade', transitionSpeed: 'fast',
+    });
+
+    // --- Custom chrome: counter, section tag, progress bar, dots ---
+    const css = getComputedStyle(document.documentElement);
+    const ACCENT = css.getPropertyValue('--accent').trim();
+    const DIM    = css.getPropertyValue('--dim').trim();
+    const total  = Reveal.getTotalSlides();
+    const dots   = document.getElementById('dots');
+    for (let i = 0; i < total; i++) dots.appendChild(document.createElement('i'));
+    const pad2 = n => String(n + 1).padStart(2, '0');
+
+    function refreshChrome() {
+      const i = Reveal.getSlides().indexOf(Reveal.getCurrentSlide());
+      document.getElementById('counter').innerHTML = `<b>${pad2(i)}</b> / ${String(total).padStart(2,'0')}`;
+      document.getElementById('progress').style.width = ((i + 1) / total * 100) + '%';
+      const tag = Reveal.getCurrentSlide().dataset.section;
+      if (tag) document.getElementById('section-tag').textContent = tag;
+      [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
+    }
+    Reveal.on('ready', refreshChrome);
+    Reveal.on('slidechanged', refreshChrome);
+
+    // --- Example ECharts line chart (replace data with your own) ---
+    Reveal.on('ready', () => {
+      const el = document.getElementById('chart-line');
+      if (!el || !window.echarts) return;
+      const chart = echarts.init(el, null, { renderer: 'svg' });
+      chart.setOption({
+        grid: { left: 32, right: 16, top: 18, bottom: 24 },
+        xAxis: { type: 'category', data: ['Q2/25','Q3/25','Q4/25','Q1/26'],
+          axisLine: { lineStyle: { color: DIM } }, axisLabel: { color: DIM, fontSize: 11 } },
+        yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
+          axisLabel: { color: DIM, fontSize: 11 } },
+        series: [{ type: 'line', smooth: true, data: [3.1, 3.5, 3.8, 4.2],
+          symbolSize: 8, lineStyle: { color: ACCENT, width: 3 },
+          itemStyle: { color: ACCENT }, label: { show: true, color: '#E7EEF6', fontSize: 11 },
+          areaStyle: { color: 'rgba(91,141,239,0.12)' } }],
+      });
+      window.addEventListener('resize', () => chart.resize());
+      Reveal.on('slidechanged', () => chart.resize());
+
+      // Donut — bookings by channel
+      const donut = echarts.init(document.getElementById('chart-donut'), null, { renderer: 'svg' });
+      donut.setOption({ tooltip:{trigger:'item'}, series:[{ type:'pie', radius:['52%','78%'],
+        itemStyle:{borderColor:'#0B0F16',borderWidth:2}, label:{color:DIM}, data:[
+          {name:'Direct',value:48,itemStyle:{color:ACCENT}},
+          {name:'Partner',value:27,itemStyle:{color:css.getPropertyValue('--pos').trim()}},
+          {name:'Self-serve',value:15,itemStyle:{color:css.getPropertyValue('--warn').trim()}},
+          {name:'Marketplace',value:10,itemStyle:{color:'#5B6675'}} ]}] });
+
+      // Radar — enterprise vs SMB profile
+      const radar = echarts.init(document.getElementById('chart-radar'), null, { renderer: 'svg' });
+      radar.setOption({ legend:{textStyle:{color:DIM},bottom:0},
+        radar:{ indicator:[{name:'Win'},{name:'Deal size'},{name:'Cycle'},{name:'Expansion'},{name:'NRR'}],
+          axisName:{color:DIM}, splitLine:{lineStyle:{color:'rgba(255,255,255,0.08)'}}, splitArea:{show:false} },
+        series:[{ type:'radar', data:[
+          {name:'Enterprise',value:[88,92,70,85,90],lineStyle:{color:ACCENT},areaStyle:{color:'rgba(91,141,239,0.22)'}},
+          {name:'SMB',value:[62,40,85,55,60],lineStyle:{color:css.getPropertyValue('--warn').trim()}} ]}] });
+
+      window.addEventListener('resize', () => { donut.resize(); radar.resize(); });
+      Reveal.on('slidechanged', () => { donut.resize(); radar.resize(); });
+    });
+  </script>
+</body>
+</html>

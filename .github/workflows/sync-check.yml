@@ -1,0 +1,25 @@
+name: sync-check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+          npm install --no-audit --no-fund
+      - name: Generated folders match .agent/
+        run: python3 scripts/sync_agents.py --check
+      - name: Tests
+        run: npm test
