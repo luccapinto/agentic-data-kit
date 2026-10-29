@@ -56,26 +56,39 @@ authored once in `.agent/` and compiled into each assistant's native format.
 You keep Power BI Desktop open on the `.pbip`. The assistant changes the model live and the
 report on disk, then reloads Desktop and looks at the result.
 
-```text
-Model / measures                         Report visuals
-────────────────                         ──────────────
-Modeling MCP  ──► change goes LIVE       edit PBIR files
-in Desktop                                   │
-     │                                       ▼
-you save in Desktop                     validate_pbir.py
-(TMDL lands in the PBIP)                     │
-     │                                       ▼
-     ▼                                Desktop has no unsaved changes?
-run_bpa.py (BPA)                             │
-                                             ▼
-                                   powerbi-report-author preview --reload
-                                             │
-                                             ▼
-                                   --screenshot <dir> --all-pages
-                                             │
-                                             ▼
-                              pbi-visual-reviewer (fresh context) ─► PASS / FAIL per page & visual
+```mermaid
+flowchart TB
+    subgraph MODEL["Model & measures"]
+        direction LR
+        M1["Modeling MCP<br/>live change"] --> M2["Save in<br/>Desktop"] --> M3["run_bpa.py"]
+    end
+
+    subgraph REPORT["Report visuals"]
+        direction TB
+        R1["Edit PBIR files"] --> R2["validate_pbir.py"]
+        R2 --> R3["Check status<br/>save if unsaved"]
+        R3 --> R4["Reload"]
+        R4 --> R5["Screenshot<br/>all pages"]
+        R5 --> R6{"Visual<br/>review"}
+        R6 -- "FAIL" --> R1
+        R6 -- "PASS" --> R7(["Done"])
+    end
+
+    MODEL ~~~ REPORT
+
+    classDef step fill:#FFFFFF,stroke:#6B7280,color:#111827
+    classDef live fill:#F2C811,stroke:#B38F00,color:#111827
+    classDef gate fill:#DBEAFE,stroke:#2563EB,color:#111827
+    classDef review fill:#EDE9FE,stroke:#7C3AED,color:#111827
+    classDef done fill:#DCFCE7,stroke:#16A34A,color:#111827
+    class R1,M2 step
+    class M1,R4,R5 live
+    class M3,R2,R3 gate
+    class R6 review
+    class R7 done
 ```
+
+<sub>Yellow: acts on the open Desktop (Modeling MCP, `powerbi-report-author preview`) · Blue: validation gate · Purple: independent review by `pbi-visual-reviewer` (read-only, fresh context).</sub>
 
 Visual loop in order: **edit PBIR → `validate_pbir.py` → confirm Desktop has no unsaved changes
 (`powerbi-report-author preview <folder> --host desktop --status`, `details.hasUnsavedChanges` must
