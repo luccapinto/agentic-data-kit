@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## [5.0.0] - 2026-10-28
+## [5.0.0] - 2026-11-03
 
 Power BI becomes the flagship, developed with Power BI Desktop open.
 
@@ -62,5 +62,9 @@ Power BI becomes the flagship, developed with Power BI Desktop open.
   `.opencode/AGENTS.md`.
 - `init --target copilot` copied the whole `.github/` folder, which would have included the
   kit's own CI workflow.
+- `validate_pbir.py` structural fallback now reports `PBIR_JSON_FILE_NO_SCHEMA` for the same files
+  as `powerbi-report-author validate`; it said `succeeded` after a Desktop save removed `"$schema"`
+  from the `.pbip` and `definition.pbir` (#7).
+- `validate_pbir.py` finds the CLI in `%APPDATA%\npm` on Windows when it is not on PATH (#7).
 
 Earlier versions are in the git history.
