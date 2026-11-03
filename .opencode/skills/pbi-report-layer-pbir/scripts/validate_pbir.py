@@ -9,15 +9,19 @@ Usage:
 folder with exactly one *.Report.
 
 The CLI (`npm i -g @microsoft/powerbi-report-authoring-cli`) is found through
-$PBIR_AUTHOR_CLI or `powerbi-report-author` on PATH. It validates every file against the
+$PBIR_AUTHOR_CLI, `powerbi-report-author` on PATH, or (Windows) npm's default global folder
+%APPDATA%\\npm, which is not on PATH for users other than the one who installed Node. It validates every file against the
 published PBIR JSON schemas plus visual roles/types, so it is the authoritative check.
 --offline passes --no-schema to it (no download of remote schemas).
 
 The structural fallback checks what breaks Desktop most often: JSON that does not parse,
 PBIR-Legacy layout, a broken semantic-model binding, pages.json out of sync with the page
 folders, page/visual `name` != folder, visuals without position/visualType, visuals outside
-the page canvas, and theme/resource files that are registered but missing. It does NOT know
-the schemas or visual roles — say so when reporting.
+the page canvas, theme/resource files that are registered but missing, and files the CLI
+rejects for lacking "$schema" (the report's .pbip, .platform, definition.pbir and every
+definition/*.json; in our test, saving in Desktop 2.159 removed it from the .pbip and
+definition.pbir). It does
+NOT know the schemas or visual roles — say so when reporting.
 
 Exit codes: 0 = no errors, 1 = errors found, 2 = usage error / the CLI could not run.
 Python 3.9+, standard library only.
@@ -130,6 +134,7 @@ def structural_check(report_dir: Path) -> dict:
         except ValueError as exc:
             f.error("JSON_INVALID", f"invalid JSON: {exc}", file)
     invalid = {i["file"] for i in f.items}
+    _check_schema_urls(f, report_dir, invalid)
 
     if not definition.is_dir():
         if (report_dir / "report.json").is_file():
@@ -179,6 +184,65 @@ def structural_check(report_dir: Path) -> dict:
         _check_page(f, pages_dir / page_id, invalid)
 
     return _result(f, "structural")
+
+
+def _pbip_report_path(pbip: Path) -> Optional[str]:
+    """artifacts[].report.path of a .pbip, or None when the file does not have that shape."""
+    try:
+        data = _read_json(pbip)
+    except ValueError:
+        return None
+    artifacts = data.get("artifacts") if isinstance(data, dict) else None
+    for artifact in artifacts if isinstance(artifacts, list) else []:
+        report = artifact.get("report") if isinstance(artifact, dict) else None
+        path = report.get("path") if isinstance(report, dict) else None
+        if isinstance(path, str) and path:
+            return path
+    return None
+
+
+def _pbip_files(report_dir: Path) -> list:
+    """The .pbip the CLI pairs with this report (same rule as its findSiblingPbip): the one that
+    points to it; none if several do; else <Name>.pbip; else the only .pbip in the folder."""
+    root = report_dir.parent
+    pbips = sorted(p for p in root.glob("*.pbip") if p.is_file())
+    target = report_dir.resolve()
+    referencing = [p for p in pbips if _pbip_report_path(p) and (root / _pbip_report_path(p)).resolve() == target]
+    if referencing:
+        return referencing if len(referencing) == 1 else []
+    named = root / (report_dir.name[: -len(".Report")] + ".pbip" if report_dir.name.lower().endswith(".report")
+                    else report_dir.name + ".pbip")
+    if named.is_file():
+        return [named]
+    return pbips if len(pbips) == 1 else []
+
+
+def _check_schema_urls(f: Findings, report_dir: Path, invalid: set) -> None:
+    """Same files `powerbi-report-author validate` rejects without "$schema" (PBIR_JSON_FILE_NO_SCHEMA).
+
+    In our test, saving in Desktop 2.159 removed "$schema" from the .pbip and definition.pbir."""
+    files = _pbip_files(report_dir) + [report_dir / ".platform", report_dir / "definition.pbir"]
+    definition = report_dir / "definition"
+    if definition.is_dir():
+        files += sorted(definition.rglob("*.json"))
+    for file in files:
+        if not file.is_file():
+            continue
+        try:
+            rel = file.relative_to(report_dir).as_posix()
+        except ValueError:
+            rel = str(file)
+        if rel in invalid:
+            continue
+        try:
+            data = _read_json(file)
+        except ValueError:
+            continue  # reported elsewhere (JSON pass / definition.pbir load)
+        schema = data.get("$schema") if isinstance(data, dict) else None
+        if isinstance(data, dict) and not (isinstance(schema, str) and schema):
+            f.error("PBIR_JSON_FILE_NO_SCHEMA", f'{file.name} has no "$schema" URL; Microsoft\'s validator and '
+                    'Fabric reject it. A Desktop save can remove it from the .pbip and definition.pbir: put the '
+                    'line back as the first key (copy it from git or from a freshly created project)', file, "$schema")
 
 
 def _check_resources(f: Findings, report: dict, report_dir: Path) -> None:
@@ -263,12 +327,19 @@ def _result(f: Findings, engine: str) -> dict:
 # ---------------------------------------------------------------------------
 # powerbi-report-author CLI
 # ---------------------------------------------------------------------------
-def find_cli(env: Optional[dict] = None) -> Optional[str]:
+def find_cli(env: Optional[dict] = None, windows: Optional[bool] = None) -> Optional[str]:
     env = os.environ if env is None else env
+    windows = os.name == "nt" if windows is None else windows
     explicit = env.get("PBIR_AUTHOR_CLI")
     if explicit:
         return explicit if Path(explicit).is_file() else None
-    return shutil.which(CLI_NAME)
+    found = shutil.which(CLI_NAME, path=env.get("PATH"))
+    if found or not windows or not env.get("APPDATA"):
+        return found
+    # `npm i -g` on Windows installs into %APPDATA%\npm; the Node installer adds that folder
+    # to the PATH of the installing user only.
+    default = Path(env["APPDATA"]) / "npm" / f"{CLI_NAME}.cmd"
+    return str(default) if default.is_file() else None
 
 
 def build_cli_command(cli: str, report_dir: Path, offline: bool) -> list:
@@ -328,7 +399,8 @@ def run_cli(cli: str, report_dir: Path, offline: bool) -> dict:
 def format_text(result: dict) -> str:
     if result["engine"] == "structural":
         lines = [f"PBIR validation: structural fallback ({CLI_NAME} not found; schemas and visual "
-                 "roles NOT checked — install @microsoft/powerbi-report-authoring-cli)"]
+                 "roles NOT checked — install @microsoft/powerbi-report-authoring-cli or point "
+                 "PBIR_AUTHOR_CLI at it)"]
     else:
         lines = [f"PBIR validation: {CLI_NAME} validate"]
     lines.append(f"Report: {result['report']}")

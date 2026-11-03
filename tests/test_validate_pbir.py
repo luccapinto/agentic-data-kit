@@ -13,6 +13,7 @@ vp = load_module(PBIR_SCRIPTS / "validate_pbir.py", "validate_pbir")
 
 PAGE = "e087e4b90fb242dfb36a"
 CARD = "1c9e5a7d3b2f4e6a8d01"
+vp_schema_url = json.loads((FIXTURE / "SalesSample.pbip").read_text(encoding="utf-8"))["$schema"]
 
 
 def run_main(args, env=None):
@@ -92,6 +93,53 @@ class Structural(TempDirMixin, unittest.TestCase):
         (self.report / "report.json").write_text("{}", encoding="utf-8")
         self.assertEqual(codes(self.check()), ["PBIR_LEGACY_FORMAT"])
 
+    def drop_schema(self, path: Path):
+        self.edit_json(path, lambda d: d.pop("$schema"))
+
+    def test_desktop_save_drops_schema_from_pbip_and_pbir(self):
+        # Observed Nov 2026: saving the fixture in Desktop 2.159 removed "$schema" from these two
+        # files; Microsoft's validate then fails with PBIR_JSON_FILE_NO_SCHEMA, so must the fallback.
+        self.drop_schema(self.project / "SalesSample.pbip")
+        self.drop_schema(self.report / "definition.pbir")
+        result = self.check()
+        self.assertEqual(codes(result), ["PBIR_JSON_FILE_NO_SCHEMA"] * 2)
+        self.assertEqual(sorted(Path(d["file"]).name for d in result["diagnostics"]), ["SalesSample.pbip", "definition.pbir"])
+
+    def test_schema_required_in_definition_and_platform(self):
+        self.drop_schema(self.pages / PAGE / "page.json")
+        self.drop_schema(self.report / ".platform")
+        result = self.check()
+        self.assertEqual(codes(result), ["PBIR_JSON_FILE_NO_SCHEMA"] * 2)
+        self.assertEqual({d["file"] for d in result["diagnostics"]}, {".platform", f"definition/pages/{PAGE}/page.json"})
+
+    def test_pbip_pairing_follows_the_cli(self):
+        pbip = self.project / "SalesSample.pbip"
+        # A renamed .pbip that points to the report is the one checked.
+        renamed = self.project / "Renamed.pbip"
+        pbip.rename(renamed)
+        self.drop_schema(renamed)
+        self.assertEqual(codes(self.check()), ["PBIR_JSON_FILE_NO_SCHEMA"])
+        # A stray copy that points elsewhere is ignored while one .pbip points to the report.
+        renamed.rename(pbip)
+        (self.project / "Copy.pbip").write_text(json.dumps({"artifacts": [{"report": {"path": "Other.Report"}}]}), encoding="utf-8")
+        self.edit_json(pbip, lambda d: d.update({"$schema": vp_schema_url}))
+        self.assertEqual(self.check()["errorCount"], 0)
+
+    def test_malformed_pbip_artifacts_do_not_crash(self):
+        for artifacts in ([{"report": "SalesSample.Report"}], None, [{"report": {"path": 3}}]):
+            with self.subTest(artifacts=artifacts):
+                self.edit_json(self.project / "SalesSample.pbip", lambda d: d.update(artifacts=artifacts))
+                self.assertEqual(self.check()["errorCount"], 0)
+
+    def test_schema_must_be_a_url_string(self):
+        self.edit_json(self.report / "definition.pbir", lambda d: d.update({"$schema": 123}))
+        self.assertEqual(codes(self.check()), ["PBIR_JSON_FILE_NO_SCHEMA"])
+
+    def test_static_resources_do_not_need_schema(self):
+        theme = self.report / "StaticResources" / "SharedResources" / "BaseThemes" / "Fluent2-CY26SU10.json"
+        self.assertNotIn("$schema", json.loads(theme.read_text(encoding="utf-8")))
+        self.assertEqual(self.check()["errorCount"], 0)
+
     def test_cli_exit_codes(self):
         code, out, _ = run_main([self.project, "--structural-only"])
         self.assertEqual(code, 0)
@@ -142,6 +190,16 @@ class ReportAuthorCli(TempDirMixin, unittest.TestCase):
         self.assertEqual(stub_args(self.tmp, "powerbi-report-author"), ["validate", str(report), "--no-schema"])
         self.assertEqual(json.loads(out)["engine"], "powerbi-report-author")
         self.assertEqual(code, 1)
+
+    def test_finds_the_npm_default_folder_on_windows(self):
+        (self.tmp / "empty").mkdir()
+        cli = self.tmp / "npm" / "powerbi-report-author.cmd"
+        cli.parent.mkdir()
+        cli.write_text("@echo off", encoding="utf-8")
+        env = {"PATH": str(self.tmp / "empty"), "APPDATA": str(self.tmp)}
+        self.assertEqual(vp.find_cli(env, windows=True), str(cli))
+        self.assertIsNone(vp.find_cli(env, windows=False))
+        self.assertIsNone(vp.find_cli({"PATH": str(self.tmp / "empty")}, windows=True))
 
     def test_structural_only_ignores_the_cli(self):
         cli = write_stub(self.tmp, "powerbi-report-author", json.dumps(CLI_ERROR))
