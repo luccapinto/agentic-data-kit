@@ -21,7 +21,9 @@ Modeling MCP (`pbi-semantic-layer-tmdl`). Create the measure first, then bind th
   resolves the right Desktop window from the report folder. Details, errors and setup:
   [references/desktop-bridge.md](references/desktop-bridge.md).
 - `scripts/validate_pbir.py` (in this skill's folder) — runs `powerbi-report-author validate`, or
-  a structural check when the CLI is missing.
+  a structural check when the CLI is missing. It looks on PATH, in `$PBIR_AUTHOR_CLI`, and on
+  Windows in `%APPDATA%\npm`. If the output says "structural fallback", schemas were NOT
+  checked: say so in your report.
 - `pbi-visual-reviewer` agent — independent screenshot review.
 
 ## The loop (Desktop open)
@@ -53,6 +55,10 @@ PBIP (e.g. `%TEMP%\pbir-review\<Name>`), so screenshots never land in git.
 ### Pitfalls (each one has lost real work)
 - **Reload discards whatever Desktop has not saved.** That is why step 4 exists. If status says
   `true`, `null`, or fails, stop and ask the user to save; never reload "just to see".
+- **A Desktop save can drop `"$schema"`** from the `.pbip` and `definition.pbir` (seen once on
+  Desktop 2.159). `validate` then fails with `PBIR_JSON_FILE_NO_SCHEMA` on files you did not edit. Put
+  the line back as the first key, copied from git history (`git diff` shows the removed line);
+  do not "fix" anything else in those files.
 - **Reload covers the report only.** `--reload` does not re-read model files. Model changes go
   through the Modeling MCP, which updates Desktop live. Use `--reload-with-model` only when TMDL
   was edited on disk (Desktop-closed habits) — and it still does not refresh data.
